@@ -9,23 +9,24 @@ Warehouse application for warehouse management
 3.	Hibernate 5.x
 4.	Mysql 5
 5.	Eclipse
+6.  JUnit 3.8.1
 
 ####	Dependencies (POM.xml)
 ```xml
-   <dependency>
-     <groupId>org.hibernate</groupId>
-     <artifactId>hibernate-core</artifactId>
-     <version>5.4.1.Final</version>
-    </dependency>
-    <dependency>
-       <groupId>org.hibernate</groupId>
-       <artifactId>hibernate-search-orm</artifactId>
-       <version>5.3.0.Final</version>
-    </dependency>
-<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
-<dependency>
-    <groupId>mysql</groupId>
-    <artifactId>mysql-connector-java</artifactId>
-    <version>5.1.39</version>
-</dependency> 
+   		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>5.4.1.Final</version>
+		</dependency>
+			<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>8.0.17</version>
+		</dependency>
 ```
