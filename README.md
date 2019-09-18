@@ -1,7 +1,7 @@
 # otp-varastonhallinta
 
 # Overview
-Warehouse application for warehouse management
+Maven warehouse project for warehouse management
 
 # Tools & technologies used 
 1.	Java 1.8
