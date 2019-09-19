@@ -38,6 +38,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import varastonhallinta.logic.LoginController;
 import varastonhallinta.logic.ProfileController;
+import varastonhallinta.logic.UiController;
 import varastonhallinta.model.User;
 import varastonhallinta.security.Authenticator;
 
@@ -85,7 +86,7 @@ public class Main extends Application {
     public boolean userLogging(String userId, String password){
         if (Authenticator.validate(userId, password)) {
             loggedUser = User.of(userId);
-            gotoProfile();
+            gotoUI();
             return true;
         } else {
             return false;
@@ -100,6 +101,14 @@ public class Main extends Application {
     private void gotoProfile() {
         try {
         	ProfileController profile = (ProfileController) replaceSceneContent(UI_PAGE);
+        } catch (Exception ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private void gotoUI() {
+        try {
+        	UiController ui = (UiController) replaceSceneContent(UI_PAGE);
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
