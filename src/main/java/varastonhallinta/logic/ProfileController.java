@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package varastonhallinta.ui;
+package varastonhallinta.logic;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -29,7 +29,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
 import varastonhallinta.model.User;
-
+import varastonhallinta.ui.Main;
 /**
  * Profile Controller.
  */

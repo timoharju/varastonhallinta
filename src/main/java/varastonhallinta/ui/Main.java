@@ -36,6 +36,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import varastonhallinta.logic.LoginController;
+import varastonhallinta.logic.ProfileController;
 import varastonhallinta.model.User;
 import varastonhallinta.security.Authenticator;
 
@@ -90,7 +92,7 @@ public class Main extends Application {
         }
     }
     
-    void userLogout(){
+    public void userLogout(){
         loggedUser = null;
         gotoLogin();
     }

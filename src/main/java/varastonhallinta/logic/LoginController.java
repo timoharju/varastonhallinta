@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package varastonhallinta.ui;
+package varastonhallinta.logic;
 
 import java.awt.Color;
 import java.net.URL;
@@ -29,7 +29,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
-
+import varastonhallinta.ui.Main;
 /**
  * Login Controller.
  */
