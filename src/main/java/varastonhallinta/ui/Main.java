@@ -19,7 +19,12 @@
 package varastonhallinta.ui;
 
 import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,8 +48,12 @@ public class Main extends Application {
     private User loggedUser;
     private final double MINIMUM_WINDOW_WIDTH = 390.0;
     private final double MINIMUM_WINDOW_HEIGHT = 500.0;
-    //private Map<String, Map<String, ? extends Parent>> pageMap = new HashMap<>();
-    //private final String UI_PAGE_LOCATION = "/otp-varastonhallinta/src/main/resources/ui.fxml";
+    private final String UI_PAGE = "/ui.fxml";
+    private final String LOGIN_PAGE = "/login.fxml";
+    private final String PROFILE_PAGE = "/profile.fxml";
+    private List<String> pages = new ArrayList<String>();
+    private Iterator<String> pagesIterator = pages.iterator();
+    //String[] pages = {LOGIN_PAGE, UI_PAGE};
 
     /**
      * @param args the command line arguments
@@ -88,9 +97,7 @@ public class Main extends Application {
     
     private void gotoProfile() {
         try {
-            //ProfileController profile = (ProfileController) replaceSceneContent("/otp-varastonhallinta/src/main/resources/ui.fxml");
-            //profile.setApp(this);
-        	replaceSceneContent("ui.fxml");
+        	ProfileController profile = (ProfileController) replaceSceneContent(UI_PAGE);
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -98,7 +105,7 @@ public class Main extends Application {
 
     private void gotoLogin() {
         try {
-            LoginController login = (LoginController) replaceSceneContent("login.fxml");
+            LoginController login = (LoginController) replaceSceneContent(LOGIN_PAGE);
             login.setApp(this);
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
@@ -110,7 +117,6 @@ public class Main extends Application {
         InputStream in = Main.class.getResourceAsStream(fxml);
         loader.setBuilderFactory(new JavaFXBuilderFactory());
         loader.setLocation(Main.class.getResource(fxml));
-        //AnchorPane page;
         Parent page;
         try {
             page = (Parent)loader.load(in);
