@@ -20,14 +20,38 @@ package varastonhallinta.security;
 
 import java.util.HashMap;
 import java.util.Map;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.NoResultException;
+import javax.persistence.Persistence;
+import varastonhallinta.domain.Role;
+import varastonhallinta.domain.User;
+import varastonhallinta.logic.RoleJpaController;
+import varastonhallinta.logic.UserJpaController;
 
 public class Authenticator {
-    private static final Map<String, String> USERS = new HashMap<String, String>();
-    static {
-        USERS.put("demo", "demo");
+    private static EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("Varastonhallinta_hib-0.0.1-SNAPSHOT.jar");
+    private static UserJpaController userController = new UserJpaController(entityManagerFactory);
+    private static RoleJpaController roleController = new RoleJpaController(entityManagerFactory);
+
+    static{
+        Role admin = new Role("Admin");
+        Role user = new Role("User");
+        Role editor = new Role("Editor");
+        roleController.create(admin);
+        roleController.create(user);
+        roleController.create(editor);
+        userController.create(new User("admin", "admin", admin));
+        userController.create(new User("user", "user", user));
+        userController.create(new User("editor", "editor", editor));
     }
-    public static boolean validate(String user, String password){
-        String validUserPassword = USERS.get(user);
-        return validUserPassword != null && validUserPassword.equals(password);
+    
+    public static boolean validate(String username, String password){
+        System.out.println("validate " + username);
+        try{
+            User user = userController.findUserWithName(username);
+        }catch(NoResultException e){
+            return false;
+        }
+        return true;
     }
 }
