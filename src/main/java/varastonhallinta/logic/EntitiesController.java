@@ -14,7 +14,7 @@ public class EntitiesController {
    
    public EntitiesController(){}
    
-   /* Method to CREATE an employee in the database */
+   /* Method to CREATE an user in the database */
    public Integer addUser(String username, String password){
       Session session = HibernateUtil.getSessionFactory().openSession();
       Transaction tx = null;
@@ -36,7 +36,7 @@ public class EntitiesController {
       return userID;
    }
    
-   /* Method to  READ all the employees */
+   /* Method to  READ all the users */
    public void listUsers( ){
       Session session = HibernateUtil.getSessionFactory().openSession();
       Transaction tx = null;
