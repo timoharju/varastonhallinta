@@ -1,5 +1,6 @@
 # Standard
 bin/
+.gitignore
 
 # Eclipse
 .classpath
