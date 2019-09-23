@@ -1,10 +1,11 @@
 package varastonhallinta.domain;
 
+import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
 @Table(name = "ITEM")
-public class Item {
+public class Item implements Serializable {
 	@Id
 	@GeneratedValue
 	@Column(name = "itemiid")

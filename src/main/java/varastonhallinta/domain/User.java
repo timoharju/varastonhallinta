@@ -1,10 +1,15 @@
 package varastonhallinta.domain;
 
+import java.io.Serializable;
 import javax.persistence.*;
 
-@Entity
-@Table(name = "USER")
-public class User {
+@Entity(name = "User")
+@Table(name = "user")
+@NamedQuery(
+    name="findUserWithName",
+    query="SELECT u FROM User u WHERE u.username = :username"
+)
+public class User implements Serializable {
    @Id @GeneratedValue
    @Column(name = "id")
    private int id;
@@ -15,7 +20,17 @@ public class User {
    @Column(name = "password")
    private String password;  
    
+   @ManyToOne()
+   @JoinColumn(name = "role_id" , referencedColumnName = "id")
+   private Role role;
+   
    public User() {}
+   
+    public User(String username, String password, Role role) {
+       this.username = username;
+       this.password = password;
+       this.role = role;
+   }
    
    public int getId() {
       return id;
@@ -40,7 +55,14 @@ public class User {
     public void setPassword(String password){
         this.password = password;
     }
- 
+    
+    public Role getRole(){
+        return role;
+    }
+
+    public void setRole(Role role){
+        this.role = role;
+    }
 }
 
 
