@@ -34,9 +34,11 @@ import javafx.fxml.Initializable;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import varastonhallinta.domain.Role;
 import varastonhallinta.logic.LoginController;
@@ -44,8 +46,10 @@ import varastonhallinta.logic.ProfileController;
 import varastonhallinta.logic.RoleJpaController;
 import varastonhallinta.logic.UiController;
 import varastonhallinta.logic.UserJpaController;
-import varastonhallinta.model.User;
+import varastonhallinta.domain.User;
 import varastonhallinta.security.Authenticator;
+import varastonhallinta.ui.exceptions.NoSuchRoleException;
+import varastonhallinta.ui.exceptions.UsernameTakenException;
 
 /**
  * Main Application. This class handles navigation and user session.
@@ -65,6 +69,7 @@ public class Main extends Application {
     private static UserJpaController userController = new UserJpaController(entityManagerFactory);
     private static RoleJpaController roleController = new RoleJpaController(entityManagerFactory);
     private Authenticator authenticator = new Authenticator(userController);
+    private Scene scene;
     
     static{
         Role admin = new Role("Admin");
@@ -104,9 +109,9 @@ public class Main extends Application {
         return loggedUser;
     }
         
-    public boolean userLogging(String userId, String password){
-        if (authenticator.validate(userId, password)) {
-            loggedUser = User.of(userId);
+    public boolean userLogging(String username, String password){
+        if (authenticator.validate(username, password)) {
+            loggedUser = userController.findUserWithName(username);
             gotoUI();
             return true;
         } else {
@@ -121,7 +126,7 @@ public class Main extends Application {
     
     private void gotoProfile() {
         try {
-            ProfileController profile = (ProfileController) replaceSceneContent(UI_PAGE);
+            ProfileController profile = (ProfileController) replaceSceneContent(PROFILE_PAGE);
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -156,7 +161,7 @@ public class Main extends Application {
         } finally {
             in.close();
         } 
-        Scene scene = new Scene(page, 800, 600);
+        scene = new Scene(page, 800, 600);
         stage.setScene(scene);
         stage.sizeToScene();
         return (Initializable) loader.getController();
@@ -169,5 +174,31 @@ public class Main extends Application {
             roleNames[i] = roles.get(i).getName();
         }
         return roleNames;
+    }
+    
+    public void addUser(String username, String password, String firstName, String lastName, String roleName) throws NoSuchRoleException, UsernameTakenException{
+        Role role = roleController.findRoleWithName(roleName);
+        if(role == null){
+            throw new NoSuchRoleException("Role " + role + " doesn't exist.");
+        }
+        
+        try{
+            if(userController.findUserWithName(username) != null){
+                throw new UsernameTakenException("Username: " + username + " is taken.");
+            } 
+        }catch(NoResultException ex){
+            
+        }
+        
+        userController.create(new User(username, password, firstName, lastName, role));
+    }
+    
+    public void showAlert(Alert.AlertType alertType, String title, String message) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.initOwner(scene.getWindow());
+        alert.show();
     }
 }
