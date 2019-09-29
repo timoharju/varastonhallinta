@@ -24,21 +24,21 @@ import varastonhallinta.ui.Main;
 public class UiController implements Initializable {
     
     @FXML
-    private ComboBox<String> rolesBox;
+    private ComboBox<String> rolesBoxKL;
+    
+    @FXML
+    private ComboBox<String> rolesBoxKM;
     
     private Main application;
     
     public void setApp(Main application){
         this.application = application;
-        String[] roles = application.getRoleNames();
-        ObservableList<String> options = 
-        FXCollections.observableArrayList(roles);
-        rolesBox.getItems().addAll(options);
+        configureRoles();
     }
    
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
-        assert rolesBox != null : "fx:id=\"colName\" was not injected: check your FXML file 'IssueTrackingLite.fxml'.";
+        assert rolesBoxKL != null : "fx:id=\"colName\" was not injected: check your FXML file 'IssueTrackingLite.fxml'.";
 //        assert colStatus != null : "fx:id=\"colStatus\" was not injected: check your FXML file 'IssueTrackingLite.fxml'.";
 //        assert colSynopsis != null : "fx:id=\"colSynopsis\" was not injected: check your FXML file 'IssueTrackingLite.fxml'.";
 //        assert deleteIssue != null : "fx:id=\"deleteIssue\" was not injected: check your FXML file 'IssueTrackingLite.fxml'.";
@@ -66,14 +66,15 @@ public class UiController implements Initializable {
     }
         
     private void configureRoles(){
-//        String[] roles = application.getRoleNames();
-//        ObservableList<String> options = 
-//        FXCollections.observableArrayList(roles);
-//        rolesBox.getItems().addAll(options);
+        String[] roles = application.getRoleNames();
+        ObservableList<String> options = 
+        FXCollections.observableArrayList(roles);
+        rolesBoxKL.getItems().addAll(options);
+        rolesBoxKM.getItems().addAll(options);
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        initialize();
+
     }
 }
