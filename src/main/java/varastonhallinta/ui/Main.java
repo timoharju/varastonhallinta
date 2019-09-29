@@ -36,9 +36,14 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import varastonhallinta.domain.Role;
 import varastonhallinta.logic.LoginController;
 import varastonhallinta.logic.ProfileController;
+import varastonhallinta.logic.RoleJpaController;
 import varastonhallinta.logic.UiController;
+import varastonhallinta.logic.UserJpaController;
 import varastonhallinta.model.User;
 import varastonhallinta.security.Authenticator;
 
@@ -51,11 +56,27 @@ public class Main extends Application {
     private User loggedUser;
     private final double MINIMUM_WINDOW_WIDTH = 390.0;
     private final double MINIMUM_WINDOW_HEIGHT = 500.0;
-    private final String UI_PAGE = "/ui.fxml";
-    private final String LOGIN_PAGE = "/login.fxml";
+    private final String UI_PAGE = "/fxml/ui3.fxml";
+    private final String LOGIN_PAGE = "/fxml/login.fxml";
     private final String PROFILE_PAGE = "/profile.fxml";
     private List<String> pages = new ArrayList<String>();
     private Iterator<String> pagesIterator = pages.iterator();
+    private static EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("varastonhallinta");
+    private static UserJpaController userController = new UserJpaController(entityManagerFactory);
+    private static RoleJpaController roleController = new RoleJpaController(entityManagerFactory);
+    private Authenticator authenticator = new Authenticator(userController);
+    
+    static{
+        Role admin = new Role("Admin");
+        Role user = new Role("User");
+        Role editor = new Role("Editor");
+        roleController.create(admin);
+        roleController.create(user);
+        roleController.create(editor);
+        userController.create(new varastonhallinta.domain.User("admin", "admin", admin));
+        userController.create(new varastonhallinta.domain.User("user", "user", user));
+        userController.create(new varastonhallinta.domain.User("editor", "editor", editor));
+    }
     //String[] pages = {LOGIN_PAGE, UI_PAGE};
 
     /**
@@ -84,7 +105,7 @@ public class Main extends Application {
     }
         
     public boolean userLogging(String userId, String password){
-        if (Authenticator.validate(userId, password)) {
+        if (authenticator.validate(userId, password)) {
             loggedUser = User.of(userId);
             gotoUI();
             return true;
@@ -100,7 +121,7 @@ public class Main extends Application {
     
     private void gotoProfile() {
         try {
-        	ProfileController profile = (ProfileController) replaceSceneContent(UI_PAGE);
+            ProfileController profile = (ProfileController) replaceSceneContent(UI_PAGE);
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -108,7 +129,8 @@ public class Main extends Application {
     
     private void gotoUI() {
         try {
-        	UiController ui = (UiController) replaceSceneContent(UI_PAGE);
+            UiController ui = (UiController) replaceSceneContent(UI_PAGE);
+            ui.setApp(this);
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -138,5 +160,14 @@ public class Main extends Application {
         stage.setScene(scene);
         stage.sizeToScene();
         return (Initializable) loader.getController();
+    }
+    
+    public String[] getRoleNames(){
+        List<Role> roles = roleController.findRoleEntities();
+        String[] roleNames = new String[roles.size()];
+        for(int i=0; i<roles.size(); i++){
+            roleNames[i] = roles.get(i).getName();
+        }
+        return roleNames;
     }
 }

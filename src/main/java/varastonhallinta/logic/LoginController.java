@@ -65,11 +65,11 @@ public class LoginController extends AnchorPane implements Initializable {
         }
     }
 
-	public void initialize(URL location, ResourceBundle resources) {
+    public void initialize(URL location, ResourceBundle resources) {
         errorMessage.setText("");
         userId.setPromptText("username");
         password.setPromptText("password");
-	}
+    }
 
 
 

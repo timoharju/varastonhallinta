@@ -30,9 +30,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="768.0" prefWidth="1024.0" stylesheets="@styles/ui.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="varastonhallinta.logic.UiController">
+<VBox prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="varastonhallinta.logic.UiController">
   <children>
-    <MenuBar stylesheets="@styles/ui.css" VBox.vgrow="NEVER">
+    <MenuBar VBox.vgrow="NEVER">
       <menus>
         <Menu mnemonicParsing="false" text="File">
           <items>
@@ -81,7 +81,7 @@
                           <items>
                             <AnchorPane prefHeight="782.0" prefWidth="557.0">
                                  <children>
-                                    <GridPane hgap="10.0" layoutX="9.0" layoutY="9.0" prefHeight="694.0" prefWidth="495.0" vgap="10.0" AnchorPane.bottomAnchor="9.0" AnchorPane.leftAnchor="9.0" AnchorPane.rightAnchor="9.0" AnchorPane.topAnchor="9.0">
+                                    <GridPane hgap="10.0" layoutX="9.0" layoutY="9.0" prefHeight="694.0" prefWidth="495.0" vgap="10.0" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0">
                                        <columnConstraints>
                                           <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" />
                                           <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" />
@@ -91,8 +91,8 @@
                                           <RowConstraints maxHeight="1.7976931348623157E308" minHeight="-Infinity" vgrow="NEVER" />
                                           <RowConstraints fillHeight="false" maxHeight="1.7976931348623157E308" minHeight="-Infinity" valignment="BOTTOM" vgrow="NEVER" />
                                           <RowConstraints fillHeight="false" maxHeight="1.7976931348623157E308" minHeight="-Infinity" valignment="TOP" vgrow="NEVER" />
-                                          <RowConstraints maxHeight="400.0" minHeight="85.0" valignment="CENTER" vgrow="ALWAYS" />
-                                          <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="324.0" vgrow="NEVER" />
+                                          <RowConstraints maxHeight="1.7976931348623157E308" minHeight="85.0" valignment="CENTER" vgrow="ALWAYS" />
+                                          <RowConstraints maxHeight="1.7976931348623157E308" minHeight="25.0" prefHeight="324.0" vgrow="NEVER" />
                                           <RowConstraints maxHeight="0.0" minHeight="0.0" prefHeight="0.0" vgrow="SOMETIMES" />
                                        </rowConstraints>
                                        <children>
@@ -134,7 +134,7 @@
                                                 <TextField promptText="12,10" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                                              </children>
                                           </VBox>
-                                          <Label text="Muokkaa tuotteita" textFill="#5000b2" GridPane.columnSpan="3" GridPane.halignment="CENTER">
+                                          <Label minHeight="-Infinity" text="Muokkaa tuotteita" textFill="#5000b2" GridPane.columnSpan="3" GridPane.halignment="CENTER">
                                              <font>
                                                 <Font name="Calibri" size="47.0" />
                                              </font>
@@ -142,7 +142,7 @@
                                           <VBox GridPane.columnSpan="3" GridPane.rowIndex="3">
                                              <children>
                                                 <Label text="Tuotekuvaus" GridPane.rowIndex="5" />
-                                                <TextArea prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="6" VBox.vgrow="ALWAYS">
+                                                <TextArea maxHeight="400.0" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="6" VBox.vgrow="ALWAYS">
                                                    <GridPane.margin>
                                                       <Insets right="20.0" />
                                                    </GridPane.margin>
@@ -154,26 +154,27 @@
                                              <children>
                                                 <TextField maxWidth="80.0" minWidth="80.0" promptText="1" />
                                                 <Button mnemonicParsing="false" text="Lisää tilaukselle" />
-                                                <Button alignment="CENTER_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false" styleClass="confirm" stylesheets="@styles/ui.css" text="Viimeistele tilaus" textAlignment="RIGHT" />
+                                                <Button alignment="CENTER_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false" text="Viimeistele tilaus" textAlignment="RIGHT" />
                                              </children>
                                           </FlowPane>
-                                          <Button alignment="CENTER" mnemonicParsing="false" styleClass="warning" text="Tyhjennä tilaus" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.valignment="TOP" />
+                                          <Button alignment="CENTER" mnemonicParsing="false" text="Tyhjennä tilaus" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.valignment="TOP" />
                                        </children>
                                     </GridPane>
                                  </children>
                               </AnchorPane>
                             <AnchorPane prefHeight="796.0" prefWidth="681.0">
                                  <children>
-                                    <GridPane vgap="10.0" AnchorPane.leftAnchor="9.0" AnchorPane.rightAnchor="9.0" AnchorPane.topAnchor="9.0">
+                                    <GridPane prefHeight="707.0" prefWidth="500.0" vgap="10.0" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0">
                                       <columnConstraints>
                                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
                                       </columnConstraints>
                                       <rowConstraints>
-                                        <RowConstraints fillHeight="false" vgrow="SOMETIMES" />
-                                        <RowConstraints vgrow="SOMETIMES" />
+                                        <RowConstraints fillHeight="false" minHeight="-Infinity" vgrow="SOMETIMES" />
+                                        <RowConstraints maxHeight="400.0" minHeight="250.0" prefHeight="310.0" vgrow="SOMETIMES" />
+                                          <RowConstraints maxHeight="1.7976931348623157E308" minHeight="0.0" prefHeight="323.0" vgrow="SOMETIMES" />
                                       </rowConstraints>
                                        <children>
-                                          <Label text="Tilaus" textFill="#5000b2" GridPane.halignment="CENTER">
+                                          <Label minHeight="-Infinity" text="Tilaus" textFill="#5000b2" GridPane.halignment="CENTER">
                                              <font>
                                                 <Font name="Calibri" size="47.0" />
                                              </font>
@@ -216,8 +217,8 @@
                                           <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="282.0" />
                                        </columnConstraints>
                                        <rowConstraints>
-                                          <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-                                          <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="307.0" vgrow="ALWAYS" />
+                                          <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="SOMETIMES" />
+                                          <RowConstraints maxHeight="1.7976931348623157E308" minHeight="-Infinity" prefHeight="307.0" vgrow="ALWAYS" />
                                           <RowConstraints maxHeight="493.0" minHeight="10.0" prefHeight="323.0" vgrow="NEVER" />
                                        </rowConstraints>
                                        <children>
@@ -272,7 +273,7 @@
                                                 </VBox>
                                              </children>
                                           </VBox>
-                                          <Label alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" text="Tuote haku" textFill="#5000b2" GridPane.columnSpan="2147483647">
+                                          <Label alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" text="Tuote haku" textFill="#5000b2" GridPane.columnSpan="2147483647">
                                              <font>
                                                 <Font name="Calibri" size="47.0" />
                                              </font>
@@ -329,7 +330,7 @@
                                                 <TextField promptText="12,10" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                                              </children>
                                           </VBox>
-                                          <Label text="Muokkaa tuotteita" textFill="#5000b2" GridPane.columnSpan="3" GridPane.halignment="CENTER">
+                                          <Label maxHeight="-Infinity" maxWidth="-Infinity" text="Muokkaa tuotteita" textFill="#5000b2" GridPane.columnSpan="3" GridPane.halignment="CENTER">
                                              <font>
                                                 <Font name="Calibri" size="47.0" />
                                              </font>
@@ -337,7 +338,7 @@
                                           <VBox GridPane.columnSpan="3" GridPane.rowIndex="3">
                                              <children>
                                                 <Label text="Tuotekuvaus" GridPane.rowIndex="5" />
-                                                <TextArea prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="6" VBox.vgrow="ALWAYS">
+                                                <TextArea maxHeight="400.0" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="6" VBox.vgrow="ALWAYS">
                                                    <GridPane.margin>
                                                       <Insets right="20.0" />
                                                    </GridPane.margin>
@@ -351,8 +352,8 @@
                                                 <TextField promptText="123,00" GridPane.columnIndex="1" GridPane.rowIndex="8" />
                                              </children>
                                           </VBox>
-                                          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="147.0" styleClass="confirm" text="TALLENNA MUUTOKSET" GridPane.rowIndex="4" />
-                                          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="147.0" styleClass="warning" text="POISTA TUOTE" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+                                          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="147.0" text="TALLENNA MUUTOKSET" GridPane.rowIndex="4" />
+                                          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="147.0" text="POISTA TUOTE" GridPane.columnIndex="2" GridPane.rowIndex="4" />
                                        </children>
                                        <columnConstraints>
                                           <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" />
@@ -363,7 +364,7 @@
                                           <RowConstraints maxHeight="1.7976931348623157E308" minHeight="-Infinity" vgrow="NEVER" />
                                           <RowConstraints fillHeight="false" maxHeight="1.7976931348623157E308" minHeight="-Infinity" valignment="BOTTOM" vgrow="NEVER" />
                                           <RowConstraints fillHeight="false" maxHeight="1.7976931348623157E308" minHeight="-Infinity" valignment="TOP" vgrow="NEVER" />
-                                          <RowConstraints maxHeight="400.0" minHeight="85.0" valignment="CENTER" vgrow="ALWAYS" />
+                                          <RowConstraints maxHeight="1.7976931348623157E308" minHeight="85.0" valignment="CENTER" vgrow="ALWAYS" />
                                           <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="324.0" valignment="TOP" vgrow="NEVER" />
                                           <RowConstraints maxHeight="0.0" minHeight="0.0" prefHeight="0.0" vgrow="SOMETIMES" />
                                        </rowConstraints>
@@ -384,7 +385,7 @@
                            <items>
                               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="796.0" prefWidth="681.0">
                                  <children>
-                                    <GridPane hgap="20.0" vgap="10.0" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0">
+                                    <GridPane gridLinesVisible="true" hgap="20.0" vgap="10.0" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0">
                                        <children>
                                           <VBox spacing="10.0" GridPane.rowIndex="1">
                                              <children>
@@ -465,25 +466,25 @@
                                                 </VBox>
                                              </children>
                                           </VBox>
-                                          <Label alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" text="Käyttäjän haku" textFill="#5000b2" GridPane.columnSpan="2147483647">
+                                          <Label alignment="TOP_CENTER" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" text="Käyttäjän haku" textFill="#5000b2" GridPane.columnSpan="2147483647">
                                              <font>
                                                 <Font name="Calibri" size="47.0" />
                                              </font>
                                           </Label>
                                           <TableView GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="1">
                                              <columns>
-                                                <TableColumn maxWidth="167.0" prefWidth="100.0" text="KäyttäjäID" />
-                                                <TableColumn maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="180.0" text="Käyttäjänimi" />
+                                                <TableColumn maxWidth="167.0" prefWidth="100.0" text="TuoteID" />
+                                                <TableColumn maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="180.0" text="Tuotenimi" />
                                              </columns>
                                           </TableView>
                                        </children>
                                        <columnConstraints>
-                                          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="222.0" minWidth="10.0" prefWidth="198.0" />
-                                          <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="282.0" />
+                                          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="222.0" minWidth="113.0" prefWidth="198.0" />
+                                          <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="150.0" prefWidth="282.0" />
                                        </columnConstraints>
                                        <rowConstraints>
-                                          <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-                                          <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="307.0" vgrow="ALWAYS" />
+                                          <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="SOMETIMES" />
+                                          <RowConstraints maxHeight="1.7976931348623157E308" minHeight="-Infinity" prefHeight="307.0" vgrow="ALWAYS" />
                                           <RowConstraints maxHeight="493.0" minHeight="10.0" prefHeight="323.0" vgrow="NEVER" />
                                        </rowConstraints>
                                     </GridPane>
@@ -491,7 +492,7 @@
                               </AnchorPane>
                               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="782.0" prefWidth="557.0">
                                  <children>
-                                    <GridPane hgap="10.0" prefHeight="694.0" prefWidth="495.0" vgap="10.0" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0">
+                                    <GridPane gridLinesVisible="true" hgap="10.0" prefHeight="694.0" prefWidth="495.0" vgap="10.0" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0">
                                        <children>
                                           <VBox GridPane.rowIndex="1">
                                              <children>
@@ -531,7 +532,7 @@
                                                 <TextField GridPane.columnIndex="1" GridPane.rowIndex="6" />
                                              </children>
                                           </VBox>
-                                          <Label text="Käyttäjän muokkaus" textFill="#5000b2" GridPane.columnSpan="3" GridPane.halignment="CENTER">
+                                          <Label minHeight="-Infinity" text="Käyttäjän muokkaus" textFill="#5000b2" GridPane.columnSpan="3" GridPane.halignment="CENTER">
                                              <font>
                                                 <Font name="Calibri" size="47.0" />
                                              </font>
@@ -553,8 +554,8 @@
                                                 <TextField GridPane.columnIndex="1" GridPane.rowIndex="8" />
                                              </children>
                                           </VBox>
-                                          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="147.0" styleClass="confirm" text="TALLENNA MUUTOKSET" GridPane.rowIndex="4" />
-                                          <Button contentDisplay="CENTER" mnemonicParsing="false" prefHeight="25.0" prefWidth="147.0" styleClass="warning" text="POISTA KÄYTTÄJÄ" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+                                          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="147.0" text="TALLENNA MUUTOKSET" GridPane.rowIndex="4" />
+                                          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="147.0" text="POISTA KÄYTTÄJÄ" GridPane.columnIndex="2" GridPane.rowIndex="4" />
                                        </children>
                                        <columnConstraints>
                                           <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" />
@@ -562,10 +563,10 @@
                                           <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" />
                                        </columnConstraints>
                                        <rowConstraints>
-                                          <RowConstraints maxHeight="1.7976931348623157E308" minHeight="-Infinity" vgrow="NEVER" />
+                                          <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
                                           <RowConstraints fillHeight="false" maxHeight="1.7976931348623157E308" minHeight="-Infinity" valignment="BOTTOM" vgrow="NEVER" />
                                           <RowConstraints fillHeight="false" maxHeight="1.7976931348623157E308" minHeight="-Infinity" valignment="TOP" vgrow="NEVER" />
-                                          <RowConstraints maxHeight="400.0" minHeight="85.0" valignment="CENTER" vgrow="ALWAYS" />
+                                          <RowConstraints maxHeight="1.7976931348623157E308" minHeight="85.0" valignment="CENTER" vgrow="ALWAYS" />
                                           <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="324.0" valignment="TOP" vgrow="NEVER" />
                                           <RowConstraints maxHeight="0.0" minHeight="0.0" prefHeight="0.0" vgrow="SOMETIMES" />
                                        </rowConstraints>
@@ -582,7 +583,7 @@
                <content>
                   <AnchorPane prefHeight="521.0" prefWidth="820.0">
                      <children>
-                        <GridPane hgap="10.0" prefHeight="694.0" prefWidth="495.0" vgap="10.0" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0">
+                        <GridPane gridLinesVisible="true" hgap="10.0" prefWidth="495.0" vgap="10.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0">
                            <children>
                               <VBox GridPane.columnIndex="1" GridPane.rowIndex="1">
                                  <children>
@@ -619,38 +620,34 @@
                               <VBox GridPane.columnIndex="3" GridPane.rowIndex="2" GridPane.valignment="CENTER">
                                  <children>
                                     <Label text="Rooli" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                                    <ComboBox fx:id="rolesBox" prefWidth="215.0" />
+                                    <ComboBox fx:id="rolesBox" prefWidth="160.0" />
                                  </children>
                               </VBox>
-                              <Label text="Käyttäjän lisäys" textFill="#5000b2" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.halignment="CENTER">
+                              <Label minHeight="-Infinity" text="Käyttäjän lisäys" textFill="#5000b2" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.halignment="CENTER">
                                  <font>
                                     <Font name="Calibri" size="47.0" />
                                  </font>
                               </Label>
-                              <VBox GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="3" />
-                              <HBox spacing="10.0" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="4" GridPane.valignment="TOP" />
                               <VBox GridPane.columnIndex="3" GridPane.rowIndex="1">
                                  <children>
                                     <Label text="Salasana" GridPane.columnIndex="1" GridPane.rowIndex="7" />
                                     <TextField GridPane.columnIndex="1" GridPane.rowIndex="8" />
                                  </children>
                               </VBox>
-                              <Button mnemonicParsing="false" prefHeight="25.0" styleClass="confirm" text="LISÄÄ KÄYTTÄJÄ" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                              <Button mnemonicParsing="false" text="LISÄÄ KÄYTTÄJÄ" GridPane.columnIndex="2" GridPane.rowIndex="3" />
                            </children>
                            <columnConstraints>
                               <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="100.0" />
-                              <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="68.0" prefWidth="215.0" />
-                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="68.0" prefWidth="215.0" />
-                              <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="68.0" prefWidth="215.0" />
+                              <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="70.0" prefWidth="160.0" />
+                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="70.0" prefWidth="160.0" />
+                              <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="70.0" prefWidth="160.0" />
                               <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="100.0" />
                            </columnConstraints>
                            <rowConstraints>
-                              <RowConstraints maxHeight="1.7976931348623157E308" minHeight="-Infinity" vgrow="NEVER" />
+                              <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
                               <RowConstraints fillHeight="false" maxHeight="1.7976931348623157E308" minHeight="-Infinity" valignment="BOTTOM" vgrow="NEVER" />
                               <RowConstraints fillHeight="false" maxHeight="1.7976931348623157E308" minHeight="-Infinity" valignment="TOP" vgrow="NEVER" />
-                              <RowConstraints maxHeight="400.0" minHeight="85.0" valignment="TOP" vgrow="ALWAYS" />
-                              <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="324.0" valignment="TOP" vgrow="NEVER" />
-                              <RowConstraints maxHeight="0.0" minHeight="0.0" prefHeight="0.0" vgrow="SOMETIMES" />
+                              <RowConstraints maxHeight="1.7976931348623157E308" minHeight="25.0" valignment="TOP" vgrow="ALWAYS" />
                            </rowConstraints>
                         </GridPane>
                      </children>
