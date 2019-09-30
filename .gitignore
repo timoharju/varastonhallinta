@@ -1,1 +1,12 @@
-/target/
+# Standard
+bin/
+.gitignore
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Maven
+log/
+target/
