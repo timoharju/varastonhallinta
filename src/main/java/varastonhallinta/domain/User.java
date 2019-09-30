@@ -18,7 +18,13 @@ public class User implements Serializable {
    private String username; 
    
    @Column(name = "password")
-   private String password;  
+   private String password; 
+   
+   @Column(name = "firstname")
+   private String firstName;
+   
+   @Column(name = "lastname")
+   private String lastName;
    
    @ManyToOne()
    @JoinColumn(name = "role_id" , referencedColumnName = "id")
@@ -27,9 +33,15 @@ public class User implements Serializable {
    public User() {}
    
     public User(String username, String password, Role role) {
-       this.username = username;
-       this.password = password;
-       this.role = role;
+       this(username, password, "", "", role);
+   }
+    
+    public User(String username, String password, String firstName, String lastName, Role role) {
+        this.username = username;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.role = role;
    }
    
    public int getId() {
@@ -62,6 +74,34 @@ public class User implements Serializable {
 
     public void setRole(Role role){
         this.role = role;
+    }
+
+    /**
+     * @return the firstName
+     */
+    public String getFirstName() {
+        return firstName;
+    }
+
+    /**
+     * @param firstName the firstName to set
+     */
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    /**
+     * @return the lastName
+     */
+    public String getLastName() {
+        return lastName;
+    }
+
+    /**
+     * @param lastName the lastName to set
+     */
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 }
 

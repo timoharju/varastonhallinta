@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Standard
 bin/
 .gitignore
@@ -10,3 +11,6 @@ bin/
 # Maven
 log/
 target/
+=======
+/target/
+>>>>>>> branch 'Taneli_ui' of https://gitlab.com/otp-ryhma4/otp-varastonhallinta.git
