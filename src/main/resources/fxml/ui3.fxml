@@ -393,6 +393,7 @@
                           <columnConstraints>
                             <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="369.0" minWidth="10.0" prefWidth="172.0" />
                             <ColumnConstraints hgrow="SOMETIMES" maxWidth="576.0" minWidth="10.0" prefWidth="576.0" />
+                              <ColumnConstraints />
                           </columnConstraints>
                           <rowConstraints>
                             <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
@@ -694,8 +695,12 @@
                               </VBox>
                               <VBox GridPane.columnIndex="2" GridPane.rowIndex="1">
                                  <children>
+                                    <Label fx:id="usernameLabel" styleClass="infoLabel" text="Label" />
                                     <Label text="Käyttäjänimi" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                    <TextField fx:id="usernameKL" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <TextField fx:id="usernameKL" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                       <tooltip>
+                                          <Tooltip fx:id="usernameTooltip" text="Empty Tooltip" />
+                                       </tooltip></TextField>
                                  </children>
                               </VBox>
                               <VBox GridPane.columnIndex="2" GridPane.rowIndex="2">

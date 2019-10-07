@@ -14,13 +14,22 @@ import javafx.scene.control.TextField;
 import javafx.fxml.Initializable;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.beans.property.ReadOnlyBooleanPropertyBase;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.Tooltip;
+import javafx.stage.PopupWindow;
 import varastonhallinta.ui.Main;
+import varastonhallinta.ui.InfoPopup;
 import varastonhallinta.ui.exceptions.AddUserException;
 
 public class UiController implements Initializable {
@@ -55,13 +64,56 @@ public class UiController implements Initializable {
     @FXML
     private TextField lastNameKL;
     
+    @FXML
+    private Label usernameLabel;
+    
+    @FXML
+    private Tooltip usernameTooltip;
+    
+    @FXML
+    private Tooltip passwordTooltip;
+
+    @FXML
+    private Tooltip firstNameTooltip;
+    
+    @FXML
+    private Tooltip lastNameTooltip;
+    
     private Main application;
     
     public void setApp(Main application){
         this.application = application;
-        configureRoles();
+        configureRolesBox();
+        configureTooltips();
     }
    
+    private InfoPopup usernamePopup;
+    private InfoPopup passwordPopup;
+    
+    private void configureTooltips(){
+        System.out.println("configureTooltips");
+        String usernameFieldHelpText = "Käyttäjänimen tulee olla " + USERNAME_MIN_LENGTH + " - " + USERNAME_MAX_LENGTH + " merkkiä pitkä";
+        usernamePopup = new InfoPopup(usernameFieldHelpText, usernameKL);
+
+        String passwordFieldHelpText = "Salasanan tulee olla " + PASSWORD_MIN_LENGTH + " - " + PASSWORD_MAX_LENGTH + " merkkiä pitkä";
+        passwordPopup = new InfoPopup(passwordFieldHelpText, passwordKL);
+    }
+    
+    private void configureRolesBox(){
+        String[] roles = application.getRoleNames();
+        ObservableList<String> options = 
+        FXCollections.observableArrayList(roles);
+        rolesBoxKL.getItems().addAll(options);
+        rolesBoxKM.getItems().addAll(options);
+    }
+    
+    
+    @FXML
+    public void toggleUsernameLabel(){
+
+    }
+    
+    
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
         assert rolesBoxKL != null : "fx:id=\"colName\" was not injected: check your FXML file 'IssueTrackingLite.fxml'.";
@@ -88,25 +140,18 @@ public class UiController implements Initializable {
 //            displayedProjectNames.addListener(projectNamesListener);
 //        }
 
-        configureRoles();
+        configureRolesBox();
+        configureTooltips();
     }
         
-    private void configureRoles(){
-        String[] roles = application.getRoleNames();
-        ObservableList<String> options = 
-        FXCollections.observableArrayList(roles);
-        rolesBoxKL.getItems().addAll(options);
-        rolesBoxKM.getItems().addAll(options);
-    }
-    
     @FXML
     public void processAddUserForm(){
         String username = usernameKL.getText();
         String password = passwordKL.getText();
         String firstName = firstNameKL.getText();
-        firstName = firstName == null ? "" : firstName;
+        firstName = firstName == null ? "" : firstName.trim();
         String lastName = lastNameKL.getText();
-        lastName = lastName == null ? "" : lastName;
+        lastName = lastName == null ? "" : lastName.trim();
         String role = rolesBoxKL.getValue();
         
         if(!validUsername(username)){
@@ -129,6 +174,7 @@ public class UiController implements Initializable {
                 application.showAlert(Alert.AlertType.ERROR, "Error", "Invalid first name!");
                 return;
             }
+            firstName = firstName.substring(0,1).toUpperCase() + firstName.substring(1);
         }
         
         if("".equals(lastName)){
@@ -138,6 +184,7 @@ public class UiController implements Initializable {
                 application.showAlert(Alert.AlertType.ERROR, "Error", "Invalid last name!");
                 return;
             }
+            lastName = lastName.substring(0,1).toUpperCase() + lastName.substring(1);
         }
         
         if(role == null || "".equals(role)){
@@ -157,7 +204,7 @@ public class UiController implements Initializable {
     }
     
     private boolean validUsername(String username){
-        String regex = "[A-Za-z0-9_\\-]{" + USERNAME_MIN_LENGTH + "," + USERNAME_MAX_LENGTH + "}";
+        String regex = "[A-Za-zåÅäÄöÖ0-9_\\-]{" + USERNAME_MIN_LENGTH + "," + USERNAME_MAX_LENGTH + "}";
         return username != null && username.matches(regex);
     }
     
