@@ -137,8 +137,8 @@
                                                       <Label text="Määrä" />
                                                       <HBox spacing="2.0">
                                                          <children>
-                                                            <TextField minWidth="30.0" promptText="1" />
-                                                            <Button alignment="CENTER" contentDisplay="CENTER" minWidth="-Infinity" mnemonicParsing="false" prefWidth="105.0" styleClass="confirm" text="Lisää tilaukselle" />
+                                                            <TextField minWidth="50.0" prefWidth="72.0" promptText="1" />
+                                                            <Button alignment="CENTER" contentDisplay="CENTER" minWidth="-Infinity" mnemonicParsing="false" styleClass="confirm" text="Lisää tilaukselle" />
                                                          </children>
                                                       </HBox>
                                                    </children>
@@ -473,7 +473,7 @@
                            <items>
                               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="796.0" prefWidth="681.0">
                                  <children>
-                                    <GridPane gridLinesVisible="true" hgap="20.0" vgap="10.0" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0">
+                                    <GridPane hgap="20.0" vgap="10.0" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0">
                                        <children>
                                           <VBox spacing="10.0" GridPane.rowIndex="1">
                                              <children>
@@ -580,7 +580,7 @@
                               </AnchorPane>
                               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="782.0" prefWidth="557.0">
                                  <children>
-                                    <GridPane gridLinesVisible="true" hgap="10.0" prefHeight="694.0" prefWidth="495.0" vgap="10.0" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0">
+                                    <GridPane hgap="10.0" prefHeight="694.0" prefWidth="495.0" vgap="10.0" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0">
                                        <children>
                                           <VBox GridPane.rowIndex="1">
                                              <children>
@@ -595,7 +595,7 @@
                                           <VBox GridPane.rowIndex="2">
                                              <children>
                                                 <Label text="Etunimi" GridPane.rowIndex="3" />
-                                                <TextField GridPane.rowIndex="4">
+                                                <TextField fx:id="firstNameKM" GridPane.rowIndex="4">
                                                    <GridPane.margin>
                                                       <Insets right="20.0" />
                                                    </GridPane.margin>
@@ -605,13 +605,13 @@
                                           <VBox GridPane.columnIndex="1" GridPane.rowIndex="1">
                                              <children>
                                                 <Label text="Käyttäjänimi" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                <TextField GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                <TextField fx:id="usernameKM" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                              </children>
                                           </VBox>
                                           <VBox GridPane.columnIndex="1" GridPane.rowIndex="2">
                                              <children>
                                                 <Label text="Sukunimi" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                                                <TextField GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                                <TextField fx:id="lastNameKM" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                                              </children>
                                           </VBox>
                                           <VBox GridPane.columnIndex="2" GridPane.rowIndex="2" GridPane.valignment="CENTER">
@@ -639,7 +639,7 @@
                                           <VBox GridPane.columnIndex="2" GridPane.rowIndex="1">
                                              <children>
                                                 <Label text="Salasana" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-                                                <TextField GridPane.columnIndex="1" GridPane.rowIndex="8" />
+                                                <TextField fx:id="passwordKM" GridPane.columnIndex="1" GridPane.rowIndex="8" />
                                              </children>
                                           </VBox>
                                           <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="147.0" styleClass="confirm" text="TALLENNA MUUTOKSET" GridPane.rowIndex="4" />
@@ -671,7 +671,7 @@
                <content>
                   <AnchorPane prefHeight="521.0" prefWidth="820.0">
                      <children>
-                        <GridPane gridLinesVisible="true" hgap="10.0" prefWidth="495.0" vgap="10.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0">
+                        <GridPane hgap="10.0" prefWidth="495.0" vgap="10.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0">
                            <children>
                               <VBox disable="true" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                  <children>
@@ -695,9 +695,8 @@
                               </VBox>
                               <VBox GridPane.columnIndex="2" GridPane.rowIndex="1">
                                  <children>
-                                    <Label fx:id="usernameLabel" styleClass="infoLabel" text="Label" />
                                     <Label text="Käyttäjänimi" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                    <TextField fx:id="usernameKL" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                    <TextField fx:id="usernameKL" maxWidth="160.0" minWidth="160.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                        <tooltip>
                                           <Tooltip fx:id="usernameTooltip" text="Empty Tooltip" />
                                        </tooltip></TextField>
@@ -723,7 +722,7 @@
                               <VBox GridPane.columnIndex="3" GridPane.rowIndex="1">
                                  <children>
                                     <Label text="Salasana" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-                                    <TextField fx:id="passwordKL" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+                                    <TextField fx:id="passwordKL" maxWidth="160.0" minWidth="160.0" GridPane.columnIndex="1" GridPane.rowIndex="8" />
                                  </children>
                               </VBox>
                               <Button mnemonicParsing="false" onAction="#processAddUserForm" styleClass="confirm" text="LISÄÄ KÄYTTÄJÄ" GridPane.columnIndex="2" GridPane.rowIndex="3" />

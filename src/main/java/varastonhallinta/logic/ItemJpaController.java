@@ -22,15 +22,27 @@ import varastonhallinta.logic.exceptions.NonexistentEntityException;
  */
 public class ItemJpaController implements Serializable {
 
+    /**
+     *
+     * @param emf
+     */
     public ItemJpaController(EntityManagerFactory emf) {
         this.emf = emf;
     }
     private EntityManagerFactory emf = null;
 
+    /**
+     *
+     * @return EntityManager
+     */
     public EntityManager getEntityManager() {
         return emf.createEntityManager();
     }
 
+    /**
+     *
+     * @param item
+     */
     public void create(Item item) {
         EntityManager em = null;
         try {
@@ -45,6 +57,12 @@ public class ItemJpaController implements Serializable {
         }
     }
 
+    /**
+     *
+     * @param item
+     * @throws NonexistentEntityException
+     * @throws Exception
+     */
     public void edit(Item item) throws NonexistentEntityException, Exception {
         EntityManager em = null;
         try {
@@ -68,6 +86,11 @@ public class ItemJpaController implements Serializable {
         }
     }
 
+    /**
+     *
+     * @param id
+     * @throws NonexistentEntityException
+     */
     public void destroy(int id) throws NonexistentEntityException {
         EntityManager em = null;
         try {
@@ -89,10 +112,20 @@ public class ItemJpaController implements Serializable {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public List<Item> findItemEntities() {
         return findItemEntities(true, -1, -1);
     }
 
+    /**
+     *
+     * @param maxResults
+     * @param firstResult
+     * @return
+     */
     public List<Item> findItemEntities(int maxResults, int firstResult) {
         return findItemEntities(false, maxResults, firstResult);
     }
@@ -113,6 +146,11 @@ public class ItemJpaController implements Serializable {
         }
     }
 
+    /**
+     *
+     * @param id
+     * @return
+     */
     public Item findItem(int id) {
         EntityManager em = getEntityManager();
         try {
@@ -122,6 +160,10 @@ public class ItemJpaController implements Serializable {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public int getItemCount() {
         EntityManager em = getEntityManager();
         try {

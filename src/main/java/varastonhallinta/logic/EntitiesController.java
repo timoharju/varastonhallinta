@@ -10,11 +10,26 @@ import org.hibernate.Transaction;
 import varastonhallinta.domain.User;
 import varastonhallinta.util.HibernateUtil;
 
+/**
+ *
+ * @author tanel
+ */
 public class EntitiesController { 
    
-   public EntitiesController(){}
+    /**
+     *
+     */
+    public EntitiesController(){}
    
    /* Method to CREATE an user in the database */
+
+    /**
+     *
+     * @param username
+     * @param password
+     * @return
+     */
+
    public Integer addUser(String username, String password){
       Session session = HibernateUtil.getSessionFactory().openSession();
       Transaction tx = null;
@@ -37,6 +52,11 @@ public class EntitiesController {
    }
    
    /* Method to  READ all the users */
+
+    /**
+     *
+     */
+
    public void listUsers( ){
       Session session = HibernateUtil.getSessionFactory().openSession();
       Transaction tx = null;

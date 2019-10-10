@@ -1,37 +1,22 @@
 package varastonhallinta.logic;
 
-import java.net.URL;
-import java.sql.SQLException;
-import java.util.ResourceBundle;
-
-import varastonhallinta.logic.EntitiesController;
-
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.fxml.Initializable;
 import java.net.URL;
 import java.util.ResourceBundle;
-import javafx.beans.property.ReadOnlyBooleanPropertyBase;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.Event;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.Tooltip;
-import javafx.stage.PopupWindow;
 import varastonhallinta.ui.Main;
 import varastonhallinta.ui.InfoPopup;
 import varastonhallinta.ui.exceptions.AddUserException;
 
+/**
+ *
+ * @author tanel
+ */
 public class UiController implements Initializable {
     
     private static final int USERNAME_MIN_LENGTH = 3;
@@ -65,38 +50,60 @@ public class UiController implements Initializable {
     private TextField lastNameKL;
     
     @FXML
-    private Label usernameLabel;
+    private TextField userIDKM;
     
     @FXML
-    private Tooltip usernameTooltip;
+    private TextField usernameKM;
     
     @FXML
-    private Tooltip passwordTooltip;
+    private TextField passwordKM;
 
     @FXML
-    private Tooltip firstNameTooltip;
+    private TextField firstNameKM;
     
     @FXML
-    private Tooltip lastNameTooltip;
+    private TextField lastNameKM;
     
     private Main application;
+    private InfoPopup usernamePopup;
+    private InfoPopup passwordPopup;
+    private InfoPopup firstNamePopup;
+    private InfoPopup lastNamePopup;
     
+    /**
+     *
+     * @param application
+     */
     public void setApp(Main application){
         this.application = application;
         configureRolesBox();
         configureTooltips();
     }
-   
-    private InfoPopup usernamePopup;
-    private InfoPopup passwordPopup;
     
     private void configureTooltips(){
         System.out.println("configureTooltips");
-        String usernameFieldHelpText = "Käyttäjänimen tulee olla " + USERNAME_MIN_LENGTH + " - " + USERNAME_MAX_LENGTH + " merkkiä pitkä";
-        usernamePopup = new InfoPopup(usernameFieldHelpText, usernameKL);
+        String usernameFieldHelpText = "Käyttäjänimi:\n"
+                + "Tulee olla " + USERNAME_MIN_LENGTH + " - " + USERNAME_MAX_LENGTH + " merkkiä pitkä,\n"
+                + "Ei saa sisältää muita erikoismerkkejä kuin: - tai _\n"
+                + "esim. Matti_Meikäläinen";
+        usernamePopup = new InfoPopup(usernameFieldHelpText, usernameKL, usernameKM);
 
         String passwordFieldHelpText = "Salasanan tulee olla " + PASSWORD_MIN_LENGTH + " - " + PASSWORD_MAX_LENGTH + " merkkiä pitkä";
-        passwordPopup = new InfoPopup(passwordFieldHelpText, passwordKL);
+        passwordPopup = new InfoPopup(passwordFieldHelpText, passwordKL, passwordKM);
+        
+        String firstNameFieldHelpText = "Etunimi: \n"
+                + "Ei ole pakollinen kenttä,\n"
+                + "Tulee olla " + FIRST_NAME_MIN_LENGTH + " - " + FIRST_NAME_MAX_LENGTH + " merkkiä pitkä,\n"
+                + "Saa sisältää vain kirjaimia\n"
+                + "esim. Matti";
+        firstNamePopup = new InfoPopup(firstNameFieldHelpText, firstNameKL, firstNameKM);
+        
+        String lastNameFieldHelpText = "Sukunimi: \n"
+                + "Ei ole pakollinen kenttä,\n"
+                + "Tulee olla " + LAST_NAME_MIN_LENGTH + " - " + LAST_NAME_MAX_LENGTH + " merkkiä pitkä,\n"
+                + "Saa sisältää vain kirjaimia\n"
+                + "esim. Meikäläinen";
+        lastNamePopup = new InfoPopup(lastNameFieldHelpText, lastNameKL, lastNameKM);
     }
     
     private void configureRolesBox(){
@@ -107,7 +114,9 @@ public class UiController implements Initializable {
         rolesBoxKM.getItems().addAll(options);
     }
     
-    
+    /**
+     *
+     */
     @FXML
     public void toggleUsernameLabel(){
 
@@ -144,6 +153,9 @@ public class UiController implements Initializable {
         configureTooltips();
     }
         
+    /**
+     *
+     */
     @FXML
     public void processAddUserForm(){
         String username = usernameKL.getText();
@@ -156,13 +168,13 @@ public class UiController implements Initializable {
         
         if(!validUsername(username)){
             System.out.println("username " + username);
-            application.showAlert(Alert.AlertType.ERROR, "Error", "Invalid username!");
+            application.showAlert(Alert.AlertType.ERROR, "Virhe", "Viallinen käyttäjänimi!");
             return;
         }
         
         if(!validPassword(password)){
             System.out.println("password " + password);
-            application.showAlert(Alert.AlertType.ERROR, "Error", "Invalid password!");
+            application.showAlert(Alert.AlertType.ERROR, "Virhe", "Viallinen salasana!");
             return;
         }
         
@@ -171,7 +183,7 @@ public class UiController implements Initializable {
             System.out.println("jorma".equals(firstName));
             firstName = firstName.toLowerCase();
             if(!validFirstName(firstName)){
-                application.showAlert(Alert.AlertType.ERROR, "Error", "Invalid first name!");
+                application.showAlert(Alert.AlertType.ERROR,  "Virhe", "Viallinen etunimi!");
                 return;
             }
             firstName = firstName.substring(0,1).toUpperCase() + firstName.substring(1);
@@ -181,7 +193,7 @@ public class UiController implements Initializable {
             System.out.println("lastName " + lastName);
             lastName = lastName.toLowerCase();
             if(!validLastName(lastName)){
-                application.showAlert(Alert.AlertType.ERROR, "Error", "Invalid last name!");
+                application.showAlert(Alert.AlertType.ERROR,  "Virhe", "Viallinen sukunimi!");
                 return;
             }
             lastName = lastName.substring(0,1).toUpperCase() + lastName.substring(1);
@@ -189,18 +201,18 @@ public class UiController implements Initializable {
         
         if(role == null || "".equals(role)){
             System.out.println("role " + role);
-            application.showAlert(Alert.AlertType.ERROR, "Error", "Please select a role!");
+            application.showAlert(Alert.AlertType.ERROR,  "Virhe", "Valitse rooli!");
             return;
         }
         
         try{
             application.addUser(username, password, firstName, lastName, role);
         }catch(AddUserException ex){
-            application.showAlert(Alert.AlertType.ERROR, "Error", ex.getMessage());
+            application.showAlert(Alert.AlertType.ERROR, "Virhe", ex.getMessage());
             return;
         }
 
-        application.showAlert(Alert.AlertType.CONFIRMATION, "Success", username + " added!");
+        application.showAlert(Alert.AlertType.CONFIRMATION, "Käyttäjä ", username + " lisätty!");
     }
     
     private boolean validUsername(String username){

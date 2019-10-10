@@ -19,13 +19,7 @@
 package varastonhallinta.ui;
 
 import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -35,7 +29,6 @@ import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
@@ -63,8 +56,7 @@ public class Main extends Application {
     private final String UI_PAGE = "/fxml/ui3.fxml";
     private final String LOGIN_PAGE = "/fxml/login.fxml";
     private final String PROFILE_PAGE = "/profile.fxml";
-    private List<String> pages = new ArrayList<String>();
-    private Iterator<String> pagesIterator = pages.iterator();
+    
     private static EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("varastonhallinta");
     private static UserJpaController userController = new UserJpaController(entityManagerFactory);
     private static RoleJpaController roleController = new RoleJpaController(entityManagerFactory);
@@ -82,7 +74,6 @@ public class Main extends Application {
         userController.create(new varastonhallinta.domain.User("user", "user", user));
         userController.create(new varastonhallinta.domain.User("editor", "editor", editor));
     }
-    //String[] pages = {LOGIN_PAGE, UI_PAGE};
 
     /**
      * @param args the command line arguments
@@ -95,7 +86,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         try {
             stage = primaryStage;
-            stage.setTitle("FXML Login Sample");
+            stage.setTitle("Kirjautumissivu");
             stage.setMinWidth(MINIMUM_WINDOW_WIDTH);
             stage.setMinHeight(MINIMUM_WINDOW_HEIGHT);
             gotoLogin();
@@ -105,11 +96,22 @@ public class Main extends Application {
         }
     }
 
+    /**
+     * Returns the currently logged in {@link User}. All user related operations
+     * are performed on the user that is logged in.
+     * @return the currently logged in user.
+     */
     public User getLoggedUser() {
         return loggedUser;
     }
         
-    public boolean userLogging(String username, String password){
+    /**
+     *
+     * @param username 
+     * @param password
+     * @return
+     */
+    public boolean userLogin(String username, String password){
         if (authenticator.validate(username, password)) {
             loggedUser = userController.findUserWithName(username);
             gotoUI();
@@ -119,6 +121,9 @@ public class Main extends Application {
         }
     }
     
+    /**
+     * Logs out the current logged in user and loads the login page.
+     */
     public void userLogout(){
         loggedUser = null;
         gotoLogin();
@@ -167,6 +172,12 @@ public class Main extends Application {
         return (Initializable) loader.getController();
     }
     
+    //TODO: Create a Bindable Roles-property instead.
+    /**
+     * Returns a array of names of all of the possible {@link roles} that a user can have.
+     * 
+     * @return an array of strings containing the name of all user roles.
+     */
     public String[] getRoleNames(){
         List<Role> roles = roleController.findRoleEntities();
         String[] roleNames = new String[roles.size()];
@@ -176,6 +187,17 @@ public class Main extends Application {
         return roleNames;
     }
     
+    /**
+     * Creates and persists a new {@link User} entity. The given username must 
+     * be unique for each created and existing user.
+     * @param username The name that the user uses to login to the application.
+     * @param password The character string that is used to identify the user during login. 
+     * @param firstName The first name of the user.
+     * @param lastName The last name of the user.
+     * @param roleName The {@link Role} of the user.
+     * @throws NoSuchRoleException If the specified role isn't found in the persistence unit.
+     * @throws UsernameTakenException If the specified username already exists in the persistence unit.
+     */
     public void addUser(String username, String password, String firstName, String lastName, String roleName) throws NoSuchRoleException, UsernameTakenException{
         Role role = roleController.findRoleWithName(roleName);
         if(role == null){
@@ -193,6 +215,15 @@ public class Main extends Application {
         userController.create(new User(username, password, firstName, lastName, role));
     }
     
+    /**
+     * Shows an popup window containing the given message and title. Used to 
+     * convey important information to the user.
+     * @param alertType The type of window to show to the user (refer to the 
+     * {@link AlertType} documentation for clarification over which one is most 
+     * appropriate). 
+     * @param title The title header of the popup window.
+     * @param message The message contained within the alert.
+     */
     public void showAlert(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);

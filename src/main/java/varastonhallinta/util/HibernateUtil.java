@@ -5,6 +5,10 @@ import org.hibernate.cfg.Configuration;
 
 import varastonhallinta.domain.User;
  
+/**
+ *
+ * @author tanel
+ */
 public class HibernateUtil {
     private static final SessionFactory sessionFactory = buildSessionFactory();
  
@@ -22,10 +26,17 @@ public class HibernateUtil {
         }
     }
  
+    /**
+     *
+     * @return
+     */
     public static SessionFactory getSessionFactory() {
         return sessionFactory;
     }
  
+    /**
+     *
+     */
     public static void shutdown() {
         // Close caches and connection pools
         getSessionFactory().close();

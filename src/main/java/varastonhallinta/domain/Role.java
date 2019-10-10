@@ -8,6 +8,10 @@ import javax.persistence.Id;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
+/**
+ *
+ * @author tanel
+ */
 @Entity(name = "Role")
 @Table(name = "role")
 @NamedQuery(
@@ -22,23 +26,47 @@ public class Role implements Serializable{
    @Column(name = "name")
    private String name; 
 
-   public Role() {}
-   public Role(String name) {
+    /**
+     *
+     */
+    public Role() {}
+
+    /**
+     *
+     * @param name
+     */
+    public Role(String name) {
        this.name = name;
    }
    
-   public int getId() {
+    /**
+     *
+     * @return
+     */
+    public int getId() {
       return id;
    }
    
-   public void setId( int id ) {
+    /**
+     *
+     * @param id
+     */
+    public void setId( int id ) {
       this.id = id;
    }
 
+    /**
+     *
+     * @return
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     *
+     * @param username
+     */
     public void setName(String username) {
         this.name = username;
     }

@@ -21,10 +21,19 @@ package varastonhallinta.model;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ *
+ * @author tanel
+ */
 public class User {
 
     private static final Map<String, User> USERS = new HashMap<String, User>();
 
+    /**
+     *
+     * @param id
+     * @return
+     */
     public static User of(String id) {
         User user = USERS.get(id);
         if (user == null) {
@@ -39,6 +48,10 @@ public class User {
     }
     private String id;
 
+    /**
+     *
+     * @return
+     */
     public String getId() {
         return id;
     }

@@ -28,14 +28,28 @@ import varastonhallinta.domain.User;
 import varastonhallinta.logic.RoleJpaController;
 import varastonhallinta.logic.UserJpaController;
 
+/**
+ *
+ * @author tanel
+ */
 public class Authenticator {
 
     private UserJpaController userController;
     
+    /**
+     *
+     * @param userController
+     */
     public Authenticator(UserJpaController userController){
         this.userController = userController;
     }
     
+    /**
+     *
+     * @param username
+     * @param password
+     * @return
+     */
     public boolean validate(String username, String password){
         System.out.println("validate " + username);
         User user;

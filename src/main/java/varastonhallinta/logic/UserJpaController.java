@@ -22,15 +22,27 @@ import varastonhallinta.logic.exceptions.NonexistentEntityException;
  */
 public class UserJpaController implements Serializable {
 
+    /**
+     *
+     * @param emf
+     */
     public UserJpaController(EntityManagerFactory emf) {
         this.emf = emf;
     }
     private EntityManagerFactory emf = null;
 
+    /**
+     *
+     * @return
+     */
     public EntityManager getEntityManager() {
         return emf.createEntityManager();
     }
 
+    /**
+     *
+     * @param user
+     */
     public void create(User user) {
         EntityManager em = null;
         try {
@@ -45,6 +57,12 @@ public class UserJpaController implements Serializable {
         }
     }
 
+    /**
+     *
+     * @param user
+     * @throws NonexistentEntityException
+     * @throws Exception
+     */
     public void edit(User user) throws NonexistentEntityException, Exception {
         EntityManager em = null;
         try {
@@ -68,6 +86,11 @@ public class UserJpaController implements Serializable {
         }
     }
 
+    /**
+     *
+     * @param id
+     * @throws NonexistentEntityException
+     */
     public void destroy(int id) throws NonexistentEntityException {
         EntityManager em = null;
         try {
@@ -89,10 +112,20 @@ public class UserJpaController implements Serializable {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public List<User> findUserEntities() {
         return findUserEntities(true, -1, -1);
     }
 
+    /**
+     *
+     * @param maxResults
+     * @param firstResult
+     * @return
+     */
     public List<User> findUserEntities(int maxResults, int firstResult) {
         return findUserEntities(false, maxResults, firstResult);
     }
@@ -113,6 +146,11 @@ public class UserJpaController implements Serializable {
         }
     }
     
+    /**
+     *
+     * @param name
+     * @return
+     */
     public User findUserWithName(String name) {
         EntityManager em = getEntityManager();
         try {
@@ -122,7 +160,11 @@ public class UserJpaController implements Serializable {
         }
     }
 
-
+    /**
+     *
+     * @param id
+     * @return
+     */
     public User findUser(int id) {
         EntityManager em = getEntityManager();
         try {
@@ -132,6 +174,10 @@ public class UserJpaController implements Serializable {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public int getUserCount() {
         EntityManager em = getEntityManager();
         try {

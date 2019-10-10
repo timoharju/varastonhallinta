@@ -3,6 +3,10 @@ package varastonhallinta.domain;
 import java.io.Serializable;
 import javax.persistence.*;
 
+/**
+ *
+ * @author tanel
+ */
 @Entity
 @Table(name = "ITEM")
 public class Item implements Serializable {
@@ -15,30 +19,57 @@ public class Item implements Serializable {
 	@Column(name = "weight")
 	private double weight;
 
-	public Item() {
+    /**
+     *
+     */
+    public Item() {
 	}
 
-	public int getItemid() {
+    /**
+     *
+     * @return
+     */
+    public int getItemid() {
 		return itemid;
 	}
 
-	public void setItemid(int itemid) {
+    /**
+     *
+     * @param itemid
+     */
+    public void setItemid(int itemid) {
 		this.itemid = itemid;
 	}
 
-	public String getItemname() {
+    /**
+     *
+     * @return
+     */
+    public String getItemname() {
 		return itemname;
 	}
 
-	public void setItemname(String itemname) {
+    /**
+     *
+     * @param itemname
+     */
+    public void setItemname(String itemname) {
 		this.itemname = itemname;
 	}
 
-	public double getWeight() {
+    /**
+     *
+     * @return
+     */
+    public double getWeight() {
 		return weight;
 	}
 
-	public void setWeight(double weight) {
+    /**
+     *
+     * @param weight
+     */
+    public void setWeight(double weight) {
 		this.weight = weight;
 	}
 
