@@ -65,14 +65,17 @@ public class Main extends Application {
     
     static{
         Role admin = new Role("Admin");
-        Role user = new Role("User");
-        Role editor = new Role("Editor");
+        Role vm = new Role("Varastomies");
+        Role tp = new Role("TuotePäällikkö");
+        Role as = new Role("Asiakas");
         roleController.create(admin);
-        roleController.create(user);
-        roleController.create(editor);
+        roleController.create(vm);
+        roleController.create(tp);
+        roleController.create(as);
         userController.create(new varastonhallinta.domain.User("admin", "admin", admin));
-        userController.create(new varastonhallinta.domain.User("user", "user", user));
-        userController.create(new varastonhallinta.domain.User("editor", "editor", editor));
+        userController.create(new varastonhallinta.domain.User("varastomies", "varastomies", vm));
+        userController.create(new varastonhallinta.domain.User("tuotePäällikkö", "tuotePäällikkö", tp));
+        userController.create(new varastonhallinta.domain.User("asiakas", "asiakas", as));
     }
 
     /**
@@ -114,7 +117,7 @@ public class Main extends Application {
     public boolean userLogin(String username, String password){
         if (authenticator.validate(username, password)) {
             loggedUser = userController.findUserWithName(username);
-            gotoUI();
+            gotoUI(loggedUser.getRole().getName() + "UI");
             return true;
         } else {
             return false;
@@ -137,9 +140,9 @@ public class Main extends Application {
         }
     }
     
-    private void gotoUI() {
+    private void gotoUI(String uiName) {
         try {
-            UiController ui = (UiController) replaceSceneContent(UI_PAGE);
+            UiController ui = (UiController) replaceSceneContent("/fxml/" + uiName + ".fxml");
             ui.setApp(this);
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
