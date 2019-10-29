@@ -34,14 +34,10 @@ public abstract class FXMLController implements Initializable, Searchable, Modif
     protected static final int LAST_NAME_MIN_LENGTH = 1;
     protected static final int LAST_NAME_MAX_LENGTH = 30;
     
-    @FXML
-    protected Button create;
-    @FXML
-    protected Button modify;
-    @FXML
-    protected Button search;
-    @FXML
-    protected Button delete;
+    private static Button create;
+    private static Button modify;
+    private static Button search;
+    private static Button delete;
     
     private static AddObjectDialog<Item> addItemDialog;
     private static FXMLController activeController;
@@ -196,64 +192,61 @@ public abstract class FXMLController implements Initializable, Searchable, Modif
     }
     
     private void configureButtons() {
-        if (create != null) {
-            create.setDisable(true);
+        if (getCreate() != null) {
+            getCreate().setDisable(true);
         }
-        if (modify != null) {
-            modify.setDisable(true);
+        if (getModify() != null) {
+            getModify().setDisable(true);
         }
-        if (search != null) {
-            search.setDisable(true);
+        if (getSearch() != null) {
+            getSearch().setDisable(true);
         }
-        if (delete != null) {
-            delete.setDisable(true);
+        if (getDelete() != null) {
+            getDelete().setDisable(true);
         }
     } 
     
     public void updateSearchButtonState() {
         boolean disable = true;
-        System.out.println("updateSearchButtonState " + search);
-        if (search != null) {
-            System.out.println("\nupdateSearchButtonState1 " + disable);
+        if (getSearch() != null) {
             final boolean canSearch = this.canSearch();
-            disable = canSearch;
-            System.out.println("updateSearchButtonState2 " + disable);
+            disable = !canSearch;
         }
-        if (search != null) {
-            search.setDisable(disable);
+        if (getSearch() != null) {
+            getSearch().setDisable(disable);
         }
     }
     
     public void updateModifyButtonState() {
         boolean disable = true;
-        if (modify != null) {
+        if (getModify() != null) {
             final boolean canModify = this.canModify();
-            disable = canModify;
+            disable = !canModify;
         }
-        if (search != null) {
-            modify.setDisable(disable);
+        if (getSearch() != null) {
+            getModify().setDisable(disable);
         }
     }
     
     public void updateNewButtonState() {
         boolean disable = true;
-        if (create != null) {
-            final boolean canModify = this.canCreate();
-            disable = canModify;
+        if (getCreate() != null) {
+            final boolean canCreate = this.canCreate();
+            disable = !canCreate;
         }
-        if (create != null) {
-            create.setDisable(disable);
+        if (getCreate() != null) {
+            getCreate().setDisable(disable);
         }
     }
     
     public void updateDeleteButtonState() {
         boolean disable = true;
-        if (delete != null) {
-            final boolean canModify = this.canDelete();
-            disable = canModify;
+        if (getDelete() != null) {
+            final boolean canDelete = this.canDelete();
+            disable = !canDelete;
         }
-        if (delete != null) {
-            delete.setDisable(disable);
+        if (getDelete() != null) {
+            getDelete().setDisable(disable);
         }
     }
 
@@ -316,5 +309,61 @@ public abstract class FXMLController implements Initializable, Searchable, Modif
         @Override
     public void initialize(URL location, ResourceBundle resources) {
 
+    }
+
+    /**
+     * @return the create
+     */
+    public static Button getCreate() {
+        return create;
+    }
+
+    /**
+     * @param aCreate the create to set
+     */
+    public static void setCreate(Button aCreate) {
+        create = aCreate;
+    }
+
+    /**
+     * @return the modify
+     */
+    public static Button getModify() {
+        return modify;
+    }
+
+    /**
+     * @param aModify the modify to set
+     */
+    public static void setModify(Button aModify) {
+        modify = aModify;
+    }
+
+    /**
+     * @return the search
+     */
+    public static Button getSearch() {
+        return search;
+    }
+
+    /**
+     * @param aSearch the search to set
+     */
+    public static void setSearch(Button aSearch) {
+        search = aSearch;
+    }
+
+    /**
+     * @return the delete
+     */
+    public static Button getDelete() {
+        return delete;
+    }
+
+    /**
+     * @param aDelete the delete to set
+     */
+    public static void setDelete(Button aDelete) {
+        delete = aDelete;
     }
 }

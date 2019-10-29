@@ -158,7 +158,7 @@ public class Main extends Application {
     public boolean userLogin(String username, String password){
         if (authenticator.validate(username, password)) {
             loggedUser = userController.findUserWithName(username);
-            gotoUI(loggedUser.getRole().getName() + "UI2");
+            gotoUI(loggedUser.getRole().getName() + "UI");
             return true;
         } else {
             return false;

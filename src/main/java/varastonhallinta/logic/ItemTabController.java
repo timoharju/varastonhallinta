@@ -56,7 +56,7 @@ import varastonhallinta.ui.Main;
 /**
  * Login Controller.
  */
-public class ItemTabController2 extends TabController{
+public class ItemTabController extends TabController{
 
     @FXML
     private TextField itemIDField;
@@ -68,10 +68,25 @@ public class ItemTabController2 extends TabController{
     private TextField weightField;
     
     @FXML
-    private TextField priceField;
+    private TextField priceLowerField;
     
     @FXML
-    private ComboBox<String> roleComboBox;
+    private TextField priceHigherField;
+    
+    @FXML
+    private TextField weightLowerField;
+    
+    @FXML
+    private TextField weightHigherField;
+    
+    @FXML
+    private TextField balanceLowerField;
+    
+    @FXML
+    private TextField balanceHigherField;
+    
+    @FXML
+    private TextField storageSpaceField;
     
     @FXML
     TableView<Item> itemTable;
@@ -87,6 +102,13 @@ public class ItemTabController2 extends TabController{
     
     @FXML
     CheckBox priceBox;
+    
+    @FXML
+    CheckBox balanceBox;
+    
+    @FXML
+    CheckBox storageSpaceBox;
+    
     
     @FXML
     CheckBox roleBox;
@@ -118,10 +140,10 @@ public class ItemTabController2 extends TabController{
     // update the DeleteIssue button state accordingly.
     private final ListChangeListener<Item> tableSelectionChanged =
             (ListChangeListener.Change<? extends Item> c) -> {
-                updateSearchButtonState();
-                updateDeleteButtonState();
-                updateModifyButtonState();
-                updateNewButtonState();
+//                updateSearchButtonState();
+//                updateDeleteButtonState();
+//                updateModifyButtonState();
+//                updateNewButtonState();
     };
     
     
@@ -189,30 +211,28 @@ public class ItemTabController2 extends TabController{
         super.initialize(location, resources);
     }
     
- 
-    List<CheckBox> checkBoxes = new ArrayList<>();
-    Map<CheckBox, BooleanSupplier> valueMap = new HashMap<>();
+
     Map<CheckBox, Input> boxMap = new HashMap<>();
     Map<Object, Function<Item, String>> inputMap = new HashMap<>();
     
     private void configureValueMap(){
-        valueMap.put(idBox, this::validateIDField);
-        valueMap.put(nameBox, this::validateItemnameField);
-        valueMap.put(weightBox, this::validateWeightField);
-        valueMap.put(priceBox, this::validatePriceField);
-        valueMap.put(roleBox, this::validateRoleField);
-        
-        inputMap.put(itemIDField, (item) -> "" + item.getItemid());
-        inputMap.put(itemnameField, (item) -> item.getItemname());
-        inputMap.put(weightField, (item) -> Double.toString(item.getWeight()));
-        inputMap.put(priceField, (item) -> Double.toString(item.getPrice()));
-        //inputMap.put(roleComboBox, (item) -> item.getRole().getName());
         
         boxMap.put(idBox, Input.from(itemIDField));
         boxMap.put(nameBox, Input.from(itemnameField));
-        boxMap.put(weightBox, Input.from(weightField));
-        boxMap.put(priceBox, Input.from(priceField));
-        boxMap.put(roleBox, Input.from(roleComboBox));
+        boxMap.put(balanceBox, Input.from(balanceLowerField, balanceHigherField));
+        boxMap.put(priceBox, Input.from(priceLowerField, priceHigherField));
+        boxMap.put(weightBox, Input.from(weightLowerField, weightHigherField));
+        boxMap.put(storageSpaceBox, Input.from(storageSpaceField));
+        
+        inputMap.put(itemIDField, (item) -> "" + item.getItemid());
+        inputMap.put(itemnameField, (item) -> item.getItemname());
+        inputMap.put(balanceLowerField, (item) -> Double.toString(item.getWeight()));
+        inputMap.put(balanceHigherField, (item) -> Double.toString(item.getPrice()));
+        inputMap.put(priceLowerField, (item) -> Double.toString(item.getWeight()));
+        inputMap.put(priceHigherField, (item) -> Double.toString(item.getPrice()));
+        inputMap.put(weightLowerField, (item) -> Double.toString(item.getWeight()));
+        inputMap.put(weightHigherField, (item) -> Double.toString(item.getPrice()));
+        inputMap.put(storageSpaceField, (item) -> Double.toString(item.getPrice()));
     }
 
     @Override
@@ -230,33 +250,17 @@ public class ItemTabController2 extends TabController{
         public static Input from(ComboBox<String> textField){
             return () -> textField.getValue();
         }
-    }
-
-    private boolean validateIDField(){
-        return itemIDField != null && !itemIDField.getText().isEmpty();
-    }
-    
-    private boolean validateItemnameField(){
-        return itemnameField != null && !itemnameField.getText().isEmpty();
-    }
-    
-    private boolean validateWeightField(){
-        return weightField != null && !weightField.getText().isEmpty();
-    }
-   
-    
-    private boolean validatePriceField(){
-        return priceField != null && !priceField.getText().isEmpty();
-    }
-    
-    private boolean validateRoleField(){
-        return roleBox != null && roleComboBox.getValue().isEmpty();
+        
+        public static Input from(TextField textFieldLower, TextField textFieldHigher){
+            return () -> textFieldLower.getText() + textFieldHigher.getText();
+        }
+        
     }
 
     @Override
     public boolean canSearch() {
-        for(CheckBox box : valueMap.keySet()){
-            if(box.isArmed() && valueMap.get(box).getAsBoolean()){
+        for(CheckBox box : boxMap.keySet()){
+            if(box.isSelected() && !boxMap.get(box).getString().isEmpty()){
                 return true;
             }
         }
@@ -271,7 +275,7 @@ public class ItemTabController2 extends TabController{
 
     @Override
     public boolean canCreate() {
-        return create != null;
+        return true;
     }
 
     @Override
@@ -288,7 +292,7 @@ public class ItemTabController2 extends TabController{
     
     private void filterItems(){
         Set<Item> items = new HashSet<>();
-        for(CheckBox box : valueMap.keySet()){
+        for(CheckBox box : boxMap.keySet()){
             if(box.isArmed()){
                 items.retainAll(Arrays.asList(this.application.getItems(simpleFilter(boxMap.get(box)))));
                 if(items.isEmpty()){

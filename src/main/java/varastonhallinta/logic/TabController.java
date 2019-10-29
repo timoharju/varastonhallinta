@@ -31,10 +31,10 @@ public abstract class TabController extends FXMLController{
             if(newValue == true){
                 System.out.println("TAB SELECTED");
                 TabController.setActiveController(this);
-                TabController.getActiveController().updateSearchButtonState();
-                TabController.getActiveController().updateDeleteButtonState();
-                TabController.getActiveController().updateModifyButtonState();
-                TabController.getActiveController().updateNewButtonState();
+//                TabController.getActiveController().updateSearchButtonState();
+//                TabController.getActiveController().updateDeleteButtonState();
+//                TabController.getActiveController().updateModifyButtonState();
+//                TabController.getActiveController().updateNewButtonState();
             }
         });
     }

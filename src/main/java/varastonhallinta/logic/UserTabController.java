@@ -19,7 +19,6 @@
  */
 package varastonhallinta.logic;
 
-import java.awt.Color;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.logging.Level;
@@ -39,31 +37,17 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.geometry.HPos;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.util.Callback;
 import varastonhallinta.domain.User;
 import varastonhallinta.ui.AddObjectDialog;
@@ -130,10 +114,10 @@ public class UserTabController extends TabController{
     // update the DeleteIssue button state accordingly.
     private final ListChangeListener<User> tableSelectionChanged =
             (ListChangeListener.Change<? extends User> c) -> {
-                updateSearchButtonState();
-                updateDeleteButtonState();
-                updateModifyButtonState();
-                updateNewButtonState();
+//                updateSearchButtonState();
+//                updateDeleteButtonState();
+//                updateModifyButtonState();
+//                updateNewButtonState();
     };
     
     
@@ -151,31 +135,12 @@ public class UserTabController extends TabController{
     public void configureDialogs(){
         System.out.println(this + " configureAddUserDialog");
         System.out.println("content " + content);
-        GridPane userGrid = null;
-        //GridPane testGrid;
         try {
             addUserController = (UserDialogController) application.loadController(ADD_USER_GRID_LOCATION);
             modifyUserController = (UserDialogController) application.loadController(ADD_USER_GRID_LOCATION);
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
-        //userGrid = createRegistrationFormPane();
-        //userGrid = new GridPane();
-        //GridPane testGrid;
-//        Color color;
-//        Rectangle rectangle = new Rectangle(200,  200, javafx.scene.paint.Color.RED);
-//        Button button = new Button("This is a button");
-//        TextField textField = new TextField("This is a text field");
-//        userGrid.getChildren().addAll(button, textField, rectangle);
-//        GridPane.setConstraints(textField, 0, 0);
-//        GridPane.setConstraints(textField, 1, 0);
-//        GridPane.setConstraints(rectangle, 1, 1);
-//        GridPane testGrid  = createRegistrationFormPane();
-//        userGrid = dialogController.getGrid();
-//        Rectangle rectangle = new Rectangle(200,  200, javafx.scene.paint.Color.RED);
-//        System.out.println("testGrid " + userGrid);
-//        roleVBox.getChildren().add(userGrid);
-//        roleVBox.getChildren().add(dialogController.getRectangle());
         
         Callback<ButtonType, User> resultConverter = (dialogButton) -> {
             ButtonBar.ButtonData data = dialogButton == null ? null : dialogButton.getButtonData();
@@ -236,8 +201,6 @@ public class UserTabController extends TabController{
         super.initialize(location, resources);
     }
     
- 
-    List<CheckBox> checkBoxes = new ArrayList<>();
     Map<CheckBox, Input> boxMap = new HashMap<>();
     Map<Object, Function<User, String>> inputMap = new HashMap<>();
     
@@ -261,14 +224,14 @@ public class UserTabController extends TabController{
     }
     
     private interface Input{
-        public String getString();
+        public String getInput();
         
         public static Input from(TextField textField){
             return () -> textField.getText();
         }
         
-        public static Input from(ComboBox<String> textField){
-            return () -> textField.getValue();
+        public static Input from(ComboBox<String> comboBox){
+            return () -> comboBox.getValue();
         }
     }
 
@@ -277,9 +240,8 @@ public class UserTabController extends TabController{
         System.out.println("can search " + this);
         for(CheckBox box : boxMap.keySet()){
             System.out.println("box.isSelected() " + box.isSelected());
-            System.out.println("!boxMap.get(box).getString().isEmpty() " + !boxMap.get(box).getString().isEmpty());
-            System.out.println("boxMap.get(box).getString() " + boxMap.get(box).getString());
-            if(box.isSelected() && !boxMap.get(box).getString().isEmpty()){
+            System.out.println("boxMap.get(box) " + boxMap.get(box));
+            if(box.isSelected() && !boxMap.get(box).getInput().isEmpty()){
                 return true;
             }
         }
@@ -293,7 +255,7 @@ public class UserTabController extends TabController{
 
     @Override
     public boolean canCreate() {
-        return create != null;
+        return true;
     }
 
     @Override
@@ -303,7 +265,18 @@ public class UserTabController extends TabController{
 
     private Predicate<User> simpleFilter(Input input){
         return user -> {
-            String string = input.getString();
+            String string = input.getInput();
+            System.out.println("string " + string);
+            String inputString = inputMap.get(input).apply(user);
+            System.out.println(inputString);
+            System.out.println(string + "contains " + inputString + " = " + inputString.contains(string));
+            return inputMap.get(input).apply(user).contains(string);
+        };
+    }
+    
+    private Predicate<User> rangeFilter(Input input){
+        return user -> {
+            String string = input.getInput();
             System.out.println("string " + string);
             String inputString = inputMap.get(input).apply(user);
             System.out.println(inputString);

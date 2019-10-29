@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import varastonhallinta.ui.Main;
 
 /**
@@ -15,17 +16,24 @@ import varastonhallinta.ui.Main;
  */
 public class UiController extends FXMLController {
 
-//    @FXML
-//    Tab userTab;
-//    
-//    @FXML
-//    Tab itemTab;
     
     @FXML
     Initializable userTabContent;
     
     @FXML
     Initializable itemTabContent;
+    
+    @FXML
+    private Button create;
+    
+    @FXML
+    private Button modify;
+    
+    @FXML
+    private Button search;
+    
+    @FXML
+    private Button delete;
     
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
@@ -101,27 +109,14 @@ public class UiController extends FXMLController {
         FXMLController.getActiveController().modify();
     }
     
-    private void configureTabs(){
-        System.out.println("configureTabs");
-        try {
-//            UserTabController userTabController = (UserTabController)application.loadController("/fxml/userTab.fxml");
-//            ItemTabController itemTabController = (ItemTabController)application.loadController("/fxml/itemTab.fxml");
-//            UserTabController userTabController = (UserTabController)userTabContent.;
-//            ItemTabController itemTabController = (ItemTabController)application.loadController("/fxml/itemTab.fxml");
-                    
-//            System.out.println("userTab " + userTab);
-//            System.out.println("itemTab " + itemTab);
-//            userTabController.setTab(userTab);
-//            itemTabController.setTab(itemTab);
-        } catch (Exception ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        configureTabs();
         super.initialize(location, resources);
+        FXMLController.setCreate(create);
+        FXMLController.setModify(modify);
+        FXMLController.setSearch(search);
+        FXMLController.setDelete(delete);
     }
    
 }
