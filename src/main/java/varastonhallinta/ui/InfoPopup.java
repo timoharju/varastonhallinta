@@ -30,12 +30,12 @@ import javafx.stage.WindowEvent;
 public class InfoPopup extends PopupControl {
     
     private ReadOnlyDoubleWrapper wrapper = new ReadOnlyDoubleWrapper(this.xProperty(), "xProperty", 0);
-    private Node node;
     
     ChangeListener<Number> windowXListener = new ChangeListener<Number>(){
         @Override
         public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-            Bounds screenBounds = node.localToScreen(node.getBoundsInLocal());
+            Node ownerNode = InfoPopup.this.ownerNodeProperty().get();
+            Bounds screenBounds = ownerNode.localToScreen(ownerNode.getBoundsInLocal());
             InfoPopup.this.setX(screenBounds.getMinX());
         }
     };   
@@ -43,7 +43,8 @@ public class InfoPopup extends PopupControl {
     ChangeListener<Number> windowYListener = new ChangeListener<Number>(){
         @Override
         public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-            Bounds screenBounds = node.localToScreen(node.getBoundsInLocal());
+            Node ownerNode = InfoPopup.this.ownerNodeProperty().get();
+            Bounds screenBounds =ownerNode.localToScreen(ownerNode.getBoundsInLocal());
             InfoPopup.this.setY(screenBounds.getMinY() - InfoPopup.this.getHeight());
         }
     };

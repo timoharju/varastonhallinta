@@ -21,7 +21,6 @@ import varastonhallinta.logic.exceptions.NonexistentEntityException;
  * @author tanel
  */
 public class UserJpaController implements Serializable {
-
     /**
      *
      * @param emf

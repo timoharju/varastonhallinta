@@ -159,6 +159,20 @@ public class ItemJpaController implements Serializable {
             em.close();
         }
     }
+    
+        /**
+     *
+     * @param name
+     * @return
+     */
+    public Item findUserWithName(String name) {
+        EntityManager em = getEntityManager();
+        try {
+            return em.createNamedQuery("findItemWithName", Item.class).setParameter("itemname", name).getSingleResult();
+        } finally {
+            em.close();
+        }
+    }
 
     /**
      *

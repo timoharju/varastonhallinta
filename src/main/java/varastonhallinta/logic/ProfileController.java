@@ -69,6 +69,7 @@ public class ProfileController extends AnchorPane implements Initializable {
 //        success.setOpacity(0);
 //    }
 //
+    @Override
     public void initialize(URL location, ResourceBundle resources) {
     }
 //    

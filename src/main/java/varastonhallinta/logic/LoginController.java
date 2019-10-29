@@ -76,7 +76,4 @@ public class LoginController extends AnchorPane implements Initializable {
         userId.setPromptText("käyttäjänimi");
         password.setPromptText("salasana");
     }
-
-
-
 }

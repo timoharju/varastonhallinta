@@ -16,7 +16,7 @@ import javax.persistence.*;
 public class User implements Serializable {
    @Id @GeneratedValue
    @Column(name = "id")
-   private int id;
+   private Integer id;
 
    @Column(name = "username")
    private String username; 
@@ -155,6 +155,26 @@ public class User implements Serializable {
      */
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+    
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof User)) {
+            return false;
+        }
+        User other = (User) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
     }
 }
 

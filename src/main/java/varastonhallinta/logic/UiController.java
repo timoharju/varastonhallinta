@@ -1,131 +1,35 @@
 package varastonhallinta.logic;
 
-import javafx.scene.control.TextField;
 import javafx.fxml.Initializable;
 import java.net.URL;
 import java.util.ResourceBundle;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ComboBox;
 import varastonhallinta.ui.Main;
-import varastonhallinta.ui.InfoPopup;
-import varastonhallinta.ui.exceptions.AddUserException;
 
 /**
  *
  * @author tanel
  */
-public class UiController implements Initializable {
-    
-    private static final int USERNAME_MIN_LENGTH = 3;
-    private static final int USERNAME_MAX_LENGTH = 20;
-    private static final int PASSWORD_MIN_LENGTH = 6;
-    private static final int PASSWORD_MAX_LENGTH = 30;
-    private static final int FIRST_NAME_MIN_LENGTH = 1;
-    private static final int FIRST_NAME_MAX_LENGTH = 30;
-    private static final int LAST_NAME_MIN_LENGTH = 1;
-    private static final int LAST_NAME_MAX_LENGTH = 30;
-    
-    @FXML
-    private ComboBox<String> rolesBoxKL;
-    
-    @FXML
-    private ComboBox<String> rolesBoxKM;
-    
-    @FXML
-    private TextField userIDKL;
-    
-    @FXML
-    private TextField usernameKL;
-    
-    @FXML
-    private TextField passwordKL;
+public class UiController extends FXMLController {
 
-    @FXML
-    private TextField firstNameKL;
+//    @FXML
+//    Tab userTab;
+//    
+//    @FXML
+//    Tab itemTab;
     
     @FXML
-    private TextField lastNameKL;
+    Initializable userTabContent;
     
     @FXML
-    private TextField userIDKM;
-    
-    @FXML
-    private TextField usernameKM;
-    
-    @FXML
-    private TextField passwordKM;
-
-    @FXML
-    private TextField firstNameKM;
-    
-    @FXML
-    private TextField lastNameKM;
-    
-    private Main application;
-    private InfoPopup usernamePopup;
-    private InfoPopup passwordPopup;
-    private InfoPopup firstNamePopup;
-    private InfoPopup lastNamePopup;
-    
-    /**
-     *
-     * @param application
-     */
-    public void setApp(Main application){
-        this.application = application;
-        configureRolesBox();
-        configureTooltips();
-    }
-    
-    private void configureTooltips(){
-        System.out.println("configureTooltips");
-        String usernameFieldHelpText = "Käyttäjänimi:\n"
-                + "Tulee olla " + USERNAME_MIN_LENGTH + " - " + USERNAME_MAX_LENGTH + " merkkiä pitkä,\n"
-                + "Ei saa sisältää muita erikoismerkkejä kuin: - tai _\n"
-                + "esim. Matti_Meikäläinen";
-        usernamePopup = new InfoPopup(usernameFieldHelpText, usernameKL, usernameKM);
-
-        String passwordFieldHelpText = "Salasanan tulee olla " + PASSWORD_MIN_LENGTH + " - " + PASSWORD_MAX_LENGTH + " merkkiä pitkä";
-        passwordPopup = new InfoPopup(passwordFieldHelpText, passwordKL, passwordKM);
-        
-        String firstNameFieldHelpText = "Etunimi: \n"
-                + "Ei ole pakollinen kenttä,\n"
-                + "Tulee olla " + FIRST_NAME_MIN_LENGTH + " - " + FIRST_NAME_MAX_LENGTH + " merkkiä pitkä,\n"
-                + "Saa sisältää vain kirjaimia\n"
-                + "esim. Matti";
-        firstNamePopup = new InfoPopup(firstNameFieldHelpText, firstNameKL, firstNameKM);
-        
-        String lastNameFieldHelpText = "Sukunimi: \n"
-                + "Ei ole pakollinen kenttä,\n"
-                + "Tulee olla " + LAST_NAME_MIN_LENGTH + " - " + LAST_NAME_MAX_LENGTH + " merkkiä pitkä,\n"
-                + "Saa sisältää vain kirjaimia\n"
-                + "esim. Meikäläinen";
-        lastNamePopup = new InfoPopup(lastNameFieldHelpText, lastNameKL, lastNameKM);
-    }
-    
-    private void configureRolesBox(){
-        String[] roles = application.getRoleNames();
-        ObservableList<String> options = 
-        FXCollections.observableArrayList(roles);
-        rolesBoxKL.getItems().addAll(options);
-        rolesBoxKM.getItems().addAll(options);
-    }
-    
-    /**
-     *
-     */
-    @FXML
-    public void toggleUsernameLabel(){
-
-    }
-    
+    Initializable itemTabContent;
     
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
-        assert rolesBoxKL != null : "fx:id=\"colName\" was not injected: check your FXML file 'IssueTrackingLite.fxml'.";
+//        assert rolesBox != null : "fx:id=\"colName\" was not injected: check your FXML file 'IssueTrackingLite.fxml'.";
 //        assert colStatus != null : "fx:id=\"colStatus\" was not injected: check your FXML file 'IssueTrackingLite.fxml'.";
 //        assert colSynopsis != null : "fx:id=\"colSynopsis\" was not injected: check your FXML file 'IssueTrackingLite.fxml'.";
 //        assert deleteIssue != null : "fx:id=\"deleteIssue\" was not injected: check your FXML file 'IssueTrackingLite.fxml'.";
@@ -149,95 +53,75 @@ public class UiController implements Initializable {
 //            displayedProjectNames.addListener(projectNamesListener);
 //        }
 
-        configureRolesBox();
-        configureTooltips();
+//        configureRolesBox();
+//        configureTooltips();
+//        configureFindUserTable();
+//        configureTestArea();
     }
-        
+    
     /**
+     * Called when the new button is fired.
      *
+     * @param event the action event.
      */
     @FXML
-    public void processAddUserForm(){
-        String username = usernameKL.getText();
-        String password = passwordKL.getText();
-        String firstName = firstNameKL.getText();
-        firstName = firstName == null ? "" : firstName.trim();
-        String lastName = lastNameKL.getText();
-        lastName = lastName == null ? "" : lastName.trim();
-        String role = rolesBoxKL.getValue();
-        
-        if(!validUsername(username)){
-            System.out.println("username " + username);
-            application.showAlert(Alert.AlertType.ERROR, "Virhe", "Viallinen käyttäjänimi!");
-            return;
-        }
-        
-        if(!validPassword(password)){
-            System.out.println("password " + password);
-            application.showAlert(Alert.AlertType.ERROR, "Virhe", "Viallinen salasana!");
-            return;
-        }
-        
-        if("".equals(firstName)){
-            System.out.println("firstName " + firstName);
-            System.out.println("jorma".equals(firstName));
-            firstName = firstName.toLowerCase();
-            if(!validFirstName(firstName)){
-                application.showAlert(Alert.AlertType.ERROR,  "Virhe", "Viallinen etunimi!");
-                return;
-            }
-            firstName = firstName.substring(0,1).toUpperCase() + firstName.substring(1);
-        }
-        
-        if("".equals(lastName)){
-            System.out.println("lastName " + lastName);
-            lastName = lastName.toLowerCase();
-            if(!validLastName(lastName)){
-                application.showAlert(Alert.AlertType.ERROR,  "Virhe", "Viallinen sukunimi!");
-                return;
-            }
-            lastName = lastName.substring(0,1).toUpperCase() + lastName.substring(1);
-        }
-        
-        if(role == null || "".equals(role)){
-            System.out.println("role " + role);
-            application.showAlert(Alert.AlertType.ERROR,  "Virhe", "Valitse rooli!");
-            return;
-        }
-        
-        try{
-            application.addUser(username, password, firstName, lastName, role);
-        }catch(AddUserException ex){
-            application.showAlert(Alert.AlertType.ERROR, "Virhe", ex.getMessage());
-            return;
-        }
+    void newFired(ActionEvent event) {
+        FXMLController.getActiveController().create();
+    }
 
-        application.showAlert(Alert.AlertType.CONFIRMATION, "Käyttäjä ", username + " lisätty!");
+    /**
+     * Called when the delete button is fired.
+     *
+     * @param event the action event.
+     */
+    @FXML
+    void deleteFired(ActionEvent event) {
+        FXMLController.getActiveController().delete();
     }
     
-    private boolean validUsername(String username){
-        String regex = "[A-Za-zåÅäÄöÖ0-9_\\-]{" + USERNAME_MIN_LENGTH + "," + USERNAME_MAX_LENGTH + "}";
-        return username != null && username.matches(regex);
+        /**
+     * Called when the search button is fired.
+     *
+     * @param event the action event.
+     */
+    @FXML
+    void searchFired(ActionEvent event) {
+        System.out.println("searchFired");
+        FXMLController.getActiveController().search();
     }
     
-    private boolean validPassword(String password){
-        String regex = "[^\n]{" + PASSWORD_MIN_LENGTH + "," + PASSWORD_MAX_LENGTH + "}";
-        return password != null && password.matches(regex);
+        /**
+     * Called when the modify button is fired.
+     *
+     * 
+     * @param event the action event.
+     */
+    @FXML
+    void modifyFired(ActionEvent event) {
+        FXMLController.getActiveController().modify();
     }
     
-    private boolean validFirstName(String firstName){
-        String regex = "[a-zåäö]{" + FIRST_NAME_MIN_LENGTH + "," + FIRST_NAME_MAX_LENGTH + "}";
-        return firstName == null || firstName.matches(regex);
-    }
-        
-    private boolean validLastName(String lastName){
-        String regex = "[a-zåäö]{" + LAST_NAME_MIN_LENGTH + "," + LAST_NAME_MAX_LENGTH + "}";
-        return lastName == null || lastName.matches(regex);
+    private void configureTabs(){
+        System.out.println("configureTabs");
+        try {
+//            UserTabController userTabController = (UserTabController)application.loadController("/fxml/userTab.fxml");
+//            ItemTabController itemTabController = (ItemTabController)application.loadController("/fxml/itemTab.fxml");
+//            UserTabController userTabController = (UserTabController)userTabContent.;
+//            ItemTabController itemTabController = (ItemTabController)application.loadController("/fxml/itemTab.fxml");
+                    
+//            System.out.println("userTab " + userTab);
+//            System.out.println("itemTab " + itemTab);
+//            userTabController.setTab(userTab);
+//            itemTabController.setTab(itemTab);
+        } catch (Exception ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
+        configureTabs();
+        super.initialize(location, resources);
     }
    
 }
