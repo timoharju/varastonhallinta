@@ -306,7 +306,7 @@ public abstract class FXMLController implements Initializable, Searchable, Modif
         
     }
     
-        @Override
+    @Override
     public void initialize(URL location, ResourceBundle resources) {
 
     }

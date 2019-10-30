@@ -22,15 +22,20 @@ package varastonhallinta.logic;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -39,6 +44,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
@@ -63,9 +69,6 @@ public class ItemTabController extends TabController{
     
     @FXML
     private TextField itemnameField;
-
-    @FXML
-    private TextField weightField;
     
     @FXML
     private TextField priceLowerField;
@@ -158,7 +161,6 @@ public class ItemTabController extends TabController{
         System.out.println(this + " configureAddItemDialog");
         try {
             dialogController = (ItemDialogController) application.loadController(ADD_USER_GRID_LOCATION);
-            System.out.println("FUCK YOU gachiGASM");
             itemGrid = dialogController.getGrid();
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
@@ -194,7 +196,6 @@ public class ItemTabController extends TabController{
         colItemname.setCellValueFactory(new PropertyValueFactory<>("itemname"));
         colWeight.setCellValueFactory(new PropertyValueFactory<>("weight"));
         colPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
-        colPrice.setCellValueFactory(new PropertyValueFactory<>("description"));
         
         itemTable.setItems(tableContent);
         final ObservableList<Item> tableSelection = itemTable.getSelectionModel().getSelectedItems();
@@ -206,62 +207,81 @@ public class ItemTabController extends TabController{
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         configureDialogs();
-        configureValueMap();
+        configureValueFilters();
         configureFindItemTable();
         super.initialize(location, resources);
     }
-    
 
-    Map<CheckBox, Input> boxMap = new HashMap<>();
-    Map<Object, Function<Item, String>> inputMap = new HashMap<>();
+    private Map<CheckBox, Input<String>> inputMap = new HashMap<>();
+    private Map<CheckBox, String> inputNameMap = new HashMap<>();
+    private FilterFactory<Item> filterFactory;
     
-    private void configureValueMap(){
+    private void configureValueFilters(){
+        filterFactory = new FilterFactory<>();
         
-        boxMap.put(idBox, Input.from(itemIDField));
-        boxMap.put(nameBox, Input.from(itemnameField));
-        boxMap.put(balanceBox, Input.from(balanceLowerField, balanceHigherField));
-        boxMap.put(priceBox, Input.from(priceLowerField, priceHigherField));
-        boxMap.put(weightBox, Input.from(weightLowerField, weightHigherField));
-        boxMap.put(storageSpaceBox, Input.from(storageSpaceField));
+        filterFactory.addFilter(idBox, Input.from(itemIDField, Integer.class), (item) -> item.getItemid(),
+                (inputID, id) -> id.equals(inputID));
         
-        inputMap.put(itemIDField, (item) -> "" + item.getItemid());
-        inputMap.put(itemnameField, (item) -> item.getItemname());
-        inputMap.put(balanceLowerField, (item) -> Double.toString(item.getWeight()));
-        inputMap.put(balanceHigherField, (item) -> Double.toString(item.getPrice()));
-        inputMap.put(priceLowerField, (item) -> Double.toString(item.getWeight()));
-        inputMap.put(priceHigherField, (item) -> Double.toString(item.getPrice()));
-        inputMap.put(weightLowerField, (item) -> Double.toString(item.getWeight()));
-        inputMap.put(weightHigherField, (item) -> Double.toString(item.getPrice()));
-        inputMap.put(storageSpaceField, (item) -> Double.toString(item.getPrice()));
+        filterFactory.addFilter(nameBox, Input.from(itemnameField, String.class), (item) -> item.getItemname(),
+               basicStringFilter);
+        
+        filterFactory.addFilter(balanceBox, Input.from(balanceLowerField, balanceHigherField), (item) -> application.getBalance(item),
+                basicIntRangeFilter);
+        
+        filterFactory.addFilter(priceBox, Input.from(priceLowerField, priceHigherField), (item) -> item.getPrice(),
+                basicDoubleRangeFilter);
+        
+        filterFactory.addFilter(weightBox, Input.from(weightLowerField, weightHigherField), (item) -> item.getWeight(),
+                basicDoubleRangeFilter);
+        
+        filterFactory.addFilter(storageSpaceBox, Input.from(storageSpaceField, String.class), (item) -> application.getStorageSpace(item),
+                basicStringFilter);
+        
+        inputMap.put(idBox, Input.from(itemIDField));
+        inputMap.put(nameBox, Input.from(itemnameField));
+        inputMap.put(balanceBox, Input.from(new TextField[]{balanceLowerField, balanceHigherField}));
+        inputMap.put(priceBox, Input.from(new TextField[]{priceLowerField, priceHigherField}));
+        inputMap.put(weightBox, Input.from(new TextField[]{weightLowerField, weightHigherField}));
+        inputMap.put(storageSpaceBox, Input.from(storageSpaceField, String.class));
+        
+        inputNameMap.put(idBox, "tuote ID");
+        inputNameMap.put(nameBox, "tuotenimi");
+        inputNameMap.put(balanceBox, "saldo");
+        inputNameMap.put(priceBox, "hinta");
+        inputNameMap.put(weightBox, "paino");
+        inputNameMap.put(storageSpaceBox, "varastopaikka");
     }
+    
+    private BiFunction<String, String, Boolean> basicStringFilter = (input, attribute) -> {
+            input = input.toLowerCase();
+            attribute = attribute.toLowerCase();
+            return  input.contains(attribute) || attribute.contains(input);
+    };
+    
+    private final BiFunction<Range, Double, Boolean> basicDoubleRangeFilter = (range, attribute) -> {
+        return  range.isInRange(attribute);
+    };
+    
+    private final BiFunction<Range, Integer, Boolean> basicIntRangeFilter = (range, attribute) -> {
+        return  range.isInRange(attribute);
+    };
+    
+    Consumer<InvalidRangeException> onInvalidRange = ex -> {};
 
     @Override
     protected Object getContent() {
         return content;
     }
     
-    private interface Input{
-        public String getString();
-        
-        public static Input from(TextField textField){
-            return () -> textField.getText();
-        }
-        
-        public static Input from(ComboBox<String> textField){
-            return () -> textField.getValue();
-        }
-        
-        public static Input from(TextField textFieldLower, TextField textFieldHigher){
-            return () -> textFieldLower.getText() + textFieldHigher.getText();
-        }
-        
-    }
-
     @Override
     public boolean canSearch() {
-        for(CheckBox box : boxMap.keySet()){
-            if(box.isSelected() && !boxMap.get(box).getString().isEmpty()){
-                return true;
+        for(CheckBox box : inputMap.keySet()){
+            try {
+                if(box.isSelected() && !inputMap.get(box).getInput().isEmpty()){
+                    return true;
+                }
+            } catch (InputException ex) {
+               
             }
         }
         return false;
@@ -283,18 +303,23 @@ public class ItemTabController extends TabController{
         return !this.itemTable.getSelectionModel().getSelectedCells().isEmpty();
     }
 
-    private Predicate<Item> simpleFilter(Input input){
-        return item -> {
-            String string = input.getString();
-            return inputMap.get(input).apply(item).contains(string);
-        };
-    }
-    
     private void filterItems(){
         Set<Item> items = new HashSet<>();
-        for(CheckBox box : boxMap.keySet()){
-            if(box.isArmed()){
-                items.retainAll(Arrays.asList(this.application.getItems(simpleFilter(boxMap.get(box)))));
+        for(CheckBox box : inputMap.keySet()){
+            if(box.isSelected()){
+                Collection<Item> temp;
+                try {
+                   temp = Arrays.asList(application.getItems(filterFactory.getFilter(box)));
+                } catch (InputException ex) {
+                    ex.setObject(getInputName(box));
+                    application.showAlert(Alert.AlertType.ERROR, "Error", ex.getHRMessage());
+                    return;
+                }
+                if(items.isEmpty()){
+                    items.addAll(temp);
+                }else{
+                    items.retainAll(temp);
+                }
                 if(items.isEmpty()){
                     return;
                 }
@@ -303,8 +328,13 @@ public class ItemTabController extends TabController{
         this.itemTable.getItems().addAll(items);
     }
     
+    private String getInputName(CheckBox checkBox){
+        return inputNameMap.get(checkBox);
+    }
+    
     @Override
     public void search() {
+        itemTable.getItems().clear();
         filterItems();
     }
     
@@ -320,9 +350,9 @@ public class ItemTabController extends TabController{
         this.addItemDialog.show();
     }
 
-    @Override
-    public void delete() {
-        //itemTable.getSelectionModel().getSelectedItems().forEach(item -> tryDeleteItem(item));
-    }
+//    @Override
+//    public void delete() {
+//        itemTable.getSelectionModel().getSelectedItems().forEach(item -> tryDeleteItem(item));
+//    }
 }
 

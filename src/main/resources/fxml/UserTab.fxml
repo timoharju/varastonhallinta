@@ -55,7 +55,7 @@
                   </VBox>
                   <VBox alignment="TOP_CENTER" spacing="5.0" HBox.hgrow="ALWAYS">
                      <children>
-                        <CheckBox fx:id="nameBox" mnemonicParsing="false" />
+                        <CheckBox fx:id="usernameBox" mnemonicParsing="false" />
                         <TextField fx:id="usernameField" minWidth="50.0" prefWidth="234.0" promptText="mattim" GridPane.rowIndex="4">
                            <GridPane.margin>
                               <Insets />

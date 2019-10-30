@@ -22,12 +22,14 @@ package varastonhallinta.logic;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.logging.Level;
@@ -38,6 +40,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
@@ -79,7 +82,7 @@ public class UserTabController extends TabController{
     CheckBox idBox;
     
     @FXML
-    CheckBox nameBox;
+    CheckBox usernameBox;
     
     @FXML
     CheckBox firstNameBox;
@@ -201,21 +204,35 @@ public class UserTabController extends TabController{
         super.initialize(location, resources);
     }
     
-    Map<CheckBox, Input> boxMap = new HashMap<>();
-    Map<Object, Function<User, String>> inputMap = new HashMap<>();
+    private Map<CheckBox, String> inputNameMap = new HashMap<>();
+    Map<CheckBox, Input<String>> inputMap = new HashMap<>();
+    private FilterFactory<User> filterFactory;
     
     private void configureValueMap(){
-        boxMap.put(idBox, Input.from(userIDField));
-        boxMap.put(nameBox, Input.from(usernameField));
-        boxMap.put(firstNameBox, Input.from(firstNameField));
-        boxMap.put(lastNameBox, Input.from(lastNameField));
-        boxMap.put(roleBox, Input.from(roleComboBox));
+        filterFactory = new FilterFactory<User>();
+        inputMap.put(idBox, Input.from(userIDField));
+        inputMap.put(usernameBox, Input.from(usernameField));
+        inputMap.put(firstNameBox, Input.from(firstNameField));
+        inputMap.put(lastNameBox, Input.from(lastNameField));
+        inputMap.put(roleBox, Input.from(roleComboBox));
         
-        inputMap.put(boxMap.get(idBox), (user) -> "" + user.getId());
-        inputMap.put(boxMap.get(nameBox), (user) -> user.getUsername());
-        inputMap.put(boxMap.get(firstNameBox), (user) -> user.getFirstName());
-        inputMap.put(boxMap.get(lastNameBox), (user) -> user.getLastName());
-        inputMap.put(boxMap.get(roleBox), (user) -> user.getRole().getName());
+        filterFactory.addFilter(idBox, Input.from(userIDField, Integer.class), (user) -> user.getId(),
+                (input, id) -> id.equals(input));
+        filterFactory.addFilter(usernameBox, Input.from(usernameField), (user) -> user.getUsername(),
+                (input, username) -> username.contains(input) || input.contains(username));
+        filterFactory.addFilter(firstNameBox, Input.from(firstNameField), (user) -> user.getFirstName(),
+                (input, firstName) -> firstName.contains(input) || input.contains(firstName));
+        filterFactory.addFilter(lastNameBox, Input.from(lastNameField), (user) -> user.getLastName(),
+                (input, lastName) -> lastName.contains(input) || input.contains(lastName));
+        filterFactory.addFilter(roleBox, Input.from(roleComboBox), (user) -> user.getRole().getName(),
+                (input, role) -> role.equals(input));
+        
+        inputNameMap.put(idBox, "ID");
+        inputNameMap.put(usernameBox, "käyttäjänimi");
+        inputNameMap.put(firstNameBox, "etunimi");
+        inputNameMap.put(lastNameBox, "sukunimi");
+        inputNameMap.put(roleBox, "rooli");
+
     }
 
     @Override
@@ -223,26 +240,15 @@ public class UserTabController extends TabController{
         return content;
     }
     
-    private interface Input{
-        public String getInput();
-        
-        public static Input from(TextField textField){
-            return () -> textField.getText();
-        }
-        
-        public static Input from(ComboBox<String> comboBox){
-            return () -> comboBox.getValue();
-        }
-    }
-
     @Override
     public boolean canSearch() {
-        System.out.println("can search " + this);
-        for(CheckBox box : boxMap.keySet()){
-            System.out.println("box.isSelected() " + box.isSelected());
-            System.out.println("boxMap.get(box) " + boxMap.get(box));
-            if(box.isSelected() && !boxMap.get(box).getInput().isEmpty()){
-                return true;
+        for(CheckBox box : inputMap.keySet()){
+            try {
+                if(box.isSelected() && !inputMap.get(box).getInput().isEmpty()){
+                    return true;
+                }
+            } catch (InputException ex) {
+                Logger.getLogger(UserTabController.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return false;
@@ -263,47 +269,33 @@ public class UserTabController extends TabController{
         return !this.userTable.getSelectionModel().getSelectedCells().isEmpty();
     }
 
-    private Predicate<User> simpleFilter(Input input){
-        return user -> {
-            String string = input.getInput();
-            System.out.println("string " + string);
-            String inputString = inputMap.get(input).apply(user);
-            System.out.println(inputString);
-            System.out.println(string + "contains " + inputString + " = " + inputString.contains(string));
-            return inputMap.get(input).apply(user).contains(string);
-        };
-    }
-    
-    private Predicate<User> rangeFilter(Input input){
-        return user -> {
-            String string = input.getInput();
-            System.out.println("string " + string);
-            String inputString = inputMap.get(input).apply(user);
-            System.out.println(inputString);
-            System.out.println(string + "contains " + inputString + " = " + inputString.contains(string));
-            return inputMap.get(input).apply(user).contains(string);
-        };
-    }
-    
     private void filterUsers(){
-        System.out.println("filterUsers");
-        Set<User> users = new HashSet<>();
-        for(CheckBox box : boxMap.keySet()){
+        Set<User> items = new HashSet<>();
+        for(CheckBox box : inputMap.keySet()){
             if(box.isSelected()){
-                System.out.println("users.isEmpty");
-                if(users.isEmpty()){
-                    System.out.println("users.isEmpty");
-                    users.addAll(Arrays.asList(this.application.getUsers(simpleFilter(boxMap.get(box)))));
-                }else{
-                    users.retainAll(Arrays.asList(this.application.getUsers(simpleFilter(boxMap.get(box)))));
+                Collection<User> temp;
+                try {
+                   temp = Arrays.asList(application.getUsers(filterFactory.getFilter(box)));
+                } catch (InputException ex) {
+                    ex.setObject(getInputName(box));
+                    application.showAlert(Alert.AlertType.ERROR, "Error", ex.getHRMessage());
+                    return;
                 }
-                System.out.println("users " + users);
-                if(users.isEmpty()){
+                if(items.isEmpty()){
+                    items.addAll(temp);
+                }else{
+                    items.retainAll(temp);
+                }
+                if(items.isEmpty()){
                     return;
                 }
             }
         }
-        this.userTable.getItems().addAll(users);
+        this.userTable.getItems().addAll(items);
+    }
+    
+    private String getInputName(CheckBox checkBox){
+        return inputNameMap.get(checkBox);
     }
     
     @Override

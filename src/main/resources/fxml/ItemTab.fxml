@@ -75,7 +75,7 @@
                               <Insets />
                            </VBox.margin>
                         </CheckBox>
-                        <TextField fx:id="nameField" minWidth="45.0" prefHeight="25.0" promptText="TuoteABC" GridPane.rowIndex="4">
+                        <TextField fx:id="itemnameField" minWidth="45.0" prefHeight="25.0" promptText="TuoteABC" GridPane.rowIndex="4">
                            <GridPane.margin>
                               <Insets />
                            </GridPane.margin>

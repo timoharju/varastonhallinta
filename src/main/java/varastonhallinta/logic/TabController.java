@@ -25,6 +25,9 @@ public abstract class TabController extends FXMLController{
     
     private void configureTab(Tab tab){
         System.out.println("configureTab " + tab);
+        if(tab.isSelected()){
+            TabController.setActiveController(this);
+        }
         tab.selectedProperty().addListener(
         (ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
             System.out.println("SELECTION CHANGED");
@@ -45,7 +48,6 @@ public abstract class TabController extends FXMLController{
     }
     
     protected abstract Object getContent();
-
 
     /**
      * @return the activeTabController

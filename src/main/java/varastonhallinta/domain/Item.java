@@ -130,7 +130,7 @@ public class Item implements Serializable{
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the itemId fields are not set
-        if (!(object instanceof User)) {
+        if (!(object instanceof Item)) {
             return false;
         }
         Item other = (Item) object;
@@ -140,4 +140,8 @@ public class Item implements Serializable{
         return true;
     }
     
+    @Override
+    public String toString(){
+        return itemId + " " + itemname + " " + weight + " " + price + " " + description;
+    }
 }

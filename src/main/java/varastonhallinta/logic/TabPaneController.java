@@ -14,6 +14,7 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 
 /**
  *
@@ -24,6 +25,8 @@ public class TabPaneController extends FXMLController{
     private Tab userTab;
     @FXML
     private Tab itemTab;
+    @FXML
+    private TabPane tabPane;
     
     private static Map<Object, Tab> tabMap = new HashMap<>();
     private static Map<Object, Consumer<Tab>> tabConsumerMap = new HashMap<>();

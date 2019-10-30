@@ -165,6 +165,14 @@ public class Main extends Application {
         }
     }
     
+    public int getBalance(Item item){
+        return 3;
+    }
+    
+    public String getStorageSpace(Item item){
+        return "A45";
+    }
+    
     /**
      * Logs out the current logged in user and loads the login page.
      */
@@ -304,13 +312,6 @@ public class Main extends Application {
     }
     
     public void addItem(String itemname, double weight, double price, String description) throws ItemnameTakenException{
-        try{
-            if(itemController.findUserWithName(itemname) != null){
-                throw new ItemnameTakenException("Item name: " + itemname + " is taken.");
-            } 
-        }catch(NoResultException ex){
-            
-        }
         itemController.create(new Item(itemname, weight, price, description));
     }
     
@@ -341,7 +342,9 @@ public class Main extends Application {
         List<User> matchedUsers = new ArrayList<>();
         
         for(User user : this.userController.findUserEntities()){
+            System.out.println("test user");
             if(predicate.test(user)){
+                System.out.println("user matches");
                 matchedUsers.add(user);
             }
         }
@@ -351,13 +354,14 @@ public class Main extends Application {
     
     public Item[] getItems(Predicate<Item> predicate){
         List<Item> matchedItems = new ArrayList<>();
-        
         for(Item item : this.itemController.findItemEntities()){
+            System.out.println("\ntest item " + item);
             if(predicate.test(item)){
+                System.out.println("item matches");
                 matchedItems.add(item);
             }
         }
-        
+        System.out.println("_______________________________________");
         return matchedItems.toArray(new Item[matchedItems.size()]);
     }
 }
