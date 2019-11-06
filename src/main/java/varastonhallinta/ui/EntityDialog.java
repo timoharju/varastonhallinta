@@ -14,7 +14,7 @@ import javafx.scene.layout.GridPane;
 import javafx.util.Callback;
 
 
-public class AddObjectDialog<T> extends Dialog<T> {
+public class EntityDialog<T> extends Dialog<T> {
 
     /**************************************************************************
      *
@@ -98,7 +98,7 @@ public class AddObjectDialog<T> extends Dialog<T> {
 //        
 //    }
 
-    public AddObjectDialog(GridPane grid, Callback<ButtonType, T> resultConverter) {
+    public EntityDialog(GridPane grid, Callback<ButtonType, T> resultConverter) {
         System.out.println("AddObjectDialog " + grid);
         final DialogPane dialogPane = getDialogPane();
         

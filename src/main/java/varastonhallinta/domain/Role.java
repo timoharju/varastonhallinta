@@ -1,6 +1,9 @@
 package varastonhallinta.domain;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Predicate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -18,13 +21,22 @@ import javax.persistence.Table;
     name="getRoleWithName",
     query="SELECT r FROM Role r WHERE r.name = :roleName"
 )
-public class Role implements Serializable{
-   @Id @GeneratedValue
+public class Role extends EntityClass<Role> implements Serializable{
+    private static final int ROLE_NAME_MIN_LENGTH = 3;
+    private static final int ROLE_NAME_MAX_LENGTH = 20;
+    
+    @Id @GeneratedValue
    @Column(name = "id")
    private Integer id;
 
    @Column(name = "name")
    private String name; 
+   
+    private static final Map<Predicate<Role>, String> map = new HashMap<>();
+   
+   static{
+       map.put(role -> validRoleName(role.getName()), "name");
+   }
 
     /**
      *
@@ -43,7 +55,8 @@ public class Role implements Serializable{
      *
      * @return
      */
-    public int getId() {
+   @Override
+    public Integer getID() {
       return id;
    }
    
@@ -51,7 +64,8 @@ public class Role implements Serializable{
      *
      * @param id
      */
-    public void setId( int id ) {
+    @Override
+    public void setID(Integer id ) {
       this.id = id;
    }
 
@@ -89,6 +103,16 @@ public class Role implements Serializable{
             return false;
         }
         return true;
+    }
+    
+    public static boolean validRoleName(String roleName){
+        String regex = "[a-zåäö]{" + ROLE_NAME_MIN_LENGTH + "," + ROLE_NAME_MAX_LENGTH + "}";
+        return roleName != null && roleName.matches(regex);
+    }
+
+    @Override
+    public void validate() throws ValidationException {
+        this.testFields(map, this);
     }
 }
 

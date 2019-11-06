@@ -27,11 +27,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -45,24 +49,21 @@ import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import varastonhallinta.domain.EntityClass;
 import varastonhallinta.domain.Item;
-import varastonhallinta.domain.User;
 import varastonhallinta.ui.EntityDialog;
 import varastonhallinta.ui.Main;
-import varastonhallinta.ui.exceptions.AddEntityException;
-import varastonhallinta.ui.exceptions.EntityException;
 /**
  * Login Controller.
  */
-public class ItemTabController extends TabController<Item>{
+public class ItemTabController1 extends TabController{
 
     @FXML
     private TextField itemIDField;
@@ -153,21 +154,15 @@ public class ItemTabController extends TabController<Item>{
     private EntityDialog<Item> addItemDialog;
     private EntityDialog<Item> modifyItemDialog;
     private GridPane itemGrid;
-    private ItemDialogController addItemController;
-    private ItemDialogController modifyItemController;
+    private ItemDialogController dialogController;
     private static final String ADD_USER_GRID_LOCATION = "/fxml/ItemGrid.fxml";
 
-
-    public ItemTabController() {
-        super("Lisäys onnistui", "Lisäys epäonnistui", "Muokkaus onnistui", "Muokkaus epäonnistui", "Poisto onnistui", "Poisto epäonnistui");
-    }
-    
 
     public void configureDialogs(){
         System.out.println(this + " configureAddItemDialog");
         try {
-            addItemController = (ItemDialogController) application.loadController(ADD_USER_GRID_LOCATION);
-            modifyItemController = (ItemDialogController) application.loadController(ADD_USER_GRID_LOCATION);
+            dialogController = (ItemDialogController) application.loadController(ADD_USER_GRID_LOCATION);
+            itemGrid = dialogController.getGrid();
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -177,27 +172,26 @@ public class ItemTabController extends TabController<Item>{
             if(data == null || data != ButtonBar.ButtonData.OK_DONE){
                 return null;
             }
-            return addItemController.getItem();
+            return dialogController.getItem();
         };
         
-        addItemDialog = new EntityDialog<>(addItemController.getGrid(), resultConverter);
+        addItemDialog = new EntityDialog<>(itemGrid, resultConverter);
         addItemDialog.resultProperty().addListener(
             (ObservableValue<? extends Item> observable, Item oldValue, Item newValue) -> {
                 if(newValue != null){
-                    super.create(newValue);
+                    tryAddItem(newValue);
                 }
         });
         
-        modifyItemDialog = new EntityDialog<>(modifyItemController.getGrid(), resultConverter);
-        modifyItemDialog.resultProperty().addListener(
-            (ObservableValue<? extends Item> observable, Item oldValue, Item newValue) -> {
-                if(newValue != null){
-                    super.update(newValue);
-                }
-        });
-
+//        modifyItemDialog = new AddObjectDialog<>(itemGrid, resultConverter);
+//        addItemDialog.resultProperty().addListener(
+//            (ObservableValue<? extends Item> observable, Item oldValue, Item newValue) -> {
+//                if(newValue != null){
+//                    tryModifyItem(newValue);
+//                }
+//        });
     }
-    
+
     private void configureFindItemTable(){
         colID.setCellValueFactory(new PropertyValueFactory<>("itemId"));
         colItemname.setCellValueFactory(new PropertyValueFactory<>("itemname"));
@@ -209,21 +203,21 @@ public class ItemTabController extends TabController<Item>{
 
         tableSelection.addListener(tableSelectionChanged);
     }
-
+    
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         configureDialogs();
+        configureValueFilters();
         configureFindItemTable();
-        configureFilters();
         super.initialize(location, resources);
     }
-    
+
     private Map<CheckBox, Input<String>> inputMap = new HashMap<>();
     private Map<CheckBox, String> inputNameMap = new HashMap<>();
     private FilterFactory<Item> filterFactory;
     
-    private void configureFilters(){
+    private void configureValueFilters(){
         filterFactory = new FilterFactory<>();
         
         filterFactory.addFilter(idBox, Input.from(itemIDField, Integer.class), (item) -> item.getID(),
@@ -272,6 +266,8 @@ public class ItemTabController extends TabController<Item>{
     private final BiFunction<Range, Integer, Boolean> basicIntRangeFilter = (range, attribute) -> {
         return  range.isInRange(attribute);
     };
+    
+    Consumer<InvalidRangeException> onInvalidRange = ex -> {};
 
     @Override
     protected Object getContent() {
@@ -286,14 +282,15 @@ public class ItemTabController extends TabController<Item>{
                     return true;
                 }
             } catch (InputException ex) {
-                Logger.getLogger(ItemTabController.class.getName()).log(Level.SEVERE, null, ex);
+               
             }
         }
         return false;
     }
+
     
     @Override
-    public boolean canUpdate() {
+    public boolean canModify() {
         return !this.itemTable.getSelectionModel().getSelectedCells().isEmpty();
     }
 
@@ -307,19 +304,16 @@ public class ItemTabController extends TabController<Item>{
         return !this.itemTable.getSelectionModel().getSelectedCells().isEmpty();
     }
 
-    private void filterUsers(){
+    private void filterItems(){
         Set<Item> items = new HashSet<>();
         for(CheckBox box : inputMap.keySet()){
             if(box.isSelected()){
                 Collection<Item> temp;
                 try {
-                   temp = application.getEntities(Item.class, filterFactory.getFilter(box));
+                   temp = Arrays.asList(application.getItems(filterFactory.getFilter(box)));
                 } catch (InputException ex) {
                     ex.setObject(getInputName(box));
                     application.showAlert(Alert.AlertType.ERROR, "Error", ex.getHRMessage());
-                    return;
-                } catch (EntityException ex) {
-                    application.showAlert(Alert.AlertType.ERROR, "Error", "");
                     return;
                 }
                 if(items.isEmpty()){
@@ -339,70 +333,32 @@ public class ItemTabController extends TabController<Item>{
         return inputNameMap.get(checkBox);
     }
     
-    private void updateTable(){
-        try {
-            itemTable.getItems().setAll(application.<Item>getEntities(Item.class, user -> itemTable.getItems().contains(user)));
-        } catch (EntityException ex) {
-            Logger.getLogger(ItemTabController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
     @Override
-    public void handleSearch() {
+    public void search() {
         itemTable.getItems().clear();
-        filterUsers();
+        filterItems();
     }
-
+    
     @Override
-    public void handleModify() {
-        modifyItemController.initFields(itemTable.getSelectionModel().getSelectedItem());
+    public void modify() {
+        dialogController.initFields(itemTable.getSelectionModel().getSelectedItem());
         this.modifyItemDialog.show();
     }
 
     @Override
-    public void handleCreate() {
-        addItemController.clearFields();
+    public void create() {
+        dialogController.clearFields();
         this.addItemDialog.show();
-        updateTable();
     }
 
     @Override
-    public void handleDelete() {
-        itemTable.getSelectionModel().getSelectedItems().forEach(item -> {
-            delete(item);
-        });
-        updateTable();
+    public void delete() {
+        itemTable.getSelectionModel().getSelectedItems().forEach(item -> tryDeleteItem(item));
     }
 
     @Override
-    public boolean validate(Item item) throws AddEntityException{
-        String name = item.getItemname();
-        
-        if(!validUsername(name)){
-            throw new AddEntityException("Viallinen käyttäjänimi!");
-        }
-
-        return true;
-    }  
-    
-    private boolean validUsername(String username){
-        return true;
+    public boolean validate(EntityClass e) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
-    private boolean validPassword(String password){
-        String regex = "[^\n]{" + PASSWORD_MIN_LENGTH + "," + PASSWORD_MAX_LENGTH + "}";
-        return password != null && password.matches(regex);
-    }
-    
-    private boolean validFirstName(String firstName){
-        String regex = "[a-zåäö]{" + FIRST_NAME_MIN_LENGTH + "," + FIRST_NAME_MAX_LENGTH + "}";
-        return firstName == null || firstName.matches(regex);
-    }
-        
-    private boolean validLastName(String lastName){
-        String regex = "[a-zåäö]{" + LAST_NAME_MIN_LENGTH + "," + LAST_NAME_MAX_LENGTH + "}";
-        return lastName == null || lastName.matches(regex);
-    }
-
 }
 

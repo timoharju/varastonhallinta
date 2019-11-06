@@ -63,7 +63,7 @@ import varastonhallinta.ui.exceptions.UsernameTakenException;
 /**
  * Main Application. This class handles navigation and user session.
  */
-public class Main extends Application implements IApplication{
+public class Main1 extends Application implements IApplication{
 
     private Stage stage;
     private User loggedUser;
@@ -77,19 +77,17 @@ public class Main extends Application implements IApplication{
 //    private UserJpaController userController = new UserJpaController(entityManagerFactory);
 //    private ItemJpaController itemController = new ItemJpaController(entityManagerFactory);
 //    private RoleJpaController roleController = new RoleJpaController(entityManagerFactory);
-    private UserJpaController userController = new UserJpaController(entityManagerFactory);
+    private JPAController userController = new JPAControllerImpl(User.class, entityManagerFactory);
+    private JPAController itemController = new JPAControllerImpl(Item.class, entityManagerFactory);
+    private JPAController roleController = new JPAControllerImpl(Role.class, entityManagerFactory);
     private Authenticator authenticator = new Authenticator(new UserJpaController(entityManagerFactory));
     private Scene scene;
-    private static Main application;
+    private static Main1 application;
     private Map<Class<?>, JPAController<?>> controllerMap = new HashMap<>();
 
     
     {
         try {
-            JPAController userController = new JPAControllerImpl(User.class, entityManagerFactory);
-            JPAController itemController = new JPAControllerImpl(Item.class, entityManagerFactory);
-            JPAController roleController = new JPAControllerImpl(Role.class, entityManagerFactory);
-            
             Role admin = new Role("Admin");
             Role vm = new Role("Varastomies");
             Role tp = new Role("TuotePäällikkö");
@@ -117,18 +115,17 @@ public class Main extends Application implements IApplication{
 "55-tuumaisessa televisiossa on teräväpiirtokanavia tukevat digivirittimet DVB-T2, DVB-C HD ja DVB-S2. Siinä on myös CI+-liitäntä "
                     + "maksu-tv-kanavia varten ja voit kiinnittää sen seinälle VESA-standardin mukaisella telineellä.";
                     
+            addItem("kamera", 0.4, 400, "asdd");
+            addItem("Monster Energy Ultra", 0.5, 1.5, "asd");
+            addItem("Samsung UE55RU7172 55\" Smart 4K Ultra HD LED", 17.3, 450, "asd");
             controllerMap.put(Item.class, itemController);
-            controllerMap.put(User.class, userController);
-            controllerMap.put(Role.class, roleController);
-            addEntity(new Item("kamera", 0.4, 400, "asdd"));
-            addEntity(new Item("Monster Energy Ultra", 0.5, 1.5, "asd"));
-            addEntity(new Item("Samsung UE55RU7172 55\" Smart 4K Ultra HD LED", 17.3, 450, "asd"));
-        } catch (AddEntityException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ItemnameTakenException ex) {
+            Logger.getLogger(Main1.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
     private static class JPAControllerImpl<E extends EntityClass<E>> extends JPAController<E> {
+
         public JPAControllerImpl(Class<? extends E> classObject, EntityManagerFactory emf) {
             super(classObject, emf);
         }
@@ -138,10 +135,10 @@ public class Main extends Application implements IApplication{
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Application.launch(Main.class, (java.lang.String[])null);
+        Application.launch(Main1.class, (java.lang.String[])null);
     }
 
-    public Main() {
+    public Main1() {
 
     }
 
@@ -156,13 +153,13 @@ public class Main extends Application implements IApplication{
             gotoLogin();
             primaryStage.show();
         } catch (Exception ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Main1.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public static Main getApp(){
+    public static Main1 getApp(){
         if(application == null){
-            application = new Main();
+            application = new Main1();
         }
         
         return application;
@@ -213,7 +210,7 @@ public class Main extends Application implements IApplication{
         try {
             ProfileController profile = (ProfileController) replaceSceneContent(PROFILE_PAGE);
         } catch (Exception ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Main1.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
@@ -222,7 +219,7 @@ public class Main extends Application implements IApplication{
             UiController ui = (UiController) replaceSceneContent("/fxml/" + uiName + ".fxml");
             ui.setApp(this);
         } catch (Exception ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Main1.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -231,16 +228,16 @@ public class Main extends Application implements IApplication{
             LoginController login = (LoginController) replaceSceneContent(LOGIN_PAGE);
             login.setApp(this);
         } catch (Exception ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Main1.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     private Initializable replaceSceneContent(String fxml) throws Exception {
         System.out.println("replaceSceneContent " + fxml);
         FXMLLoader loader = new FXMLLoader();
-        InputStream in = Main.class.getResourceAsStream(fxml);
+        InputStream in = Main1.class.getResourceAsStream(fxml);
         loader.setBuilderFactory(new JavaFXBuilderFactory());
-        loader.setLocation(Main.class.getResource(fxml));
+        loader.setLocation(Main1.class.getResource(fxml));
         Parent page;
         try {
             page = (Parent)loader.load(in);
@@ -256,9 +253,9 @@ public class Main extends Application implements IApplication{
     public Node loadContent(String fxml) throws Exception {
         System.out.println("loadContent " + fxml);
         FXMLLoader loader = new FXMLLoader();
-        InputStream in = Main.class.getResourceAsStream(fxml);
+        InputStream in = Main1.class.getResourceAsStream(fxml);
         loader.setBuilderFactory(new JavaFXBuilderFactory());
-        loader.setLocation(Main.class.getResource(fxml));
+        loader.setLocation(Main1.class.getResource(fxml));
         Node node;
         try {
             node = (Node)loader.load(in);
@@ -272,9 +269,9 @@ public class Main extends Application implements IApplication{
     public Initializable loadController(String fxml) throws Exception {
         System.out.println("loadController " + fxml);
         FXMLLoader loader = new FXMLLoader();
-        InputStream in = Main.class.getResourceAsStream(fxml);
+        InputStream in = Main1.class.getResourceAsStream(fxml);
         loader.setBuilderFactory(new JavaFXBuilderFactory());
-        loader.setLocation(Main.class.getResource(fxml));
+        loader.setLocation(Main1.class.getResource(fxml));
         Node node;
         try {
             node = (Node)loader.load(in);
@@ -284,7 +281,70 @@ public class Main extends Application implements IApplication{
         //((FXMLController) loader.getController()).setApp(this);
         return loader.getController();
     }
-
+    
+    //TODO: Create a Bindable Roles-property instead.
+    /**
+     * Returns a array of names of all of the possible {@link roles} that a user can have.
+     * 
+     * @return an array of strings containing the name of all user roles.
+     */
+    public String[] getRoleNames(){
+        List<Role> roles = roleController.findRoleEntities();
+        String[] roleNames = new String[roles.size()];
+        for(int i=0; i<roles.size(); i++){
+            roleNames[i] = roles.get(i).getName();
+        }
+        return roleNames;
+    }
+    
+    /**
+     * Creates and persists a new {@link User} entity. The given username must 
+     * be unique for each created and existing user.
+     * @param username The name that the user uses to login to the application.
+     * @param password The character string that is used to identify the user during login. 
+     * @param firstName The first name of the user.
+     * @param lastName The last name of the user.
+     * @param roleName The {@link Role} of the user.
+     * @throws NoSuchRoleException If the specified role isn't found in the persistence unit.
+     * @throws UsernameTakenException If the specified username already exists in the persistence unit.
+     */
+    public void addUser(String username, String password, String firstName, String lastName, String roleName) throws NoSuchRoleException, UsernameTakenException{
+        Role role = roleController.findRoleWithName(roleName);
+        if(role == null){
+            throw new NoSuchRoleException("Role " + role + " doesn't exist.");
+        }
+        
+        try{
+            if(userController.findUserWithName(username) != null){
+                throw new UsernameTakenException("Username: " + username + " is taken.");
+            } 
+        }catch(NoResultException ex){
+            
+        }
+        userController.create(new User(username, password, firstName, lastName, role));
+    }
+    
+    public void modifyUser(User user) throws Exception{
+        userController.edit(user);
+    }
+    
+    public void removeUser(User user) throws NonexistentEntityException {
+        userController.destroy(user.getID());
+    }
+    
+    public void addUser(User user) throws NoSuchRoleException, UsernameTakenException{
+        addUser(user.getUsername(), user.getPassword(), user.getFirstName(), user.getLastName(), user.getRole().getName());
+    }
+    
+    public void addItem(String itemname, double weight, double price, String description) throws ItemnameTakenException{
+        itemController.create(new Item(itemname, weight, price, description));
+    }
+    
+    
+    public void addItem(Item item) throws ItemnameTakenException{
+        addItem(item.getItemname(), item.getWeight(), item.getPrice(), item.getDescription());
+    }
+    
     /**
      * Shows an popup window containing the given message and title. Used to 
      * convey important information to the user.
@@ -301,6 +361,33 @@ public class Main extends Application implements IApplication{
         alert.setContentText(message);
         alert.initOwner(scene.getWindow());
         alert.show();
+    }
+    
+    public User[] getUsers(Predicate<User> predicate){
+        List<User> matchedUsers = new ArrayList<>();
+        
+        for(User user : this.userController.findUserEntities()){
+            System.out.println("test user");
+            if(predicate.test(user)){
+                System.out.println("user matches");
+                matchedUsers.add(user);
+            }
+        }
+        
+        return matchedUsers.toArray(new User[matchedUsers.size()]);
+    }
+    
+    public Item[] getItems(Predicate<Item> predicate){
+        List<Item> matchedItems = new ArrayList<>();
+        for(Item item : this.itemController.findEntities()){
+            System.out.println("\ntest item " + item);
+            if(predicate.test(item)){
+                System.out.println("item matches");
+                matchedItems.add(item);
+            }
+        }
+        System.out.println("_______________________________________");
+        return matchedItems.toArray(new Item[matchedItems.size()]);
     }
 
     @Override
@@ -322,13 +409,13 @@ public class Main extends Application implements IApplication{
         try {
             ((JPAController<T>)controllerMap.get(t.getClass())).edit(t);
         } catch (Exception ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Main1.class.getName()).log(Level.SEVERE, null, ex);
         } 
     }
 
 
     @Override
-    public <T extends EntityClass<T>> Collection<T> getEntities(Class<? extends T> c, Predicate<T> predicate) throws EntityException {
+    public <T extends EntityClass<T>> Collection<T> getEntities(Predicate<T> predicate, Class<? extends T> c) throws EntityException {
         List<T> matchedEntities = new ArrayList<>();
         for(T entity : ((JPAController<T>)controllerMap.get(c)).findEntities()){
             System.out.println("\ntest item " + entity);
@@ -338,15 +425,6 @@ public class Main extends Application implements IApplication{
             }
         }
         return matchedEntities;
-    }
-    
-    public String[] getRoleNames(){
-        List<Role> roles = ((JPAController<Role>)controllerMap.get(Role.class)).findEntities();
-        String[] roleNames = new String[roles.size()];
-        for(int i=0; i<roles.size(); i++){
-            roleNames[i] = roles.get(i).getName();
-        }
-        return roleNames;
     }
 
 }

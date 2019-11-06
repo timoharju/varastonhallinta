@@ -1,7 +1,14 @@
 package varastonhallinta.domain;
 
 import java.io.Serializable;
+import java.util.Map;
+import java.util.HashMap;
 import javax.persistence.*;
+import java.util.Map;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -13,8 +20,17 @@ import javax.persistence.*;
     name="findUserWithName",
     query="SELECT u FROM User u WHERE u.username = :username"
 )
-public class User implements Serializable {
-   @Id @GeneratedValue
+public class User extends EntityClass<User> implements Serializable {
+    private static final int USERNAME_MIN_LENGTH = 3;
+    private static final int USERNAME_MAX_LENGTH = 20;
+    private static final int PASSWORD_MIN_LENGTH = 6;
+    private static final int PASSWORD_MAX_LENGTH = 30;
+    private static final int FIRST_NAME_MIN_LENGTH = 1;
+    private static final int FIRST_NAME_MAX_LENGTH = 30;
+    private static final int LAST_NAME_MIN_LENGTH = 1;
+    private static final int LAST_NAME_MAX_LENGTH = 30;
+    
+    @Id @GeneratedValue
    @Column(name = "id")
    private Integer id;
 
@@ -34,10 +50,20 @@ public class User implements Serializable {
    @JoinColumn(name = "role_id" , referencedColumnName = "id")
    private Role role;
    
+   private static final Map<Predicate<User>, String> map = new HashMap<>();
+   
+   static{
+       map.put(user -> User.validUsername(user.getUsername()), "username");
+       map.put(user -> User.validFirstName(user.getPassword()), "password");
+       map.put(user -> User.validLastName(user.getFirstName()), "firstname");
+       map.put(user -> User.validFirstName(user.getLastName()), "lastname");
+       map.put(user -> User.validLRole(user.getRole()), "role");
+   }
     /**
      *
      */
-    public User() {}
+    public User() {
+    }
    
     /**
      *
@@ -69,7 +95,8 @@ public class User implements Serializable {
      *
      * @return
      */
-    public int getId() {
+   @Override
+    public Integer getID() {
       return id;
    }
    
@@ -77,7 +104,8 @@ public class User implements Serializable {
      *
      * @param id
      */
-    public void setId( int id ) {
+    @Override
+    public void setID(Integer id ) {
       this.id = id;
    }
 
@@ -176,6 +204,41 @@ public class User implements Serializable {
         }
         return true;
     }
+    
+    public static boolean validUsername(String username){
+        String regex = "[A-Za-zåÅäÄöÖ0-9_\\-]{" + USERNAME_MIN_LENGTH + "," + USERNAME_MAX_LENGTH + "}";
+        return username != null && username.matches(regex);
+    }
+    
+    public static boolean validPassword(String password){
+        String regex = "[^\n]{" + PASSWORD_MIN_LENGTH + "," + PASSWORD_MAX_LENGTH + "}";
+        return password != null && password.matches(regex);
+    }
+    
+    public static boolean validFirstName(String firstName){
+        String regex = "[a-zåäö]{" + FIRST_NAME_MIN_LENGTH + "," + FIRST_NAME_MAX_LENGTH + "}";
+        return "".equals(firstName) || firstName.matches(regex);
+    }
+        
+    public static boolean validLastName(String lastName){
+        String regex = "[a-zåäö]{" + LAST_NAME_MIN_LENGTH + "," + LAST_NAME_MAX_LENGTH + "}";
+        return "".equals(lastName) || lastName.matches(regex);
+    }
+    
+    public static boolean validLRole(Role role){
+        try {
+            role.validate();
+        } catch (ValidationException ex) {
+            return false;
+        }
+        return true;
+    }
+    
+    @Override
+    public void validate() throws ValidationException{
+        this.testFields(map, this);
+    }
+
 }
 
 

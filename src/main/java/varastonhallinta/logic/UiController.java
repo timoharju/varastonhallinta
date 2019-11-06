@@ -74,7 +74,7 @@ public class UiController extends FXMLController {
      */
     @FXML
     void newFired(ActionEvent event) {
-        FXMLController.getActiveController().create();
+        FXMLController.getActiveController().handleCreate();
     }
 
     /**
@@ -84,7 +84,7 @@ public class UiController extends FXMLController {
      */
     @FXML
     void deleteFired(ActionEvent event) {
-        FXMLController.getActiveController().delete();
+        FXMLController.getActiveController().handleDelete();
     }
     
         /**
@@ -95,7 +95,7 @@ public class UiController extends FXMLController {
     @FXML
     void searchFired(ActionEvent event) {
         System.out.println("searchFired");
-        FXMLController.getActiveController().search();
+        FXMLController.getActiveController().handleSearch();
     }
     
         /**
@@ -106,13 +106,12 @@ public class UiController extends FXMLController {
      */
     @FXML
     void modifyFired(ActionEvent event) {
-        FXMLController.getActiveController().modify();
+        FXMLController.getActiveController().handleModify();
     }
     
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        super.initialize(location, resources);
         FXMLController.setCreate(create);
         FXMLController.setModify(modify);
         FXMLController.setSearch(search);

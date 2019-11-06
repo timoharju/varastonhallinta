@@ -6,17 +6,7 @@
 package varastonhallinta.logic;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.function.Predicate;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -24,11 +14,7 @@ import javafx.fxml.Initializable;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -39,20 +25,17 @@ import javafx.scene.layout.Priority;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.util.Callback;
-import javax.persistence.Column;
 import varastonhallinta.domain.Item;
 import varastonhallinta.domain.Role;
 import varastonhallinta.domain.User;
 import static varastonhallinta.logic.FXMLController.USERNAME_MIN_LENGTH;
-import varastonhallinta.ui.EntityDialog;
 import varastonhallinta.ui.InfoPopup;
 
 /**
  *
  * @author tanel
  */
-public class UserDialogController extends DialogController<User>{
+public class UserDialogController1 extends FXMLController{
     @FXML
     private TextField userIDField;
     
@@ -69,42 +52,15 @@ public class UserDialogController extends DialogController<User>{
     private TextField lastNameField;
     
     @FXML
-    private ComboBox<Role> roleComboBox;
+    private ComboBox<String> roleComboBox;
     
     @FXML
-    private GridPane createGrid;
-    
-    @FXML
-    private GridPane modifyGrid;
+    private GridPane grid;
     
     private InfoPopup usernamePopup;
     private InfoPopup passwordPopup;
     private InfoPopup firstNamePopup;
     private InfoPopup lastNamePopup;
-    
-    private Collection<Input<String>> inputs;
-    private EntityDialog<User> addUserDialog;
-    private EntityDialog<User> modifyUserDialog;
-    
-    
-    private class Validator{
-        Predicate<String> p;
-        Input<String> i;
-        Runnable r;
-        String failMessage;
-        
-        public void validate(){
-            try {
-                if(p.test(i.getInput())){
-                    r.run();
-                }else{
-                    application.showAlert(Alert.AlertType.ERROR, "Error", failMessage);
-                }
-            } catch (InputException ex) {
-                application.showAlert(Alert.AlertType.ERROR, "Error", failMessage);
-            }
-        }
-    }
     
     private void configureTooltips(){
         System.out.println("configureTooltips");
@@ -139,8 +95,32 @@ public class UserDialogController extends DialogController<User>{
         roleComboBox.getItems().addAll(options);
     }
 
+    /**
+     * @return the grid
+     */
+    public GridPane getGrid() {
+        System.out.println("getGrid " + grid);
+        return grid;
+    }
+
+    /**
+     * @param grid the grid to set
+     */
+    public void setGrid(GridPane grid) {
+        this.grid = grid;
+    }
+
     
-    @Override
+    public User getUser(){
+        String username = this.usernameField.getText();
+        String password = this.passwordField.getText();
+        String firstName = this.firstNameField.getText();
+        String lastName = this.lastNameField.getText();
+        String role = this.roleComboBox.getValue();
+            
+        return new User(username, password, firstName, lastName, new Role(role));
+    }
+    
     public void initFields(User user){
         usernameField.setText(user.getUsername());
         passwordField.setText(user.getPassword());
@@ -149,7 +129,6 @@ public class UserDialogController extends DialogController<User>{
         roleComboBox.setValue(user.getRole().getName());
     }
     
-    @Override
     public void clearFields(){
         usernameField.setText("");
         passwordField.setText("");
@@ -161,25 +140,6 @@ public class UserDialogController extends DialogController<User>{
     public void initialize(URL location, ResourceBundle resources) {
         configureRolesBox();
         configureTooltips();
-        configureDialogController(createGrid, modifyGrid, addUserDialog, modifyUserDialog);
     }
-
-    @Override
-    public User getEntity() {
-        String username = ""; 
-        String password = ""; 
-        String firstName = ""; 
-        String lastName = ""; 
-        Role role;
-        try{
-            username = Input.from(usernameField, String.class).getInput(); 
-            password = Input.from(passwordField, String.class).getInput(); 
-            firstName = Input.from(firstNameField, String.class).getInput(); 
-            lastName = Input.from(lastNameField, String.class).getInput(); 
-            role = Input.from(roleComboBox).getInput();
-        }catch(Exception e){
-            
-        }
-        return new User(username, password, firstName, lastName);
-    }
+    
 }
