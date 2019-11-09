@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package varastonhallinta.logic;
+package varastonhallinta.ui;
 
+import org.junit.platform.runner;
 /**
  *
  * @author tanel
  */
-public interface Deletable {
-    public boolean canDelete();
-    public void delete();
+public class TestRunner {
+    
 }

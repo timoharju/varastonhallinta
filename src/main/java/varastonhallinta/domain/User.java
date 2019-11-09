@@ -15,7 +15,9 @@ import java.util.logging.Logger;
  * @author tanel
  */
 @Entity(name = "User")
-@Table(name = "user")
+@Table(name = "user",
+    uniqueConstraints=
+        @UniqueConstraint(columnNames={"id", "username"}))
 @NamedQuery(
     name="findUserWithName",
     query="SELECT u FROM User u WHERE u.username = :username"
@@ -23,7 +25,7 @@ import java.util.logging.Logger;
 public class User extends EntityClass<User> implements Serializable {
     private static final int USERNAME_MIN_LENGTH = 3;
     private static final int USERNAME_MAX_LENGTH = 20;
-    private static final int PASSWORD_MIN_LENGTH = 6;
+    private static final int PASSWORD_MIN_LENGTH = 5;
     private static final int PASSWORD_MAX_LENGTH = 30;
     private static final int FIRST_NAME_MIN_LENGTH = 1;
     private static final int FIRST_NAME_MAX_LENGTH = 30;
@@ -54,7 +56,7 @@ public class User extends EntityClass<User> implements Serializable {
    
    static{
        map.put(user -> User.validUsername(user.getUsername()), "username");
-       map.put(user -> User.validFirstName(user.getPassword()), "password");
+       map.put(user -> User.validPassword(user.getPassword()), "password");
        map.put(user -> User.validLastName(user.getFirstName()), "firstname");
        map.put(user -> User.validFirstName(user.getLastName()), "lastname");
        map.put(user -> User.validLRole(user.getRole()), "role");
@@ -185,26 +187,6 @@ public class User extends EntityClass<User> implements Serializable {
         this.lastName = lastName;
     }
     
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof User)) {
-            return false;
-        }
-        User other = (User) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
-    }
-    
     public static boolean validUsername(String username){
         String regex = "[A-Za-zåÅäÄöÖ0-9_\\-]{" + USERNAME_MIN_LENGTH + "," + USERNAME_MAX_LENGTH + "}";
         return username != null && username.matches(regex);
@@ -239,6 +221,12 @@ public class User extends EntityClass<User> implements Serializable {
         this.testFields(map, this);
     }
 
+    @Override
+    public String toString(){
+        return "id: " + id + " username: " + username + " password: " + password + 
+                " firstName: " + firstName + " lastName: " + lastName + " role: " + role;
+    }
+                
 }
 
 

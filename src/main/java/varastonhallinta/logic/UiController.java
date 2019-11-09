@@ -106,7 +106,7 @@ public class UiController extends FXMLController {
      */
     @FXML
     void modifyFired(ActionEvent event) {
-        FXMLController.getActiveController().handleModify();
+        FXMLController.getActiveController().handleUpdate();
     }
     
 

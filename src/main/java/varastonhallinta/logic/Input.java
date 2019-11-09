@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javax.persistence.Tuple;
 
@@ -38,7 +39,6 @@ public interface Input<T>{
     public T getInput() throws InputException;
 
     public static <T> Input<T> from(TextField textField, Class<? extends T> c){
-        System.out.println("textField " + textField);
         return () -> converterFactory.getConverter(String.class, c).convert(textField.getText());
     }
     
@@ -46,6 +46,9 @@ public interface Input<T>{
         return () -> comboBox.getValue();
     }
 
+    public static <T> Input<T> from(TextArea textArea, Class<? extends T> c){
+        return () -> converterFactory.getConverter(String.class, c).convert(textArea.getText());
+    }
     
     public static  Input<Range> from(TextField textFieldMin, TextField textFieldMax){
         return () -> new Range(textFieldMin.getText(), textFieldMax.getText());

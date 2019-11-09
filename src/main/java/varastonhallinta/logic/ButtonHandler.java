@@ -11,7 +11,7 @@ package varastonhallinta.logic;
  */
 public interface ButtonHandler {
     public void handleSearch();
-    public void handleModify();
+    public void handleUpdate();
     public void handleCreate();
     public void handleDelete();
 }

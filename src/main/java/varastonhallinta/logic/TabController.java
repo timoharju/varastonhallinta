@@ -25,6 +25,8 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TableView;
 import varastonhallinta.domain.EntityClass;
 import varastonhallinta.domain.User;
+import varastonhallinta.domain.ValidationException;
+import varastonhallinta.logic.exceptions.NonexistentEntityException;
 import varastonhallinta.ui.EntityDialog;
 import varastonhallinta.ui.Main;
 import varastonhallinta.ui.exceptions.AddEntityException;
@@ -36,18 +38,17 @@ import varastonhallinta.ui.exceptions.EntityException;
  * @param <E>
  */
 public abstract class TabController <E extends EntityClass<E>> extends FXMLController implements ButtonController<E>, ButtonHandler{
-    private static TabController activeTabController; 
-    private Map<CheckBox, String> inputNameMap = new HashMap<>();
-    private Map<CheckBox, Input<String>> inputMap = new HashMap<>();
+    private Map<CheckBox, String> inputNameMap;
+    private Map<CheckBox, Input<String>> inputMap;
     private FilterFactory<E> filterFactory;
     private TableView<E> entityTable;
     private Class<? extends E> classObject;
     
-    private EntityDialog<E> addUserDialog;
-    private EntityDialog<E> modifyUserDialog;
+    private EntityDialog<E> createDialog;
+    private EntityDialog<E> updateDialog;
     //private GridPane userGrid;
-    private UserDialogController addUserController;
-    private UserDialogController modifyUserController;
+    private DialogController<E> createDialogController;
+    private DialogController<E> updateDialogController;
     
     
     protected abstract Object getContent();
@@ -58,14 +59,54 @@ public abstract class TabController <E extends EntityClass<E>> extends FXMLContr
     private String updateFail;
     private String removeSuccessfull;
     private String removeFail;
+
     
-    public TabController(String addSuccessfull, String addFail, String updateSuccessfull, String updateFail, String removeSuccessfull, String removeFail) {
+    private void configureDialogs(){
+//TODO: Make it so that we dont have to null the dialog result value.
+//Ex. By making it handle some wrapper class of the entity class that overrides 
+//the equals method to depend on all of the different fields of the entity class.
+//Ex2. By making the handleCreate and handleUpdate -methods use the showAndWait-method instead
+        createDialogController.setOnPositiveResult(() -> createDialogController.getEntity());
+        updateDialogController.setOnPositiveResult(() -> updateDialogController.updateEntity(entityTable.getSelectionModel().getSelectedItem()));
+        createDialog.resultProperty().addListener((
+        (ObservableValue<? extends E> observable, E oldValue, E newValue) -> {
+            if(newValue == null){
+                return;
+            }
+            System.out.println("\ncreateDialog NEW RESULT RECEIVED " + newValue + "\n");
+            this.create(newValue);
+            updateDialog.setResult(null);
+        }));
+        updateDialog.resultProperty().addListener(
+        (ObservableValue<? extends E> observable, E oldValue, E newValue) -> {
+            if(newValue == null){
+                return;
+            }
+            System.out.println("\nupdateDialog NEW RESULT RECEIVED " + newValue + "\n");
+            this.update(newValue);
+            updateTable();
+            updateDialog.setResult(null);
+        });
+    }
+    
+    protected void configureDialogController(TableView<E> entityTable, Class<? extends E> classObject, DialogController<E> createDialogController, DialogController<E> updateDialogController, FilterFactory<E> filterFactory, Map<CheckBox, String> inputNameMap, Map<CheckBox, Input<String>> inputMap, String addSuccessfull, String addFail, String updateSuccessfull, String updateFail, String removeSuccessfull, String removeFail){
+        this.entityTable = entityTable;
+        this.classObject = classObject;
+        this.createDialog = createDialogController.getDialog();
+        this.updateDialog = updateDialogController.getDialog();
+        this.createDialogController = createDialogController;
+        this.updateDialogController = updateDialogController;
         this.addSuccessfull = addSuccessfull;
         this.addFail = addFail;
         this.updateSuccessfull = updateSuccessfull;
         this.updateFail = updateFail;
         this.removeSuccessfull = removeSuccessfull;
         this.removeFail = removeFail;
+        this.filterFactory = filterFactory;
+        this.inputNameMap = inputNameMap;
+        this.inputMap = inputMap;
+        this.configureDialogs();
+        TabPaneController.onTabSet(getContent(), this::configureTab);
     }
 
     private void configureTab(Tab tab){
@@ -86,13 +127,7 @@ public abstract class TabController <E extends EntityClass<E>> extends FXMLContr
             }
         });
     }
-    
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        TabPaneController.onTabSet(getContent(), this::configureTab);
-    }
-    
-    public abstract boolean validate(E e) throws AddEntityException;
+
     
     @Override
     public void search() {
@@ -176,16 +211,15 @@ public abstract class TabController <E extends EntityClass<E>> extends FXMLContr
     }
 
     @Override
-    public void handleModify() {
-        modifyUserController.initFields(entityTable.getSelectionModel().getSelectedItem());
-        this.modifyUserDialog.show();
+    public void handleUpdate() {
+        updateDialogController.initFields(entityTable.getSelectionModel().getSelectedItem());
+        this.updateDialog.show();
     }
 
     @Override
     public void handleCreate() {
-        addUserController.clearFields();
-        this.addUserDialog.show();
-        updateTable();
+        createDialogController.clearFields();
+        this.createDialog.show();
     }
 
     @Override
@@ -199,10 +233,12 @@ public abstract class TabController <E extends EntityClass<E>> extends FXMLContr
     @Override
     public final void create(E e){
         try{
-            validate(e);
             application.addEntity(e);
         }catch(AddEntityException ex){
             application.showAlert(Alert.AlertType.ERROR, "Virhe", addFail);
+            return;
+        } catch (ValidationException ex) {
+            application.showAlert(Alert.AlertType.ERROR, "Virhe", "Viallinen " + ex.getInvalidFieldName());
             return;
         }
         application.showAlert(Alert.AlertType.CONFIRMATION, "Käsky onnistunut", addSuccessfull);
@@ -212,51 +248,28 @@ public abstract class TabController <E extends EntityClass<E>> extends FXMLContr
     public final void delete(E e){
         try{
             application.removeEntity(e);
-        } catch (EntityException ex) {
+        } catch (NonexistentEntityException ex) {
             application.showAlert(Alert.AlertType.ERROR, "Virhe", removeFail);
             return;
         }
 
-        application.showAlert(Alert.AlertType.CONFIRMATION, "Käsky onnistunut ", removeSuccessfull);
+        application.showAlert(Alert.AlertType.CONFIRMATION, "Käsky onnistunut", removeSuccessfull);
     }
     
     @Override
     public void update(E e){
+        System.out.println("TAB CONTROLLER UPDATE " + e);
         try{
-            validate(e);
             application.update(e);
-        }catch (EntityException ex) {
+        } catch (NonexistentEntityException ex) {
             application.showAlert(Alert.AlertType.ERROR, "Virhe", updateFail);
             return;
-        } catch (AddEntityException ex) {
-                Logger.getLogger(TabController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ValidationException ex) {
+            Logger.getLogger(TabController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        application.showAlert(Alert.AlertType.CONFIRMATION, "Käsky onnistunut ", updateFail);
-    }
-  
-    
-    @Override
-    public boolean canSearch() {
-        return false;
+        application.showAlert(Alert.AlertType.CONFIRMATION, "Käsky onnistunut", updateSuccessfull);
     }
 
-    
-    @Override
-    public boolean canUpdate() {
-        return false;
-    }
-
-    @Override
-    public boolean canCreate() {
-        return false;
-    }
-
-    @Override
-    public boolean canDelete() {
-        return false;
-    }
-    
-    
     public void updateSearchButtonState() {
         boolean disable = true;
         if (getSearch() != null) {

@@ -125,54 +125,20 @@ public class UserTabController extends TabController<User>{
 //                updateModifyButtonState();
 //                updateNewButtonState();
     };
-    
-    
-    private EntityDialog<User> addUserDialog;
-    private EntityDialog<User> modifyUserDialog;
+
     //private GridPane userGrid;
-    private UserDialogController addUserController;
-    private UserDialogController modifyUserController;
+    private UserDialogController createUserController;
+    private UserDialogController updateUserController;
     private static final String ADD_USER_GRID_LOCATION = "/fxml/UserGrid.fxml";
 
-    public UserTabController() {
-        super("Lisäys onnistui", "Lisäys epäonnistui", "Muokkaus onnistui", "Muokkaus epäonnistui", "Poisto onnistui", "Poisto epäonnistui");
-    }
     
     public void configureDialogs(){
-        System.out.println(this + " configureAddUserDialog");
-        System.out.println("content " + content);
         try {
-            addUserController = (UserDialogController) application.loadController(ADD_USER_GRID_LOCATION);
-            modifyUserController = (UserDialogController) application.loadController(ADD_USER_GRID_LOCATION);
+            createUserController = (UserDialogController) application.loadController(ADD_USER_GRID_LOCATION);
+            updateUserController = (UserDialogController) application.loadController(ADD_USER_GRID_LOCATION);
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        Callback<ButtonType, User> resultConverter = (dialogButton) -> {
-            ButtonBar.ButtonData data = dialogButton == null ? null : dialogButton.getButtonData();
-            if(data == null || data != ButtonBar.ButtonData.OK_DONE){
-                return null;
-            }
-            return addUserController.getUser();
-        };
-        
-        addUserDialog = new EntityDialog<User>(addUserController.getGrid(), resultConverter);
-        addUserDialog.resultProperty().addListener(
-            (ObservableValue<? extends User> observable, User oldValue, User newValue) -> {
-                if(newValue != null){
-                    super.create(newValue);
-                    updateTable();
-                }
-        });
-        
-        modifyUserDialog = new EntityDialog<User>(modifyUserController.getGrid(), resultConverter);
-        addUserDialog.resultProperty().addListener(
-            (ObservableValue<? extends User> observable, User oldValue, User newValue) -> {
-                if(newValue != null){
-                    super.update(newValue);
-                    updateTable();
-                }
-        });
     }
 
     private void configureFindUserTable(){
@@ -200,21 +166,12 @@ public class UserTabController extends TabController<User>{
         roleComboBox.getItems().addAll(options);
     }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        configureDialogs();
-        configureRolesBox();
-        configureFilters();
-        configureFindUserTable();
-        super.initialize(location, resources);
-    }
-    
     private Map<CheckBox, String> inputNameMap = new HashMap<>();
     private Map<CheckBox, Input<String>> inputMap = new HashMap<>();
     private FilterFactory<User> filterFactory;
     
     private void configureFilters(){
-        filterFactory = new FilterFactory<User>();
+        filterFactory = new FilterFactory<>();
         inputMap.put(idBox, Input.from(userIDField));
         inputMap.put(usernameBox, Input.from(usernameField));
         inputMap.put(firstNameBox, Input.from(firstNameField));
@@ -243,158 +200,14 @@ public class UserTabController extends TabController<User>{
     protected Object getContent() {
         return content;
     }
-    
-    @Override
-    public boolean canSearch() {
-        for(CheckBox box : inputMap.keySet()){
-            try {
-                if(box.isSelected() && !inputMap.get(box).getInput().isEmpty()){
-                    return true;
-                }
-            } catch (InputException ex) {
-                Logger.getLogger(UserTabController.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        return false;
-    }
-    
-    @Override
-    public boolean canUpdate() {
-        return !this.userTable.getSelectionModel().getSelectedCells().isEmpty();
-    }
 
     @Override
-    public boolean canCreate() {
-        return true;
-    }
-
-    @Override
-    public boolean canDelete() {
-        return !this.userTable.getSelectionModel().getSelectedCells().isEmpty();
-    }
-
-    private void filterUsers(){
-        Set<User> items = new HashSet<>();
-        for(CheckBox box : inputMap.keySet()){
-            if(box.isSelected()){
-                Collection<User> temp;
-                try {
-                   temp = application.getEntities(User.class, filterFactory.getFilter(box));
-                } catch (InputException ex) {
-                    ex.setObject(getInputName(box));
-                    application.showAlert(Alert.AlertType.ERROR, "Error", ex.getHRMessage());
-                    return;
-                } catch (EntityException ex) {
-                    application.showAlert(Alert.AlertType.ERROR, "Error", "");
-                    return;
-                }
-                if(items.isEmpty()){
-                    items.addAll(temp);
-                }else{
-                    items.retainAll(temp);
-                }
-                if(items.isEmpty()){
-                    return;
-                }
-            }
-        }
-        this.userTable.getItems().addAll(items);
-    }
-    
-    private String getInputName(CheckBox checkBox){
-        return inputNameMap.get(checkBox);
-    }
-    
-    private void updateTable(){
-        try {
-            userTable.getItems().setAll(application.<User>getEntities(User.class, user -> userTable.getItems().contains(user)));
-        } catch (EntityException ex) {
-            Logger.getLogger(UserTabController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    @Override
-    public void handleSearch() {
-        userTable.getItems().clear();
-        filterUsers();
-    }
-
-    @Override
-    public void handleModify() {
-        modifyUserController.initFields(userTable.getSelectionModel().getSelectedItem());
-        this.modifyUserDialog.show();
-    }
-
-    @Override
-    public void handleCreate() {
-        addUserController.clearFields();
-        this.addUserDialog.show();
-        updateTable();
-    }
-
-    @Override
-    public void handleDelete() {
-        userTable.getSelectionModel().getSelectedItems().forEach(user -> {
-            delete(user);
-        });
-        updateTable();
-    }
-
-    @Override
-    public boolean validate(User user) throws AddEntityException{
-        String username = user.getUsername();
-        String password = user.getPassword(); 
-        String firstName = user.getFirstName();
-        String lastName = user.getLastName();
-        String role = user.getRole().getName();
-        
-        if(!validUsername(username)){
-            throw new AddEntityException("Viallinen käyttäjänimi!");
-        }
-        
-        if(!validPassword(password)){
-            throw new AddEntityException("Viallinen salasana!");
-        }
-        
-        if(!firstName.isEmpty()){
-            firstName = firstName.toLowerCase();
-            if(!validFirstName(firstName)){
-                throw new AddEntityException("Viallinen etunimi!");
-            }
-        }
-        
-        if(!lastName.isEmpty()){
-            lastName = lastName.toLowerCase();
-            if(!validLastName(lastName)){
-                throw new AddEntityException("Viallinen sukunimi!");
-            }
-        }
-        
-        if(role == null || "".equals(role)){
-            throw new AddEntityException("Valitse rooli!");
-        }
-        
-        return true;
-    }  
-    
-    private boolean validUsername(String username){
-        String regex = "[A-Za-zåÅäÄöÖ0-9_\\-]{" + USERNAME_MIN_LENGTH + "," + USERNAME_MAX_LENGTH + "}";
-        return username != null && username.matches(regex);
-    }
-    
-    private boolean validPassword(String password){
-        String regex = "[^\n]{" + PASSWORD_MIN_LENGTH + "," + PASSWORD_MAX_LENGTH + "}";
-        return password != null && password.matches(regex);
-    }
-    
-    private boolean validFirstName(String firstName){
-        String regex = "[a-zåäö]{" + FIRST_NAME_MIN_LENGTH + "," + FIRST_NAME_MAX_LENGTH + "}";
-        return firstName == null || firstName.matches(regex);
-    }
-        
-    private boolean validLastName(String lastName){
-        String regex = "[a-zåäö]{" + LAST_NAME_MIN_LENGTH + "," + LAST_NAME_MAX_LENGTH + "}";
-        return lastName == null || lastName.matches(regex);
+    public void initialize(URL location, ResourceBundle resources) {
+        configureDialogs();
+        configureRolesBox();
+        configureFilters();
+        configureFindUserTable();
+        super.configureDialogController(userTable, User.class, createUserController, updateUserController, filterFactory, inputNameMap, inputMap, "Lisäys onnistui", "Lisäys epäonnistui", "Muokkaus onnistui", "Muokkaus epäonnistui", "Poisto onnistui", "Poisto epäonnistui");
     }
 
 }

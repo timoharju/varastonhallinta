@@ -45,21 +45,22 @@ public abstract class EntityClass<T>{
 
     @Override
     public int hashCode() {
+
         return Objects.hashCode(getID());
     }
 
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (this.getClass().isInstance(object)) {
+        if (!this.getClass().isInstance(object)) {
             return false;
         }
         EntityClass<T> other = this.getClass().cast(object);
-        this.getClass().cast(object);
         if ((this.getID() == null && other.getID() != null) || (this.getID() != null && !this.getID().equals(other.getID()))) {
             return false;
         }
         return true;
     }
     
+
 }

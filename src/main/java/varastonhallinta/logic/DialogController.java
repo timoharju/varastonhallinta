@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.value.ChangeListener;
@@ -49,71 +50,47 @@ import varastonhallinta.ui.Main;
  * @author tanel
  */
 public abstract class DialogController<E extends EntityClass<E>> extends FXMLController{
-    private GridPane createGrid;
-    private GridPane modifyGrid;
-    
-    private EntityDialog<E> addUserDialog;
-    private EntityDialog<E> modifyUserDialog;
-    
-    private ChangeListener<? super E> createChangeListener;
-    private ChangeListener<? super E> modifyChangeListener;
-    private Collection<Input<?>> inputs = new ArrayList<>();
+
+    /**
+     * @return the dialog
+     */
+    public EntityDialog<E> getDialog() {
+        return dialog;
+    }
+
+    /**
+     * @param dialog the dialog to set
+     */
+    public void setDialog(EntityDialog<E> dialog) {
+        this.dialog = dialog;
+    }
+
+    private EntityDialog<E> dialog;
+    private Supplier<E> onPositiveResult;
     
     public abstract void initFields(E e);
     public abstract void clearFields();
+    public abstract E getEntity();
+    public abstract E updateEntity(E e);
     
-    public void configureDialogs(){  
+    public void setOnPositiveResult(Supplier<E> r){
+        this.onPositiveResult = r;
+    }
+    
+    public Supplier<E> getOnPositiveResult(){
+        return onPositiveResult;
+    }
+    
+    protected void configureDialogController(GridPane grid){  
         Callback<ButtonType, E> resultConverter = (dialogButton) -> {
             ButtonBar.ButtonData data = dialogButton == null ? null : dialogButton.getButtonData();
             if(data == null || data != ButtonBar.ButtonData.OK_DONE){
                 return null;
             }
-            return getEntity();
+            System.out.println("onPositiveResult.get()");
+            return onPositiveResult.get();
         };
         
-        addUserDialog = new EntityDialog<E>(createGrid, resultConverter);
-        modifyUserDialog = new EntityDialog<E>(modifyGrid, resultConverter);
-    }
-    
-    public abstract E getEntity();
-    
-    public void configureDialogController(Collection<Input<?>> inputs, GridPane createGrid, GridPane modifyGrid, EntityDialog<E> addUserDialog, EntityDialog<E> modifyUserDialog){
-        this.inputs = inputs;
-        this.createGrid = createGrid;
-        this.modifyGrid = modifyGrid;
-        this.addUserDialog = addUserDialog;
-        this.modifyUserDialog = modifyUserDialog;
-        
-        configureDialogs();
-    }
-
-    /**
-     * @return the createChangeListener
-     */
-    public ChangeListener<? super E> getCreateChangeListener() {
-        return createChangeListener;
-    }
-
-    /**
-     * @param createChangeListener the createChangeListener to set
-     */
-    public void setCreateChangeListener(ChangeListener<? super E> createChangeListener) {
-        this.createChangeListener = createChangeListener;
-        addUserDialog.resultProperty().addListener(getCreateChangeListener());
-    }
-
-    /**
-     * @return the modifyChangeListener
-     */
-    public ChangeListener<? super E> getModifyChangeListener() {
-        return modifyChangeListener;
-    }
-
-    /**
-     * @param modifyChangeListener the modifyChangeListener to set
-     */
-    public void setModifyChangeListener(ChangeListener<? super E> modifyChangeListener) {
-        this.modifyChangeListener = modifyChangeListener;
-        modifyUserDialog.resultProperty().addListener(getModifyChangeListener());
+        setDialog(new EntityDialog<>(grid, resultConverter));
     }
 }

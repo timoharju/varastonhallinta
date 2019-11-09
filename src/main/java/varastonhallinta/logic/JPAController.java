@@ -14,9 +14,7 @@ import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import varastonhallinta.domain.EntityClass;
-import varastonhallinta.domain.Item;
 import varastonhallinta.domain.ValidationException;
-import varastonhallinta.domain.Validator;
 import varastonhallinta.logic.exceptions.NonexistentEntityException;
 
 /**
@@ -48,6 +46,7 @@ public abstract class JPAController<E extends EntityClass<E>> implements Seriali
      * @throws varastonhallinta.domain.ValidationException
      */
     public void create(E entity) throws ValidationException {
+        System.out.println("CREATE " + entity);
         EntityManager em = null;
         try {
             entity.validate();
@@ -55,6 +54,7 @@ public abstract class JPAController<E extends EntityClass<E>> implements Seriali
             em.getTransaction().begin();
             em.persist(entity);
             em.getTransaction().commit();
+            System.out.println("CREATE SUCCESSFULL " + entity);
         } finally {
             if (em != null) {
                 em.close();
@@ -69,6 +69,7 @@ public abstract class JPAController<E extends EntityClass<E>> implements Seriali
      * @throws Exception
      */
     public void edit(E entity) throws NonexistentEntityException, ValidationException {
+        System.out.println("EDIT " + entity);
         EntityManager em = null;
         try {
             entity.validate();
@@ -76,6 +77,7 @@ public abstract class JPAController<E extends EntityClass<E>> implements Seriali
             em.getTransaction().begin();
             entity = em.merge(entity);
             em.getTransaction().commit();
+            System.out.println("EDIT SUCCESSFULL " + entity);
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {

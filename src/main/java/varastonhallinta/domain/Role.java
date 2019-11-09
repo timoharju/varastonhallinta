@@ -85,34 +85,19 @@ public class Role extends EntityClass<Role> implements Serializable{
         this.name = username;
     }
     
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof User)) {
-            return false;
-        }
-        Role other = (Role) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
-    }
-    
     public static boolean validRoleName(String roleName){
-        String regex = "[a-zåäö]{" + ROLE_NAME_MIN_LENGTH + "," + ROLE_NAME_MAX_LENGTH + "}";
+        String regex = "[a-zåäöA-ZÅÄÖ]{" + ROLE_NAME_MIN_LENGTH + "," + ROLE_NAME_MAX_LENGTH + "}";
         return roleName != null && roleName.matches(regex);
     }
 
     @Override
     public void validate() throws ValidationException {
         this.testFields(map, this);
+    }
+    
+        @Override
+    public String toString(){
+        return "id: " + id + " name: " + name;
     }
 }
 

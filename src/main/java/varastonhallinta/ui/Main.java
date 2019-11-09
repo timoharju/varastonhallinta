@@ -49,6 +49,7 @@ import varastonhallinta.logic.RoleJpaController;
 import varastonhallinta.logic.UiController;
 import varastonhallinta.logic.UserJpaController;
 import varastonhallinta.domain.User;
+import varastonhallinta.domain.ValidationException;
 import varastonhallinta.logic.FXMLController;
 import varastonhallinta.logic.ItemJpaController;
 import varastonhallinta.logic.JPAController;
@@ -120,11 +121,15 @@ public class Main extends Application implements IApplication{
             controllerMap.put(Item.class, itemController);
             controllerMap.put(User.class, userController);
             controllerMap.put(Role.class, roleController);
-            addEntity(new Item("kamera", 0.4, 400, "asdd"));
-            addEntity(new Item("Monster Energy Ultra", 0.5, 1.5, "asd"));
-            addEntity(new Item("Samsung UE55RU7172 55\" Smart 4K Ultra HD LED", 17.3, 450, "asd"));
+            addEntity(new Item("kamera", 0.4, 400, "description"));
+            addEntity(new Item("Monster Energy Ultra", 0.5, 1.5, "description"));
+            addEntity(new Item("Samsung UE55RU7172 55\" Smart 4K Ultra HD LED", 17.3, 450, "description"));
         } catch (AddEntityException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ValidationException ex) {
+            System.out.println("ex.getInvalidFieldName() " + ex.getInvalidFieldName());
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, ex.getInvalidFieldName(), ex);
+            
         }
     }
     
@@ -133,16 +138,16 @@ public class Main extends Application implements IApplication{
             super(classObject, emf);
         }
     }
+    
+    {
+        application = this;
+    }
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         Application.launch(Main.class, (java.lang.String[])null);
-    }
-
-    public Main() {
-
     }
 
     @Override
@@ -186,7 +191,7 @@ public class Main extends Application implements IApplication{
     public boolean userLogin(String username, String password){
         if (authenticator.validate(username, password)) {
             loggedUser = userController.findUserWithName(username);
-            gotoUI(loggedUser.getRole().getName() + "UI");
+            gotoUI("Admin" + "UI");
             return true;
         } else {
             return false;
@@ -304,29 +309,25 @@ public class Main extends Application implements IApplication{
     }
 
     @Override
-    public <T extends EntityClass<T>> void addEntity(T t) throws AddEntityException {
+    public <T extends EntityClass<T>> void addEntity(T t) throws AddEntityException, ValidationException {
         ((JPAController<T>)controllerMap.get(t.getClass())).create(t);
     }
 
     @Override
-    public <T extends EntityClass<T>> void removeEntity(T t) throws EntityException {
-        try {
-            controllerMap.get(t.getClass()).destroy(t.getID());
-        } catch (NonexistentEntityException ex) {
-            throw new EntityException(ex.getMessage());
-        }
+    public <T extends EntityClass<T>> void removeEntity(T t) throws NonexistentEntityException {
+        controllerMap.get(t.getClass()).destroy(t.getID());
     }
 
     @Override
-    public <T extends EntityClass<T>> void update(T t) throws EntityException {
-        try {
-            ((JPAController<T>)controllerMap.get(t.getClass())).edit(t);
-        } catch (Exception ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        } 
+    public <T extends EntityClass<T>> void update(T t) throws NonexistentEntityException, ValidationException{
+        ((JPAController<T>)controllerMap.get(t.getClass())).edit(t);
     }
 
-
+    public <T extends EntityClass<T>> Collection<T> getEntities(Class<? extends T> c){
+        List<T> matchedEntities = ((JPAController<T>)controllerMap.get(c)).findEntities();
+        return matchedEntities;
+    }
+    
     @Override
     public <T extends EntityClass<T>> Collection<T> getEntities(Class<? extends T> c, Predicate<T> predicate) throws EntityException {
         List<T> matchedEntities = new ArrayList<>();

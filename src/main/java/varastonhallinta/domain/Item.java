@@ -17,13 +17,13 @@ import javax.persistence.*;
     query="SELECT i FROM Item i WHERE i.itemname = :itemname"
 )
 public class Item extends EntityClass<Item> implements Serializable{
-    private static final int ITEM_NAME_MIN_LENGTH = 3;
-    private static final int ITEM_NAME_MAX_LENGTH = 20;
+    private static final int ITEM_NAME_MIN_LENGTH = 1;
+    private static final int ITEM_NAME_MAX_LENGTH = 60;
     private static final double MIN_WEIGHT = 0;
     private static final double MAX_WEIGHT = Double.MAX_VALUE;
     private static final double MIN_PRICE = 0;
     private static final double MAX_PRICE = Double.MAX_VALUE;
-    private static final int DESCRIPTION_MIN_LENGTH = 1;
+    private static final int DESCRIPTION_MIN_LENGTH = 0;
     private static final int DESCRIPTION_MAX_LENGTH = 30;
     
     @Column(name = "itenmane")
@@ -124,10 +124,6 @@ public class Item extends EntityClass<Item> implements Serializable{
     }
 
     
-    @Override
-    public String toString(){
-        return id + " " + itemname + " " + weight + " " + price + " " + description;
-    }
 
     @Override
     public Integer getID() {
@@ -140,20 +136,20 @@ public class Item extends EntityClass<Item> implements Serializable{
     }
 
     public static boolean validItemname(String itemname){
-        String regex = "[A-Za-zåÅäÄöÖ0-9_\\-]{" + ITEM_NAME_MIN_LENGTH + "," + ITEM_NAME_MAX_LENGTH + "}";
-        return itemname != null && itemname.matches(regex);
+        String regex = "[\\S]+([ ]?[\\S]+)+";
+        return itemname != null && itemname.matches(regex) && itemname.length() >= ITEM_NAME_MIN_LENGTH && itemname.length() <= ITEM_NAME_MAX_LENGTH;
     }
     
     public static boolean validItemWeight(double weight){
-        return weight >= MIN_WEIGHT && weight >= MAX_WEIGHT;
+        return weight >= MIN_WEIGHT && weight <= MAX_WEIGHT;
     }
     
     public static boolean validItemPrice(double price){
-        return price >= MIN_PRICE && price >= MAX_PRICE;
+        return price >= MIN_PRICE && price <= MAX_PRICE;
     }
         
     public static boolean validItemDescription(String description){
-        String regex = "[.]{" + DESCRIPTION_MIN_LENGTH + "," + DESCRIPTION_MAX_LENGTH + "}";
+        String regex = "[\\x{" + Integer.toHexString(Character.MIN_CODE_POINT) + "}-\\x{" + (Integer.toHexString(Character.MAX_CODE_POINT)) + "}]{" + DESCRIPTION_MIN_LENGTH + "," + DESCRIPTION_MAX_LENGTH + "}";
         return description != null && description.matches(regex);
     }
 
@@ -162,4 +158,9 @@ public class Item extends EntityClass<Item> implements Serializable{
         this.testFields(map, this);
     }
 
+    @Override
+    public String toString(){
+        return "id: " + id + " itemname: " + itemname + " weight: " + weight + 
+                " price: " + price + " description: " + description;
+    }
 }
