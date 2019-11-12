@@ -28,30 +28,36 @@ import varastonhallinta.domain.User;
 import varastonhallinta.logic.RoleJpaController;
 import varastonhallinta.logic.UserJpaController;
 
+/**
+ *
+ * @author tanel
+ */
 public class Authenticator {
-    private static EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("Varastonhallinta_hib-0.0.1-SNAPSHOT.jar");
-    private static UserJpaController userController = new UserJpaController(entityManagerFactory);
-    private static RoleJpaController roleController = new RoleJpaController(entityManagerFactory);
 
-    static{
-        Role admin = new Role("Admin");
-        Role user = new Role("User");
-        Role editor = new Role("Editor");
-        roleController.create(admin);
-        roleController.create(user);
-        roleController.create(editor);
-        userController.create(new User("admin", "admin", admin));
-        userController.create(new User("user", "user", user));
-        userController.create(new User("editor", "editor", editor));
+    private UserJpaController userController;
+    
+    /**
+     *
+     * @param userController
+     */
+    public Authenticator(UserJpaController userController){
+        this.userController = userController;
     }
     
-    public static boolean validate(String username, String password){
+    /**
+     *
+     * @param username
+     * @param password
+     * @return
+     */
+    public boolean validate(String username, String password){
         System.out.println("validate " + username);
+        User user;
         try{
-            User user = userController.findUserWithName(username);
+            user = userController.findUserWithName(username);
         }catch(NoResultException e){
-            return false;
+            user = null;
         }
-        return true;
+        return user != null && user.getPassword().equals(password);
     }
 }

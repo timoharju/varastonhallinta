@@ -22,15 +22,27 @@ import varastonhallinta.domain.exceptions.NonexistentEntityException;
  */
 public class RoleJpaController implements Serializable {
 
+    /**
+     *
+     * @param emf
+     */
     public RoleJpaController(EntityManagerFactory emf) {
         this.emf = emf;
     }
     private EntityManagerFactory emf = null;
 
+    /**
+     *
+     * @return
+     */
     public EntityManager getEntityManager() {
         return emf.createEntityManager();
     }
 
+    /**
+     *
+     * @param role
+     */
     public void create(Role role) {
         EntityManager em = null;
         try {
@@ -45,6 +57,12 @@ public class RoleJpaController implements Serializable {
         }
     }
 
+    /**
+     *
+     * @param role
+     * @throws NonexistentEntityException
+     * @throws Exception
+     */
     public void edit(Role role) throws NonexistentEntityException, Exception {
         EntityManager em = null;
         try {
@@ -55,7 +73,7 @@ public class RoleJpaController implements Serializable {
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
-                int id = role.getId();
+                int id = role.getID();
                 if (findRole(id) == null) {
                     throw new NonexistentEntityException("The role with id " + id + " no longer exists.");
                 }
@@ -68,6 +86,11 @@ public class RoleJpaController implements Serializable {
         }
     }
 
+    /**
+     *
+     * @param id
+     * @throws NonexistentEntityException
+     */
     public void destroy(int id) throws NonexistentEntityException {
         EntityManager em = null;
         try {
@@ -76,7 +99,7 @@ public class RoleJpaController implements Serializable {
             Role role;
             try {
                 role = em.getReference(Role.class, id);
-                role.getId();
+                role.getID();
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The role with id " + id + " no longer exists.", enfe);
             }
@@ -89,10 +112,20 @@ public class RoleJpaController implements Serializable {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public List<Role> findRoleEntities() {
         return findRoleEntities(true, -1, -1);
     }
 
+    /**
+     *
+     * @param maxResults
+     * @param firstResult
+     * @return
+     */
     public List<Role> findRoleEntities(int maxResults, int firstResult) {
         return findRoleEntities(false, maxResults, firstResult);
     }
@@ -113,6 +146,11 @@ public class RoleJpaController implements Serializable {
         }
     }
 
+    /**
+     *
+     * @param id
+     * @return
+     */
     public Role findRole(int id) {
         EntityManager em = getEntityManager();
         try {
@@ -122,6 +160,11 @@ public class RoleJpaController implements Serializable {
         }
     }
     
+    /**
+     *
+     * @param name
+     * @return
+     */
     public Role findRoleWithName(String name) {
         EntityManager em = getEntityManager();
         try {
@@ -131,6 +174,10 @@ public class RoleJpaController implements Serializable {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public int getRoleCount() {
         EntityManager em = getEntityManager();
         try {

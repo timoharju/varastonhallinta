@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
 
     Licensed to the Apache Software Foundation (ASF) under one
@@ -28,7 +29,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="500.0" styleClass="background" xmlns:fx="http://javafx.com/fxml" fx:controller="varastonhallinta.logic.LoginController">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="500.0" styleClass="background" stylesheets="@Login.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="varastonhallinta.logic.LoginController">
   <children>
     <AnchorPane id="anchorPane2" prefHeight="300.0" prefWidth="500.0" styleClass="top-segment" AnchorPane.bottomAnchor="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <children>
@@ -42,7 +43,7 @@
                 <PasswordField id="passwordField1" fx:id="password" layoutY="157.0" prefWidth="415.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" />
                 <ImageView id="app-login-logo" layoutY="-12.0">
                   <image>
-                    <Image url="@LoginLogo.png" preserveRatio="true" smooth="true" />
+                    <Image url="@../images/LoginLogo.png" />
                   </image>
                 </ImageView>
               </children>
@@ -58,7 +59,4 @@
       </children>
     </HBox>
   </children>
-  <stylesheets>
-    <URL value="@Login.css" />
-  </stylesheets>
 </AnchorPane>
