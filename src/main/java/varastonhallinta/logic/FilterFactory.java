@@ -12,7 +12,9 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import javafx.scene.control.CheckBox;
 import varastonhallinta.domain.Item;
+import varastonhallinta.logic.exceptions.InputException;
 import varastonhallinta.logic.exceptions.NonexistentEntityException;
+import varastonhallinta.util.InvalidRangeException;
 
 /**
  *

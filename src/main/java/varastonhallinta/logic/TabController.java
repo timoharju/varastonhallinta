@@ -26,6 +26,7 @@ import javafx.scene.control.TableView;
 import varastonhallinta.domain.EntityClass;
 import varastonhallinta.domain.User;
 import varastonhallinta.domain.ValidationException;
+import varastonhallinta.logic.exceptions.InputException;
 import varastonhallinta.logic.exceptions.NonexistentEntityException;
 import varastonhallinta.ui.EntityDialog;
 import varastonhallinta.ui.Main;

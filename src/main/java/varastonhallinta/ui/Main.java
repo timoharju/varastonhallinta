@@ -60,6 +60,7 @@ import varastonhallinta.ui.exceptions.EntityException;
 import varastonhallinta.ui.exceptions.ItemnameTakenException;
 import varastonhallinta.ui.exceptions.NoSuchRoleException;
 import varastonhallinta.ui.exceptions.UsernameTakenException;
+import varastonhallinta.util.Range;
 
 /**
  * Main Application. This class handles navigation and user session.
@@ -350,4 +351,18 @@ public class Main extends Application implements IApplication{
         return roleNames;
     }
 
+    
+    private static class EntityTester{
+        
+    }
+    
+    private static class EntityField{
+        private boolean isMandatory;
+        private Range range;
+        private char[] invalidChars;
+        
+        public EntityField(){
+            
+        }
+    }
 }

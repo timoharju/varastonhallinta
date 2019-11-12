@@ -14,6 +14,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import varastonhallinta.domain.Item;
+import varastonhallinta.logic.exceptions.InputException;
 
 /**
  *

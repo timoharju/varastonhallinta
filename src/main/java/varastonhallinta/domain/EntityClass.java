@@ -14,6 +14,7 @@ import java.util.function.Supplier;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import varastonhallinta.util.Range;
 
 /**
  *
@@ -62,5 +63,15 @@ public abstract class EntityClass<T>{
         return true;
     }
     
+    
+    private static class Validator{
+        private Range range;
+        private String allowedChars;
+        
+        public Validator(){
+            
+        }
+        
+    }
 
 }
