@@ -37,7 +37,7 @@ public class Item extends EntityClass implements Serializable{
     @Id
     @GeneratedValue
     @Column(name = "id")
-    public Integer id;
+    public int id;
 
     private static final Map<Predicate<Item>, String> map = new HashMap<>();
    
@@ -82,16 +82,16 @@ public class Item extends EntityClass implements Serializable{
      * @return
      */
     public double getWeight() {
-		return weight;
-	}
+        return weight;
+    }
 
     /**
      *
      * @param weight
      */
     public void setWeight(double weight) {
-		this.weight = weight;
-	}
+        this.weight = weight;
+    }
 
     /**
      * @return the price
@@ -122,11 +122,9 @@ public class Item extends EntityClass implements Serializable{
     public void setDescription(String description) {
         this.description = description;
     }
-
     
-
     @Override
-    public Integer getID() {
+    public int getID() {
         return id;
     }
 

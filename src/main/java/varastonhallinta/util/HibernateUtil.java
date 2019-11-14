@@ -1,5 +1,6 @@
 package varastonhallinta.util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +12,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
+import varastonhallinta.domain.EntityClass;
 import varastonhallinta.domain.Item;
 import varastonhallinta.domain.Role;
 
@@ -100,6 +102,18 @@ public class HibernateUtil {
             main.addEntity(new Item("kamera", 0.4, 400, "description"));
             main.addEntity(new Item("Monster Energy Ultra", 0.5, 1.5, "description"));
             main.addEntity(new Item("Samsung UE55RU7172 55\" Smart 4K Ultra HD LED", 17.3, 450, "description"));
+
+//        for(int i=0; i<3; i++){
+//            Role validRole = new Role("test" + i);
+//            Item validItem = new Item("test" + i, i, i, "description" + i);
+//            User validUser = new User("test" + i, "test" + i, validRole);
+//            
+//            main.addEntity(validRole);
+//            main.addEntity(validUser);
+//            main.addEntity(validItem);
+//        }
+        
+        
         }catch (ValidationException ex) {
             System.out.println("ex.getInvalidFieldName() " + ex.getInvalidFieldName());
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, ex.getInvalidFieldName(), ex);

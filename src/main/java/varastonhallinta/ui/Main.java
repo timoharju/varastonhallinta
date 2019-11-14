@@ -91,13 +91,13 @@ public class Main extends Application{
     private final String LOGIN_PAGE = "/fxml/login.fxml";
     private final String PROFILE_PAGE = "/profile.fxml";
     
-    private EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("varastonhallinta");
+    private EntityManagerFactory entityManagerFactory;
     
 //    private UserJpaController userController = new UserJpaController(entityManagerFactory);
 //    private ItemJpaController itemController = new ItemJpaController(entityManagerFactory);
 //    private RoleJpaController roleController = new RoleJpaController(entityManagerFactory);
-    private UserJpaController userController = new UserJpaController(getEntityManagerFactory());
-    private Authenticator authenticator = new Authenticator(new UserJpaController(getEntityManagerFactory()));
+    private UserJpaController userController;
+    private Authenticator authenticator;
     private Scene scene;
     private static Main application;
     private Map<Class<?>, JPAController<?>> controllerMap = new HashMap<>();
@@ -124,9 +124,11 @@ public class Main extends Application{
         Application.launch(Main.class, (java.lang.String[])null);
     }
     
-    private Main(){
+    public Main(){
         application = this;
         HibernateUtil.initDB(this);
+        userController = new UserJpaController(entityManagerFactory);
+        authenticator = new Authenticator(new UserJpaController(entityManagerFactory));
     }
 
     @Override
@@ -146,7 +148,8 @@ public class Main extends Application{
 
     public static Main getApp(){
         if(application == null){
-            application = new Main();
+            //application = new Main();
+            Application.launch(Main.class, (java.lang.String[])null);
         }
         return application;
     }
@@ -287,10 +290,12 @@ public class Main extends Application{
     }
 
     public <T extends EntityClass> void addEntity(T t) throws ValidationException, AddEntityException {
+        System.out.println();
         ((JPAController<T>)controllerMap.get(t.getClass())).create(t);
     }
 
     public <T extends EntityClass> void removeEntity(T t) throws NonexistentEntityException {
+        System.out.println("Main removeEntity " + t + " t.getClass() " + t.getClass());
         controllerMap.get(t.getClass()).destroy(t.getID());
     }
 
@@ -304,6 +309,7 @@ public class Main extends Application{
     }
     
     public <T extends EntityClass> Collection<T> getEntities(Class<? extends T> c, Predicate<T> predicate){
+        System.out.println("");
         List<T> matchedEntities = new ArrayList<>();
         for(T entity : ((JPAController<T>)controllerMap.get(c)).findEntities()){
             System.out.println("\ntest item " + entity);

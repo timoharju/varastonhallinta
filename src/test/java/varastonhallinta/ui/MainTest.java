@@ -29,6 +29,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
+import javax.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -61,6 +62,45 @@ public class MainTest {
     public MainTest() {
     }
     
+//    private static final List<User> users = new ArrayList<>();
+//    private static final List<Item> items = new ArrayList<>();
+//    private static final List<Role> roles = new ArrayList<>();
+    
+    final String[] firstNames = new String[] {"jorma", "seppo", "kalle"};
+    final String[] lastNames = new String[] {"jormala", "seppola", "kallela"};
+    private static final List<User> users = new ArrayList<>();
+    private static final List<Item> items = new ArrayList<>();
+    private static final List<Role> roles = new ArrayList<>();
+    
+    private List<Role> getTestRoles(){
+        return new ArrayList<>(roles);
+    }
+    
+    private List<User> getTestUsers(){
+        return new ArrayList<>(users);
+    }
+        
+    private List<Item> getTestItems(){
+        return new ArrayList<>(items);
+    }
+    
+    private List<EntityClass> getTestEntities(){
+        final int ENTITY_AMOUNT = 3;
+        final List<EntityClass> entities = new ArrayList<>();
+        final String[] firstNames = new String[] {"jorma", "seppo", "kalle"};
+        final String[] lastNames = new String[] {"jormala", "seppola", "kallela"};
+   
+        for(int i=0; i<ENTITY_AMOUNT; i++){
+            final Role validRole = new Role("role" + i);
+            final Item validItem = new Item("item" + i, i, i, "description" + i);
+            final User validUser = new User("user" + i, "password" + i, firstNames[i], lastNames[i], validRole);
+            
+            entities.addAll(Arrays.asList(validRole, validUser, validItem));
+        }
+        
+        return entities;
+    }
+    
     @BeforeAll
     public static void setUpClass() {
     }
@@ -69,13 +109,17 @@ public class MainTest {
     public static void tearDownClass() {
     }
     
+    private static int testCounter = 1;
+    
     @BeforeEach
     public void setUp() {
         varastonhallinta.util.HibernateUtil.initDB(Main.getApp());
+        System.out.println("Test number: " + testCounter++ + " Start");
     }
     
     @AfterEach
     public void tearDown() {
+        System.out.println("______________________________________________________________");
     }
 
 
@@ -223,25 +267,28 @@ public class MainTest {
      * Test of loadContent method, of class Main.
      */
     @Test
+    @Disabled("JavaFX dependent method")
     public void testLoadContent(){
         System.out.println("loadContent");
         Main instance = Main.getApp();
         Node result;
+        
         try {
             for(String name : getFxmlFileNames()){
+                System.out.println("getFxmlFileNames " + name);
                 result = instance.loadContent(name);
                 Assertions.assertNotNull(result);
             }
         } catch (Exception ex) {
-            fail();
+            Logger.getLogger(MainTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail(ex);
         }
     }
     
     private Collection<String> getFxmlFileNames() throws IOException{
         Path path = FileSystems.getDefault().getPath("src", "main", "resources", "fxml");
-        System.out.println("path.toAbsolutePath() " + path.toAbsolutePath());
         List<String> names = new ArrayList<>();
-        Files.newDirectoryStream(path.toAbsolutePath()).iterator().forEachRemaining(p -> names.add(p.getFileName().toUri().getPath()));
+        Files.newDirectoryStream(path.toAbsolutePath()).iterator().forEachRemaining(p -> names.add("/fxml/" + p.getFileName().toString()));
         return names;
     }
 
@@ -249,6 +296,7 @@ public class MainTest {
      * Test of loadController method, of class Main.
      */
     @Test
+    @Disabled("JavaFX dependent method")
     public void testLoadController() throws Exception {
         System.out.println("loadController");
         Main instance = Main.getApp();
@@ -259,7 +307,8 @@ public class MainTest {
                 Assertions.assertNotNull(result);
             }
         } catch (Exception ex) {
-            fail();
+            Logger.getLogger(MainTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail(ex);
         }
     }
 
@@ -288,10 +337,6 @@ public class MainTest {
     public void testAddEntity(){
         System.out.println("addEntity");
         Main instance = Main.getApp();
-                
-        Role validRole = new Role("test");
-        Item validItem = new Item("test", 1, 100, "description");
-        User validUser = new User("test", "test", validRole);
         
         Role invalidRole = new Role("te     eserg st");
         Item invalidItem = new Item("test", 1, -500, "description");
@@ -301,18 +346,18 @@ public class MainTest {
         Assertions.assertFalse(usersInDB.isEmpty());
         
         for(User user : usersInDB){
-            Assertions.assertThrows(AddUserException.class, () -> {
+            Assertions.assertThrows(AddEntityException.class, () -> {
                 try {
                     instance.addEntity(user);
                 } catch (ValidationException ex) {
                     Logger.getLogger(MainTest.class.getName()).log(Level.SEVERE, null, ex);
-                    fail();
+                    fail(ex);
                 }
             });
         }
     
 
-        List<EntityClass> validEntities = Arrays.asList(validRole, validItem, validUser);
+        List<EntityClass> validEntities = getTestEntities();
         List<EntityClass> invalidEntities = Arrays.asList(invalidRole, invalidItem, invalidUser);
  
         for(EntityClass entity : validEntities){
@@ -322,7 +367,7 @@ public class MainTest {
                 Assertions.assertEquals(1, result.size());
                 Assertions.assertEquals(result.iterator().next(), entity);
             } catch (ValidationException | AddEntityException ex) {
-                fail();
+                fail(ex);
             }
         }
 
@@ -369,9 +414,10 @@ public class MainTest {
         List<EntityClass> entitiesNotInDB = Arrays.asList(role, item, user);
         
         for(EntityClass entity : entitiesNotInDB){
+            System.out.println("Entity " + entity);
             Collection<EntityClass> entities = instance.getEntities(entity.getClass(), e -> e.equals(entity));
             assertTrue(entities.isEmpty());
-
+            
             Assertions.assertThrows(NonexistentEntityException.class, () -> instance.removeEntity(entity));
         }
     }
@@ -381,25 +427,31 @@ public class MainTest {
      */
     @Test
     public void testUpdate(){
-        System.out.println("addEntity");
+        System.out.println("updateEntity");
         Main instance = Main.getApp();
-                
-        Role validRole = new Role("test");
-        Item validItem = new Item("test", 1, 100, "description");
-        User validUser = new User("test", "test", validRole);
        
-        List<EntityClass> newEntities = Arrays.asList(validRole, validItem, validUser);
+        List<EntityClass> newEntities = getTestEntities();
+        System.out.println("newEntities " + newEntities);
+        newEntities.forEach(e -> {
+            if(e instanceof Role){
+                try {
+                    instance.addEntity(e);
+                } catch (ValidationException | AddEntityException ex) {
+                    Logger.getLogger(MainTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
 
         newEntities.forEach((newEntity) -> {
             Class<? extends EntityClass> entityClass = newEntity.getClass();
             EntityClass oldEntity = instance.getEntities(entityClass).iterator().next();
-            assertNotNull(oldEntity);
             
             updateEntity(oldEntity, newEntity);
+            
             try{
                 instance.update(oldEntity);
             }catch(ValidationException | NonexistentEntityException ex){
-                fail();
+                fail(ex);
             }
             
             checkEntityEquality(instance.getEntities(entityClass).iterator().next(), newEntity);
@@ -508,15 +560,13 @@ public class MainTest {
                 if(allEntities.contains(e)){
                     allEntities.remove(e);
                 }else{
-                    fail();
+                    fail("");
                 }
             });
         });
     }
+
     
-    private void test(EntityClass f){
-        
-    }
     /**
      * Test of getEntities method, of class Main.
      */
@@ -540,11 +590,13 @@ public class MainTest {
                         instance.addEntity(t);
                     } catch (ValidationException | AddEntityException ex) {
                         Logger.getLogger(MainTest.class.getName()).log(Level.SEVERE, null, ex);
+                        fail(ex);
                     }
                 });
                 
                 entities.forEach(t -> {
                     functions.forEach(function -> {
+                        System.out.println("function.apply(t) " + function.apply(t));
                         Collection<EntityClass> result = instance.getEntities(t.getClass(), e -> function.apply(t).equals(function.apply((T)e)));
                         assertEquals(1, result.size());
                         assertEquals(t, result.iterator().next());
@@ -558,11 +610,14 @@ public class MainTest {
         List<User> users = new ArrayList<>();
         List<Item> items = new ArrayList<>();
         List<Role> roles = new ArrayList<>();
+        
+        String[] firstNames = new String[] {"jorma", "seppo", "kalle"};
+        String[] lastNames = new String[] {"jormala", "seppola", "kallela"};
    
         for(int i=0; i<ENTITY_AMOUNT; i++){
-            Role validRole = new Role("test" + i);
-            Item validItem = new Item("test" + i, i, i, "description" + i);
-            User validUser = new User("test" + i, "test" + i, validRole);
+            Role validRole = new Role("role" + i);
+            Item validItem = new Item("item" + i, i, i, "description" + i);
+            User validUser = new User("user" + i, "password" + i, firstNames[i], lastNames[i], validRole);
             
             users.add(validUser);
             items.add(validItem);
@@ -592,9 +647,9 @@ public class MainTest {
         );
 
         List<Helper<?>> helpers = Arrays.asList(
+                new Helper<>(roleFunctions, roles),
                 new Helper<>(userFunctions, users),
-                new Helper<>(itemFunctions, items),
-                new Helper<>(roleFunctions, roles));
+                new Helper<>(itemFunctions, items));
 
         helpers.forEach(helper -> helper.runTests());
     }

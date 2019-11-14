@@ -5,15 +5,9 @@
  */
 package varastonhallinta.domain;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import varastonhallinta.util.Range;
 
 /**
@@ -36,7 +30,7 @@ public abstract class EntityClass{
      *
      * @return
      */
-    public abstract Integer getID();
+    public abstract int getID();
 
     /**
      *
@@ -47,7 +41,6 @@ public abstract class EntityClass{
 
     @Override
     public int hashCode() {
-
         return Objects.hashCode(getID());
     }
 
@@ -58,7 +51,10 @@ public abstract class EntityClass{
             return false;
         }
         EntityClass other = this.getClass().cast(object);
-        if ((this.getID() == null && other.getID() != null) || (this.getID() != null && !this.getID().equals(other.getID()))) {
+//        if ((this.getID() == null && other.getID() != null) || (this.getID() != null && !this.getID().equals(other.getID()))) {
+//            return false;
+//        }
+        if(this.getID() != other.getID()){
             return false;
         }
         return true;

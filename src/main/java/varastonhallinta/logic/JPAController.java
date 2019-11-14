@@ -105,6 +105,7 @@ public abstract class JPAController<E extends EntityClass> implements Serializab
      * @throws NonexistentEntityException
      */
     public void destroy(int id) throws NonexistentEntityException {
+        System.out.println("DESTROY id:" + id);
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -112,11 +113,11 @@ public abstract class JPAController<E extends EntityClass> implements Serializab
             E entity;
             try {
                 entity = em.getReference(classObject, id);
+                em.remove(entity);
+                em.getTransaction().commit();
             } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The entity with id " + id + " no longer exists.", enfe);
+                throw new NonexistentEntityException("The entity with id " + id + " no longer exists.");
             }
-            em.remove(entity);
-            em.getTransaction().commit();
         } finally {
             if (em != null) {
                 em.close();
