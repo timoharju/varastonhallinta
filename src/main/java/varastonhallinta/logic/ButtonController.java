@@ -11,7 +11,7 @@ import varastonhallinta.domain.EntityClass;
  *
  * @author tanel
  */
-public interface ButtonController <E extends EntityClass<E>>{
+public interface ButtonController <E extends EntityClass>{
     public boolean canSearch();
     public boolean canUpdate();
     public boolean canCreate();

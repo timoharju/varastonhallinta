@@ -20,17 +20,18 @@ import varastonhallinta.util.Range;
  *
  * @author tanel
  */
-public abstract class EntityClass<T>{
+public abstract class EntityClass{
 
     public abstract void validate() throws ValidationException;
     
-    protected final void testFields(Map<Predicate<T>, String> validationMap, T t) throws ValidationException{
+    protected final <T extends EntityClass> void testFields(Map<Predicate<T>, String> validationMap, T entity) throws ValidationException{
         for(Predicate<T> test : validationMap.keySet()){
-            if(!test.test(t)){
+            if(!test.test(entity)){
                 throw new ValidationException(validationMap.get(test));
             }
         }
     }
+
     /**
      *
      * @return
@@ -56,7 +57,7 @@ public abstract class EntityClass<T>{
         if (!this.getClass().isInstance(object)) {
             return false;
         }
-        EntityClass<T> other = this.getClass().cast(object);
+        EntityClass other = this.getClass().cast(object);
         if ((this.getID() == null && other.getID() != null) || (this.getID() != null && !this.getID().equals(other.getID()))) {
             return false;
         }

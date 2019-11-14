@@ -49,7 +49,7 @@ import varastonhallinta.ui.Main;
  *
  * @author tanel
  */
-public abstract class DialogController<E extends EntityClass<E>> extends FXMLController{
+public abstract class DialogController<E extends EntityClass> extends FXMLController{
 
     /**
      * @return the dialog
