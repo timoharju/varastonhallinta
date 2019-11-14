@@ -17,8 +17,8 @@ import varastonhallinta.ui.exceptions.*;
  * @author tanel
  */
 public interface IApplication {
-    public <T extends EntityClass<T>> void addEntity(T t) throws AddEntityException, ValidationException;
-    public <T extends EntityClass<T>> void removeEntity(T t) throws NonexistentEntityException;
-    public <T extends EntityClass<T>> void update(T t) throws NonexistentEntityException, ValidationException;
-    public <T extends EntityClass<T>> Collection<T> getEntities(Class<? extends T> c, Predicate<T> predicate) throws EntityException;
+    public <T extends EntityClass> void addEntity(T t) throws AddEntityException, ValidationException;
+    public <T extends EntityClass> void removeEntity(T t) throws NonexistentEntityException;
+    public <T extends EntityClass> void update(T t) throws NonexistentEntityException, ValidationException;
+    public <T extends EntityClass> Collection<T> getEntities(Class<? extends T> c, Predicate<T> predicate) throws EntityException;
 }

@@ -23,9 +23,11 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableView;
+import javax.persistence.EntityExistsException;
 import varastonhallinta.domain.EntityClass;
 import varastonhallinta.domain.User;
 import varastonhallinta.domain.ValidationException;
+import varastonhallinta.logic.exceptions.InputException;
 import varastonhallinta.logic.exceptions.NonexistentEntityException;
 import varastonhallinta.ui.EntityDialog;
 import varastonhallinta.ui.Main;
@@ -37,7 +39,7 @@ import varastonhallinta.ui.exceptions.EntityException;
  * @author tanel
  * @param <E>
  */
-public abstract class TabController <E extends EntityClass<E>> extends FXMLController implements ButtonController<E>, ButtonHandler{
+public abstract class TabController <E extends EntityClass> extends FXMLController implements ButtonController<E>, ButtonHandler{
     private Map<CheckBox, String> inputNameMap;
     private Map<CheckBox, Input<String>> inputMap;
     private FilterFactory<E> filterFactory;
@@ -175,9 +177,6 @@ public abstract class TabController <E extends EntityClass<E>> extends FXMLContr
                     ex.setObject(getInputName(box));
                     application.showAlert(Alert.AlertType.ERROR, "Error", ex.getHRMessage());
                     return;
-                } catch (EntityException ex) {
-                    application.showAlert(Alert.AlertType.ERROR, "Error", "");
-                    return;
                 }
                 if(items.isEmpty()){
                     items.addAll(temp);
@@ -197,11 +196,7 @@ public abstract class TabController <E extends EntityClass<E>> extends FXMLContr
     }
     
     private void updateTable(){
-        try {
-            entityTable.getItems().setAll(application.getEntities(classObject, user -> entityTable.getItems().contains(user)));
-        } catch (EntityException ex) {
-            Logger.getLogger(UserTabController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        entityTable.getItems().setAll(application.getEntities(classObject, entity -> entityTable.getItems().contains(entity)));
     }
 
     @Override

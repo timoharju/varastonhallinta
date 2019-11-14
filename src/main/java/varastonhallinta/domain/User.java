@@ -22,7 +22,7 @@ import java.util.logging.Logger;
     name="findUserWithName",
     query="SELECT u FROM User u WHERE u.username = :username"
 )
-public class User extends EntityClass<User> implements Serializable {
+public class User extends EntityClass implements Serializable {
     private static final int USERNAME_MIN_LENGTH = 3;
     private static final int USERNAME_MAX_LENGTH = 20;
     private static final int PASSWORD_MIN_LENGTH = 5;

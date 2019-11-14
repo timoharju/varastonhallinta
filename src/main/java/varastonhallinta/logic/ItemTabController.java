@@ -37,6 +37,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import varastonhallinta.domain.Item;
 import varastonhallinta.ui.Main;
+import varastonhallinta.util.Range;
 /**
  * Login Controller.
  */

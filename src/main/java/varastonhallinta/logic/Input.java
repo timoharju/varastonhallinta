@@ -14,6 +14,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javax.persistence.Tuple;
+import varastonhallinta.logic.exceptions.InputException;
+import varastonhallinta.util.Range;
 
 /**
  *
@@ -129,97 +131,4 @@ class converterFactory{
     }
 }
 
-class Range{
-    double min;
-    double max;
-    
-    public Range(double min, double max) throws InvalidRangeException{
-        this.min = min;
-        this.max = max;
-        
-        if(min > max){
-            InvalidRangeException ex = new InvalidRangeException("min greater than max");
-            throw ex;
-        }
-    }
-    
-    public Range(String minString, String maxString) throws InvalidRangeException{
-        this(Double.parseDouble(minString), Double.parseDouble(maxString));
-    }
-    
-    public boolean isInRange(double n){
-        return n >= min && n <= max;
-    }
-}
 
-class InvalidRangeException extends InputException{
-        /**
-     *
-     * @param message
-     * @param cause
-     */
-    public InvalidRangeException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    /**
-     *
-     * @param message
-     */
-    public InvalidRangeException(String message) {
-        super(message);
-    }
-}
-
-class InputException extends Exception{
-    private String verb = "";
-    private String object = "";
-    /**
-     *
-     * @param message
-     * @param cause
-     */
-    public InputException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    /**
-     *
-     * @param message
-     */
-    public InputException(String message) {
-        super(message);
-    }
-    
-    public String getHRMessage(){
-        return verb + " " + object;
-    }
-
-    /**
-     * @return the verb
-     */
-    public String getVerb() {
-        return verb;
-    }
-
-    /**
-     * @param verb the verb to set
-     */
-    public void setVerb(String verb) {
-        this.verb = verb;
-    }
-
-    /**
-     * @return the object
-     */
-    public String getObject() {
-        return object;
-    }
-
-    /**
-     * @param object the object to set
-     */
-    public void setObject(String object) {
-        this.object = object;
-    }
-}

@@ -60,11 +60,28 @@ import varastonhallinta.ui.exceptions.EntityException;
 import varastonhallinta.ui.exceptions.ItemnameTakenException;
 import varastonhallinta.ui.exceptions.NoSuchRoleException;
 import varastonhallinta.ui.exceptions.UsernameTakenException;
+import varastonhallinta.util.HibernateUtil;
+import varastonhallinta.util.Range;
 
 /**
  * Main Application. This class handles navigation and user session.
  */
-public class Main extends Application implements IApplication{
+public class Main extends Application{
+
+    /**
+     * @return the entityManagerFactory
+     */
+    public EntityManagerFactory getEntityManagerFactory() {
+        return entityManagerFactory;
+    }
+
+    /**
+     * @param entityManagerFactory the entityManagerFactory to set
+     */
+    public void setEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
+        this.entityManagerFactory = entityManagerFactory;
+        configureControllers(entityManagerFactory);
+    }
 
     private Stage stage;
     private User loggedUser;
@@ -75,72 +92,29 @@ public class Main extends Application implements IApplication{
     private final String PROFILE_PAGE = "/profile.fxml";
     
     private EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("varastonhallinta");
+    
 //    private UserJpaController userController = new UserJpaController(entityManagerFactory);
 //    private ItemJpaController itemController = new ItemJpaController(entityManagerFactory);
 //    private RoleJpaController roleController = new RoleJpaController(entityManagerFactory);
-    private UserJpaController userController = new UserJpaController(entityManagerFactory);
-    private Authenticator authenticator = new Authenticator(new UserJpaController(entityManagerFactory));
+    private UserJpaController userController = new UserJpaController(getEntityManagerFactory());
+    private Authenticator authenticator = new Authenticator(new UserJpaController(getEntityManagerFactory()));
     private Scene scene;
     private static Main application;
     private Map<Class<?>, JPAController<?>> controllerMap = new HashMap<>();
-
-    
-    {
-        try {
-            JPAController userController = new JPAControllerImpl(User.class, entityManagerFactory);
-            JPAController itemController = new JPAControllerImpl(Item.class, entityManagerFactory);
-            JPAController roleController = new JPAControllerImpl(Role.class, entityManagerFactory);
-            
-            Role admin = new Role("Admin");
-            Role vm = new Role("Varastomies");
-            Role tp = new Role("TuotePäällikkö");
-            Role as = new Role("Asiakas");
-            roleController.create(admin);
-            roleController.create(vm);
-            roleController.create(tp);
-            roleController.create(as);
-            userController.create(new varastonhallinta.domain.User("admin", "admin", admin));
-            userController.create(new varastonhallinta.domain.User("varastomies", "varastomies", vm));
-            userController.create(new varastonhallinta.domain.User("tuotePäällikkö", "tuotePäällikkö", tp));
-            userController.create(new varastonhallinta.domain.User("asiakas", "asiakas", as));
-            
-            String description1 = "Nikonin harrastajarunko hyödyntää tiedonsiirrossa uutta SnapBridge-teknologiaa, "
-                    + "jonka avulla yhteys mobiililaitteeseen säilyy jatkuvasti vaikka kamera sammutetaan. Kuvien siirto "
-                    + "kamerasta hoituu tarvittaessa koko ajan taustalla ja halutessaan kuvakansion voi mobiililaitteella "
-                    + "synkronoida pilveen, jolloin web-kokoiset kuvat saa jaettua täysin automaattisesti ja lähes viipeettä "
-                    + "vaikka toiselle puolelle maailmaa.";
-            
-            String description2 = "\"Uusi, vähemmän makea ja kevyempi Monster Energy Ultra on nollakalorinen, \"\n" +
-"                    + \"mutta täyttä Monster Energyä. Unleash the Ultra Beast!";
-            
-            String description3 = "Samsung UE55RU7172 / UE55RU7179 / UE55RU7170 on "
-                    + "Ultra HD -resoluutioinen televisio, jossa on HDR10 ja HLG -tuki.\n" +
-"55-tuumaisessa televisiossa on teräväpiirtokanavia tukevat digivirittimet DVB-T2, DVB-C HD ja DVB-S2. Siinä on myös CI+-liitäntä "
-                    + "maksu-tv-kanavia varten ja voit kiinnittää sen seinälle VESA-standardin mukaisella telineellä.";
-                    
-            controllerMap.put(Item.class, itemController);
-            controllerMap.put(User.class, userController);
-            controllerMap.put(Role.class, roleController);
-            addEntity(new Item("kamera", 0.4, 400, "description"));
-            addEntity(new Item("Monster Energy Ultra", 0.5, 1.5, "description"));
-            addEntity(new Item("Samsung UE55RU7172 55\" Smart 4K Ultra HD LED", 17.3, 450, "description"));
-        } catch (AddEntityException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ValidationException ex) {
-            System.out.println("ex.getInvalidFieldName() " + ex.getInvalidFieldName());
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, ex.getInvalidFieldName(), ex);
-            
-        }
+ 
+    private void configureControllers(EntityManagerFactory em){
+        JPAController userController = new JPAControllerImpl(User.class, em);
+        JPAController itemController = new JPAControllerImpl(Item.class, em);
+        JPAController roleController = new JPAControllerImpl(Role.class, em);
+        controllerMap.put(Item.class, itemController);
+        controllerMap.put(User.class, userController);
+        controllerMap.put(Role.class, roleController);
     }
     
-    private static class JPAControllerImpl<E extends EntityClass<E>> extends JPAController<E> {
+    private static class JPAControllerImpl<E extends EntityClass> extends JPAController<E> {
         public JPAControllerImpl(Class<? extends E> classObject, EntityManagerFactory emf) {
             super(classObject, emf);
         }
-    }
-    
-    {
-        application = this;
     }
 
     /**
@@ -148,6 +122,11 @@ public class Main extends Application implements IApplication{
      */
     public static void main(String[] args) {
         Application.launch(Main.class, (java.lang.String[])null);
+    }
+    
+    private Main(){
+        application = this;
+        HibernateUtil.initDB(this);
     }
 
     @Override
@@ -169,7 +148,6 @@ public class Main extends Application implements IApplication{
         if(application == null){
             application = new Main();
         }
-        
         return application;
     }
     
@@ -308,28 +286,24 @@ public class Main extends Application implements IApplication{
         alert.show();
     }
 
-    @Override
-    public <T extends EntityClass<T>> void addEntity(T t) throws AddEntityException, ValidationException {
+    public <T extends EntityClass> void addEntity(T t) throws ValidationException, AddEntityException {
         ((JPAController<T>)controllerMap.get(t.getClass())).create(t);
     }
 
-    @Override
-    public <T extends EntityClass<T>> void removeEntity(T t) throws NonexistentEntityException {
+    public <T extends EntityClass> void removeEntity(T t) throws NonexistentEntityException {
         controllerMap.get(t.getClass()).destroy(t.getID());
     }
 
-    @Override
-    public <T extends EntityClass<T>> void update(T t) throws NonexistentEntityException, ValidationException{
+    public <T extends EntityClass> void update(T t) throws NonexistentEntityException, ValidationException{
         ((JPAController<T>)controllerMap.get(t.getClass())).edit(t);
     }
 
-    public <T extends EntityClass<T>> Collection<T> getEntities(Class<? extends T> c){
+    public <T extends EntityClass> Collection<T> getEntities(Class<? extends T> c){
         List<T> matchedEntities = ((JPAController<T>)controllerMap.get(c)).findEntities();
         return matchedEntities;
     }
     
-    @Override
-    public <T extends EntityClass<T>> Collection<T> getEntities(Class<? extends T> c, Predicate<T> predicate) throws EntityException {
+    public <T extends EntityClass> Collection<T> getEntities(Class<? extends T> c, Predicate<T> predicate){
         List<T> matchedEntities = new ArrayList<>();
         for(T entity : ((JPAController<T>)controllerMap.get(c)).findEntities()){
             System.out.println("\ntest item " + entity);
@@ -350,4 +324,18 @@ public class Main extends Application implements IApplication{
         return roleNames;
     }
 
+    
+    private static class EntityTester{
+        
+    }
+    
+    private static class EntityField{
+        private boolean isMandatory;
+        private Range range;
+        private char[] invalidChars;
+        
+        public EntityField(){
+            
+        }
+    }
 }

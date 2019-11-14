@@ -21,7 +21,7 @@ import javax.persistence.Table;
     name="getRoleWithName",
     query="SELECT r FROM Role r WHERE r.name = :roleName"
 )
-public class Role extends EntityClass<Role> implements Serializable{
+public class Role extends EntityClass implements Serializable{
     private static final int ROLE_NAME_MIN_LENGTH = 3;
     private static final int ROLE_NAME_MAX_LENGTH = 20;
     

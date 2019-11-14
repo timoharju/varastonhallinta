@@ -16,13 +16,14 @@ import javax.persistence.criteria.Root;
 import varastonhallinta.domain.EntityClass;
 import varastonhallinta.domain.ValidationException;
 import varastonhallinta.logic.exceptions.NonexistentEntityException;
+import varastonhallinta.ui.exceptions.AddEntityException;
 
 /**
  *
  * @author tanel
  * @param <E>
  */
-public abstract class JPAController<E extends EntityClass<E>> implements Serializable {
+public abstract class JPAController<E extends EntityClass> implements Serializable {
     
     protected EntityManagerFactory emf = null;
     private Class<? extends E> classObject;
@@ -45,17 +46,21 @@ public abstract class JPAController<E extends EntityClass<E>> implements Seriali
      * @param entity
      * @throws varastonhallinta.domain.ValidationException
      */
-    public void create(E entity) throws ValidationException {
+    public void create(E entity) throws ValidationException, AddEntityException {
         System.out.println("CREATE " + entity);
         EntityManager em = null;
+        entity.validate();
+        
         try {
-            entity.validate();
             em = getEntityManager();
             em.getTransaction().begin();
             em.persist(entity);
             em.getTransaction().commit();
             System.out.println("CREATE SUCCESSFULL " + entity);
-        } finally {
+        }catch(Exception e){
+            throw new AddEntityException(e.getMessage());
+        } 
+        finally {
             if (em != null) {
                 em.close();
             }
