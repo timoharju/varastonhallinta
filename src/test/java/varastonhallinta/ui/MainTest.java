@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -65,44 +66,54 @@ public class MainTest {
 //    private static final List<User> users = new ArrayList<>();
 //    private static final List<Item> items = new ArrayList<>();
 //    private static final List<Role> roles = new ArrayList<>();
+
+    final static String[] firstNames = new String[] {"jorma", "seppo", "kalle"};
+    final static String[] lastNames = new String[] {"jormala", "seppola", "kallela"};
+    final static int ENTITY_AMOUNT = Math.min(firstNames.length, lastNames.length);
+    private static final User[] users = new User[ENTITY_AMOUNT];
+    private static final Item[] items = new Item[ENTITY_AMOUNT];
+    private static final Role[] roles = new Role[ENTITY_AMOUNT];
+    //private static final List<EntityClass> entities = new ArrayList<>();
     
-    final String[] firstNames = new String[] {"jorma", "seppo", "kalle"};
-    final String[] lastNames = new String[] {"jormala", "seppola", "kallela"};
-    private static final List<User> users = new ArrayList<>();
-    private static final List<Item> items = new ArrayList<>();
-    private static final List<Role> roles = new ArrayList<>();
-    
-    private List<Role> getTestRoles(){
-        return new ArrayList<>(roles);
+    private Role[] getTestRoles(){
+        Role[] copy = new Role[ENTITY_AMOUNT];
+        for(int i=0; i<ENTITY_AMOUNT; i++){
+            copy[i] = new Role(roles[i]);
+        }
+        return copy;
     }
     
-    private List<User> getTestUsers(){
-        return new ArrayList<>(users);
+    private User[] getTestUsers(){
+        User[] copy = new User[ENTITY_AMOUNT];
+        for(int i=0; i<ENTITY_AMOUNT; i++){
+            copy[i] = new User(users[i]);
+        }
+        return copy;
     }
         
-    private List<Item> getTestItems(){
-        return new ArrayList<>(items);
+    private Item[] getTestItems(){
+        Item[] copy = new Item[ENTITY_AMOUNT];
+        for(int i=0; i<ENTITY_AMOUNT; i++){
+            copy[i] = new Item(items[i]);
+        }
+        return copy;
     }
     
     private List<EntityClass> getTestEntities(){
-        final int ENTITY_AMOUNT = 3;
         final List<EntityClass> entities = new ArrayList<>();
-        final String[] firstNames = new String[] {"jorma", "seppo", "kalle"};
-        final String[] lastNames = new String[] {"jormala", "seppola", "kallela"};
-   
-        for(int i=0; i<ENTITY_AMOUNT; i++){
-            final Role validRole = new Role("role" + i);
-            final Item validItem = new Item("item" + i, i, i, "description" + i);
-            final User validUser = new User("user" + i, "password" + i, firstNames[i], lastNames[i], validRole);
-            
-            entities.addAll(Arrays.asList(validRole, validUser, validItem));
-        }
-        
+        entities.addAll(Arrays.asList(getTestRoles()));
+        entities.addAll(Arrays.asList(getTestUsers()));
+        entities.addAll(Arrays.asList(getTestItems()));
         return entities;
     }
     
     @BeforeAll
     public static void setUpClass() {
+        for(int i=0; i<ENTITY_AMOUNT; i++){
+            roles[i] = new Role("role" + i);
+            items[i] = new Item("item" + i, i, i, "description" + i);
+            users[i] = new User("user" + i, "password" + i, firstNames[i], lastNames[i], roles[i]);
+        }
     }
     
     @AfterAll
@@ -356,8 +367,13 @@ public class MainTest {
             });
         }
     
-
-        List<EntityClass> validEntities = getTestEntities();
+        List<EntityClass> validEntities = new ArrayList<>();
+        List<User> validUsers = Arrays.asList(getTestUsers());
+        List<Role> validRoles = Arrays.asList(validUsers.stream().map(user -> user.getRole()).toArray(Role[]::new));
+        List<Item> validItems = Arrays.asList(getTestItems());
+        validEntities.addAll(validRoles);
+        validEntities.addAll(validUsers);
+        validEntities.addAll(validItems);
         List<EntityClass> invalidEntities = Arrays.asList(invalidRole, invalidItem, invalidUser);
  
         for(EntityClass entity : validEntities){
@@ -429,32 +445,41 @@ public class MainTest {
     public void testUpdate(){
         System.out.println("updateEntity");
         Main instance = Main.getApp();
-       
-        List<EntityClass> newEntities = getTestEntities();
-        System.out.println("newEntities " + newEntities);
-        newEntities.forEach(e -> {
-            if(e instanceof Role){
-                try {
-                    instance.addEntity(e);
-                } catch (ValidationException | AddEntityException ex) {
-                    Logger.getLogger(MainTest.class.getName()).log(Level.SEVERE, null, ex);
-                }
+        
+        List<User> users = Arrays.asList(getTestUsers());
+        System.out.println("users " + users);
+        List<Role> roles = Arrays.asList(users.stream().map(user -> user.getRole()).toArray(Role[]::new));
+        List<Item> items = Arrays.asList(getTestItems());
+        roles.forEach(role -> {
+            try {
+                instance.addEntity(role);
+            } catch (ValidationException | AddEntityException ex) {
+                Logger.getLogger(MainTest.class.getName()).log(Level.SEVERE, null, ex);
+                fail(ex);
             }
         });
 
-        newEntities.forEach((newEntity) -> {
-            Class<? extends EntityClass> entityClass = newEntity.getClass();
-            EntityClass oldEntity = instance.getEntities(entityClass).iterator().next();
-            
-            updateEntity(oldEntity, newEntity);
-            
-            try{
-                instance.update(oldEntity);
-            }catch(ValidationException | NonexistentEntityException ex){
-                fail(ex);
+        Map<Iterator<? extends EntityClass>, Iterator<? extends EntityClass>> map = new HashMap<>();
+        map.put(users.iterator(), instance.getEntities(User.class).iterator());
+        map.put(roles.iterator(), instance.getEntities(Role.class).iterator());
+        map.put(items.iterator(), instance.getEntities(Item.class).iterator());
+
+        
+        map.forEach((newEntities, oldEntities) -> {
+            while(newEntities.hasNext() && oldEntities.hasNext()){
+                EntityClass newEntity = newEntities.next();
+                EntityClass oldEntity = oldEntities.next();
+                
+                updateEntity(oldEntity, newEntity);
+                
+                try{
+                    instance.update(oldEntity);
+                }catch(ValidationException | NonexistentEntityException ex){
+                    fail(ex);
+                }
+                
+                checkEntityEquality(oldEntity, newEntity);
             }
-            
-            checkEntityEquality(instance.getEntities(entityClass).iterator().next(), newEntity);
         });
     }
     
@@ -517,29 +542,13 @@ public class MainTest {
     public void testGetEntities_Class() {
         System.out.println("getEntities");
         Main instance = Main.getApp();
-              
-        final int ENTITY_AMOUNT = 3;
-        
-        Role[] roles = new Role[ENTITY_AMOUNT];
-        Item[] items = new Item[ENTITY_AMOUNT];
-        User[] users = new User[ENTITY_AMOUNT];
-        
-        for(int i=0; i<ENTITY_AMOUNT; i++){
-            Role validRole = new Role("test" + i);
-            Item validItem = new Item("test" + i, i, i, "description" + i);
-            User validUser = new User("test" + i, "test" + i, validRole);
-            
-            roles[i] = validRole;
-            items[i] = validItem;
-            users[i] = validUser;
-        }
 
 //        List<List<EntityClass>> entityTypes = Arrays.asList(Arrays.asList(roles), Arrays.asList(items), Arrays.asList(users));
         Map<Class<? extends EntityClass>, List<EntityClass>> entityMap = new HashMap<>();
         //entityTypes.forEach(list -> list.forEach(entity -> map.get(entity.getClass()).add(entity)));
-        entityMap.put(User.class, Arrays.asList(users));
-        entityMap.put(Item.class, Arrays.asList(items));
-        entityMap.put(Role.class, Arrays.asList(roles));
+        entityMap.put(User.class, Arrays.asList(getTestUsers()));
+        entityMap.put(Item.class, Arrays.asList(getTestItems()));
+        entityMap.put(Role.class, Arrays.asList(getTestRoles()));
         
         entityMap.forEach((entityClass, entityList) -> {
             Collection<EntityClass> previousEntities = instance.getEntities(entityClass);
@@ -560,7 +569,7 @@ public class MainTest {
                 if(allEntities.contains(e)){
                     allEntities.remove(e);
                 }else{
-                    fail("");
+                    fail("Not all entities were added");
                 }
             });
         });

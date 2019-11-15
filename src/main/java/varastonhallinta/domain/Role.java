@@ -49,7 +49,11 @@ public class Role extends EntityClass implements Serializable{
      */
     public Role(String name) {
        this.name = name;
-   }
+    }
+    
+    public Role(Role other) {
+       this.name = other.name;
+    }
    
     /**
      *

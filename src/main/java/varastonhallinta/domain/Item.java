@@ -61,6 +61,13 @@ public class Item extends EntityClass implements Serializable{
         this.description = description;
     }
     
+    public Item(Item other) {
+        this.itemname = other.itemname;
+        this.weight = other.weight;
+        this.price = other.price;
+        this.description = other.description;
+    }
+    
     /**
      *
      * @return

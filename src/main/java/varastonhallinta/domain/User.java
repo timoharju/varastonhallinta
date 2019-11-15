@@ -75,7 +75,7 @@ public class User extends EntityClass implements Serializable {
      */
     public User(String username, String password, Role role) {
        this(username, password, "", "", role);
-   }
+    }
     
     /**
      *
@@ -91,6 +91,14 @@ public class User extends EntityClass implements Serializable {
         this.firstName = firstName;
         this.lastName = lastName;
         this.role = role;
+   }
+    
+    public User(User other) {
+        this.username = other.username;
+        this.password = other.password;
+        this.firstName = other.firstName;
+        this.lastName = other.lastName;
+        this.role = new Role(other.role);
    }
    
     /**

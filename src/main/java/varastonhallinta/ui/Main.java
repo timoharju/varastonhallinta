@@ -300,11 +300,17 @@ public class Main extends Application{
     }
 
     public <T extends EntityClass> void update(T t) throws NonexistentEntityException, ValidationException{
+        System.out.println("update " + t);
         ((JPAController<T>)controllerMap.get(t.getClass())).edit(t);
     }
 
     public <T extends EntityClass> Collection<T> getEntities(Class<? extends T> c){
         List<T> matchedEntities = ((JPAController<T>)controllerMap.get(c)).findEntities();
+        return matchedEntities;
+    }
+    
+    public Collection<EntityClass> getEntities2(Class<? extends EntityClass> c){
+        List<EntityClass> matchedEntities = (List<EntityClass>) controllerMap.get(c).findEntities();
         return matchedEntities;
     }
     
