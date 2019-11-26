@@ -36,7 +36,7 @@ public abstract class EntityClass{
      *
      * @return
      */
-    public abstract Integer getID();
+    public abstract Integer getId();
 
     /**
      *
@@ -48,7 +48,7 @@ public abstract class EntityClass{
     @Override
     public int hashCode() {
 
-        return Objects.hashCode(getID());
+        return Objects.hashCode(getId());
     }
 
     @Override
@@ -58,7 +58,7 @@ public abstract class EntityClass{
             return false;
         }
         EntityClass other = this.getClass().cast(object);
-        if ((this.getID() == null && other.getID() != null) || (this.getID() != null && !this.getID().equals(other.getID()))) {
+        if ((this.getId() == null && other.getId() != null) || (this.getId() != null && !this.getId().equals(other.getId()))) {
             return false;
         }
         return true;

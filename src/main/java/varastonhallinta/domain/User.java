@@ -92,13 +92,21 @@ public class User extends EntityClass implements Serializable {
         this.lastName = lastName;
         this.role = role;
    }
+    
+    public User(User other) {
+        this.username = other.username;
+        this.password = other.password;
+        this.firstName = other.firstName;
+        this.lastName = other.lastName;
+        this.role = new Role(other.role);
+   }
    
     /**
      *
      * @return
      */
    @Override
-    public Integer getID() {
+    public Integer getId() {
       return id;
    }
    

@@ -5,9 +5,7 @@
  */
 package varastonhallinta.ui;
 
-import com.google.common.collect.Maps;
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,14 +16,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
-import java.util.function.IntFunction;
-import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Stream;
-import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
@@ -37,9 +30,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import varastonhallinta.domain.EntityClass;
 import varastonhallinta.domain.Item;
@@ -48,9 +40,6 @@ import varastonhallinta.domain.User;
 import varastonhallinta.domain.ValidationException;
 import varastonhallinta.logic.exceptions.NonexistentEntityException;
 import varastonhallinta.ui.exceptions.AddEntityException;
-import varastonhallinta.ui.exceptions.AddUserException;
-import varastonhallinta.ui.exceptions.EntityException;
-import varastonhallinta.util.Range;
 
 /**
  *
@@ -58,24 +47,95 @@ import varastonhallinta.util.Range;
  */
 public class MainTest {
     
+    /**
+     *
+     */
     public MainTest() {
     }
+
+    static final Logger logger = Logger.getLogger(MainTest.class.getName());
+    private static final String SEPARATOR = "======================================================";
     
-    @BeforeAll
-    public static void setUpClass() {
+    //Array of example names used for the test entities that will be added to the db
+    final static String[] firstNames = new String[] {"jorma", "seppo", "kalle"};
+    final static String[] lastNames = new String[] {"jormala", "seppola", "kallela"};
+    final static int ENTITY_AMOUNT = Math.min(firstNames.length, lastNames.length);
+    private static final User[] users = new User[ENTITY_AMOUNT];
+    private static final Item[] items = new Item[ENTITY_AMOUNT];
+    private static final Role[] roles = new Role[ENTITY_AMOUNT];
+    
+    private Role[] getTestRoles(){
+        Role[] copy = new Role[ENTITY_AMOUNT];
+        for(int i=0; i<ENTITY_AMOUNT; i++){
+            copy[i] = new Role(roles[i]);
+        }
+        return copy;
     }
     
+    private User[] getTestUsers(){
+        User[] copy = new User[ENTITY_AMOUNT];
+        for(int i=0; i<ENTITY_AMOUNT; i++){
+            copy[i] = new User(users[i]);
+        }
+        return copy;
+    }
+        
+    private Item[] getTestItems(){
+        Item[] copy = new Item[ENTITY_AMOUNT];
+        for(int i=0; i<ENTITY_AMOUNT; i++){
+            copy[i] = new Item(items[i]);
+        }
+        return copy;
+    }
+    
+    private List<EntityClass> getTestEntities(){
+        final List<EntityClass> entities = new ArrayList<>();
+        entities.addAll(Arrays.asList(getTestRoles()));
+        entities.addAll(Arrays.asList(getTestUsers()));
+        entities.addAll(Arrays.asList(getTestItems()));
+        return entities;
+    }
+    
+    /**
+     * Sets up the db with example users and items 
+     */
+    @BeforeAll
+    public static void setUpClass() {
+        for(int i=0; i<ENTITY_AMOUNT; i++){
+            roles[i] = new Role("role" + i);
+            items[i] = new Item("item" + i, i, i, "description" + i);
+            users[i] = new User("user" + i, "password" + i, firstNames[i], lastNames[i], roles[i]);
+        }
+    }
+    
+    /**
+     *
+     */
     @AfterAll
     public static void tearDownClass() {
     }
     
+    /** 
+     * Clears the DB and prints the name of the next test before all tests.
+     * Drops all tables in the DB and creates 4 example Entities of all of the
+     * existing Entity Classes in varastonhallinta.domain.
+     * @param testInfo
+     */
     @BeforeEach
-    public void setUp() {
-        varastonhallinta.util.HibernateUtil.initDB(Main.getApp());
+    public void setUp(TestInfo testInfo) {
+        logger.info(() -> String.format("About to execute [%s] \n" + SEPARATOR,
+            testInfo.getDisplayName()));
+        varastonhallinta.util.HibernateUtil.initDB();
     }
     
+    /**
+     * Prints the name of the test that finished executing
+     * @param testInfo
+     */
     @AfterEach
-    public void tearDown() {
+    public void tearDown(TestInfo testInfo) {
+        logger.info(() -> String.format("Finished executing [%s] \n" + SEPARATOR,
+            testInfo.getDisplayName()));
     }
 
 
@@ -129,6 +189,8 @@ public class MainTest {
 
     /**
      * Test of userLogin method, of class Main.
+     * @param username
+     * @param password
      */
     @ParameterizedTest
     @CsvSource({
@@ -147,6 +209,8 @@ public class MainTest {
 
         /**
      * Test of userLogin method, of class Main.
+     * @param username
+     * @param password
      */
     @ParameterizedTest
     @CsvSource({
@@ -223,32 +287,37 @@ public class MainTest {
      * Test of loadContent method, of class Main.
      */
     @Test
+    @Disabled("JavaFX dependent method")
     public void testLoadContent(){
         System.out.println("loadContent");
         Main instance = Main.getApp();
         Node result;
+        
         try {
             for(String name : getFxmlFileNames()){
+                System.out.println("getFxmlFileNames " + name);
                 result = instance.loadContent(name);
                 Assertions.assertNotNull(result);
             }
         } catch (Exception ex) {
-            fail();
+            Logger.getLogger(MainTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail(ex);
         }
     }
     
     private Collection<String> getFxmlFileNames() throws IOException{
         Path path = FileSystems.getDefault().getPath("src", "main", "resources", "fxml");
-        System.out.println("path.toAbsolutePath() " + path.toAbsolutePath());
         List<String> names = new ArrayList<>();
-        Files.newDirectoryStream(path.toAbsolutePath()).iterator().forEachRemaining(p -> names.add(p.getFileName().toUri().getPath()));
+        Files.newDirectoryStream(path.toAbsolutePath()).iterator().forEachRemaining(p -> names.add("/fxml/" + p.getFileName().toString()));
         return names;
     }
 
     /**
      * Test of loadController method, of class Main.
+     * @throws java.lang.Exception
      */
     @Test
+    @Disabled("JavaFX dependent method")
     public void testLoadController() throws Exception {
         System.out.println("loadController");
         Main instance = Main.getApp();
@@ -259,7 +328,8 @@ public class MainTest {
                 Assertions.assertNotNull(result);
             }
         } catch (Exception ex) {
-            fail();
+            Logger.getLogger(MainTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail(ex);
         }
     }
 
@@ -288,10 +358,6 @@ public class MainTest {
     public void testAddEntity(){
         System.out.println("addEntity");
         Main instance = Main.getApp();
-                
-        Role validRole = new Role("test");
-        Item validItem = new Item("test", 1, 100, "description");
-        User validUser = new User("test", "test", validRole);
         
         Role invalidRole = new Role("te     eserg st");
         Item invalidItem = new Item("test", 1, -500, "description");
@@ -301,18 +367,23 @@ public class MainTest {
         Assertions.assertFalse(usersInDB.isEmpty());
         
         for(User user : usersInDB){
-            Assertions.assertThrows(AddUserException.class, () -> {
+            Assertions.assertThrows(AddEntityException.class, () -> {
                 try {
                     instance.addEntity(user);
                 } catch (ValidationException ex) {
                     Logger.getLogger(MainTest.class.getName()).log(Level.SEVERE, null, ex);
-                    fail();
+                    fail(ex);
                 }
             });
         }
     
-
-        List<EntityClass> validEntities = Arrays.asList(validRole, validItem, validUser);
+        List<EntityClass> validEntities = new ArrayList<>();
+        List<User> validUsers = Arrays.asList(getTestUsers());
+        List<Role> validRoles = Arrays.asList(validUsers.stream().map(user -> user.getRole()).toArray(Role[]::new));
+        List<Item> validItems = Arrays.asList(getTestItems());
+        validEntities.addAll(validRoles);
+        validEntities.addAll(validUsers);
+        validEntities.addAll(validItems);
         List<EntityClass> invalidEntities = Arrays.asList(invalidRole, invalidItem, invalidUser);
  
         for(EntityClass entity : validEntities){
@@ -322,7 +393,7 @@ public class MainTest {
                 Assertions.assertEquals(1, result.size());
                 Assertions.assertEquals(result.iterator().next(), entity);
             } catch (ValidationException | AddEntityException ex) {
-                fail();
+                fail(ex);
             }
         }
 
@@ -367,11 +438,13 @@ public class MainTest {
         User user = new User("test", "test", role);
         
         List<EntityClass> entitiesNotInDB = Arrays.asList(role, item, user);
+        System.out.println("entitiesNotInDB " + entitiesNotInDB);
         
         for(EntityClass entity : entitiesNotInDB){
+            System.out.println("Entity " + entity);
             Collection<EntityClass> entities = instance.getEntities(entity.getClass(), e -> e.equals(entity));
             assertTrue(entities.isEmpty());
-
+            System.out.println("");
             Assertions.assertThrows(NonexistentEntityException.class, () -> instance.removeEntity(entity));
         }
     }
@@ -381,28 +454,43 @@ public class MainTest {
      */
     @Test
     public void testUpdate(){
-        System.out.println("addEntity");
+        System.out.println("updateEntity");
         Main instance = Main.getApp();
-                
-        Role validRole = new Role("test");
-        Item validItem = new Item("test", 1, 100, "description");
-        User validUser = new User("test", "test", validRole);
-       
-        List<EntityClass> newEntities = Arrays.asList(validRole, validItem, validUser);
-
-        newEntities.forEach((newEntity) -> {
-            Class<? extends EntityClass> entityClass = newEntity.getClass();
-            EntityClass oldEntity = instance.getEntities(entityClass).iterator().next();
-            assertNotNull(oldEntity);
-            
-            updateEntity(oldEntity, newEntity);
-            try{
-                instance.update(oldEntity);
-            }catch(ValidationException | NonexistentEntityException ex){
-                fail();
+        
+        List<User> users = Arrays.asList(getTestUsers());
+        System.out.println("users " + users);
+        List<Role> roles = Arrays.asList(users.stream().map(user -> user.getRole()).toArray(Role[]::new));
+        List<Item> items = Arrays.asList(getTestItems());
+        roles.forEach(role -> {
+            try {
+                instance.addEntity(role);
+            } catch (ValidationException | AddEntityException ex) {
+                Logger.getLogger(MainTest.class.getName()).log(Level.SEVERE, null, ex);
+                fail(ex);
             }
-            
-            checkEntityEquality(instance.getEntities(entityClass).iterator().next(), newEntity);
+        });
+
+        Map<Iterator<? extends EntityClass>, Iterator<? extends EntityClass>> map = new HashMap<>();
+        map.put(users.iterator(), instance.getEntities(User.class).iterator());
+        map.put(roles.iterator(), instance.getEntities(Role.class).iterator());
+        map.put(items.iterator(), instance.getEntities(Item.class).iterator());
+
+        
+        map.forEach((newEntities, oldEntities) -> {
+            while(newEntities.hasNext() && oldEntities.hasNext()){
+                EntityClass newEntity = newEntities.next();
+                EntityClass oldEntity = oldEntities.next();
+                
+                updateEntity(oldEntity, newEntity);
+                
+                try{
+                    instance.update(oldEntity);
+                }catch(ValidationException | NonexistentEntityException ex){
+                    fail(ex);
+                }
+                
+                checkEntityEquality(oldEntity, newEntity);
+            }
         });
     }
     
@@ -465,29 +553,13 @@ public class MainTest {
     public void testGetEntities_Class() {
         System.out.println("getEntities");
         Main instance = Main.getApp();
-              
-        final int ENTITY_AMOUNT = 3;
-        
-        Role[] roles = new Role[ENTITY_AMOUNT];
-        Item[] items = new Item[ENTITY_AMOUNT];
-        User[] users = new User[ENTITY_AMOUNT];
-        
-        for(int i=0; i<ENTITY_AMOUNT; i++){
-            Role validRole = new Role("test" + i);
-            Item validItem = new Item("test" + i, i, i, "description" + i);
-            User validUser = new User("test" + i, "test" + i, validRole);
-            
-            roles[i] = validRole;
-            items[i] = validItem;
-            users[i] = validUser;
-        }
 
 //        List<List<EntityClass>> entityTypes = Arrays.asList(Arrays.asList(roles), Arrays.asList(items), Arrays.asList(users));
         Map<Class<? extends EntityClass>, List<EntityClass>> entityMap = new HashMap<>();
         //entityTypes.forEach(list -> list.forEach(entity -> map.get(entity.getClass()).add(entity)));
-        entityMap.put(User.class, Arrays.asList(users));
-        entityMap.put(Item.class, Arrays.asList(items));
-        entityMap.put(Role.class, Arrays.asList(roles));
+        entityMap.put(User.class, Arrays.asList(getTestUsers()));
+        entityMap.put(Item.class, Arrays.asList(getTestItems()));
+        entityMap.put(Role.class, Arrays.asList(getTestRoles()));
         
         entityMap.forEach((entityClass, entityList) -> {
             Collection<EntityClass> previousEntities = instance.getEntities(entityClass);
@@ -508,15 +580,13 @@ public class MainTest {
                 if(allEntities.contains(e)){
                     allEntities.remove(e);
                 }else{
-                    fail();
+                    fail("Not all entities were added");
                 }
             });
         });
     }
+
     
-    private void test(EntityClass f){
-        
-    }
     /**
      * Test of getEntities method, of class Main.
      */
@@ -540,11 +610,13 @@ public class MainTest {
                         instance.addEntity(t);
                     } catch (ValidationException | AddEntityException ex) {
                         Logger.getLogger(MainTest.class.getName()).log(Level.SEVERE, null, ex);
+                        fail(ex);
                     }
                 });
                 
                 entities.forEach(t -> {
                     functions.forEach(function -> {
+                        System.out.println("function.apply(t) " + function.apply(t));
                         Collection<EntityClass> result = instance.getEntities(t.getClass(), e -> function.apply(t).equals(function.apply((T)e)));
                         assertEquals(1, result.size());
                         assertEquals(t, result.iterator().next());
@@ -558,11 +630,14 @@ public class MainTest {
         List<User> users = new ArrayList<>();
         List<Item> items = new ArrayList<>();
         List<Role> roles = new ArrayList<>();
+        
+        String[] firstNames = new String[] {"jorma", "seppo", "kalle"};
+        String[] lastNames = new String[] {"jormala", "seppola", "kallela"};
    
         for(int i=0; i<ENTITY_AMOUNT; i++){
-            Role validRole = new Role("test" + i);
-            Item validItem = new Item("test" + i, i, i, "description" + i);
-            User validUser = new User("test" + i, "test" + i, validRole);
+            Role validRole = new Role("role" + i);
+            Item validItem = new Item("item" + i, i, i, "description" + i);
+            User validUser = new User("user" + i, "password" + i, firstNames[i], lastNames[i], validRole);
             
             users.add(validUser);
             items.add(validItem);
@@ -570,7 +645,7 @@ public class MainTest {
         }
         
         List<Function<User, Object>> userFunctions = Arrays.asList(
-                (user) -> user.getID(),
+                (user) -> user.getId(),
                 (user) -> user.getUsername(),
                 (user) -> user.getPassword(),
                 (user) -> user.getFirstName(),
@@ -579,7 +654,7 @@ public class MainTest {
         );
         
         List<Function<Item, Object>> itemFunctions = Arrays.asList(
-                (item) -> item.getID(),
+                (item) -> item.getId(),
                 (item) -> item.getItemname(),
                 (item) -> item.getPrice(),
                 (item) -> item.getWeight(),
@@ -587,14 +662,14 @@ public class MainTest {
         );
         
         List<Function<Role, Object>> roleFunctions = Arrays.asList(
-                (role) -> role.getID(),
+                (role) -> role.getId(),
                 (role) -> role.getName()
         );
 
         List<Helper<?>> helpers = Arrays.asList(
+                new Helper<>(roleFunctions, roles),
                 new Helper<>(userFunctions, users),
-                new Helper<>(itemFunctions, items),
-                new Helper<>(roleFunctions, roles));
+                new Helper<>(itemFunctions, items));
 
         helpers.forEach(helper -> helper.runTests());
     }

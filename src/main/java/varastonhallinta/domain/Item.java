@@ -24,15 +24,16 @@ public class Item extends EntityClass implements Serializable{
     private static final double MIN_PRICE = 0;
     private static final double MAX_PRICE = Double.MAX_VALUE;
     private static final int DESCRIPTION_MIN_LENGTH = 0;
-    private static final int DESCRIPTION_MAX_LENGTH = 30;
+    private static final int DESCRIPTION_MAX_LENGTH = 65000;
+
     
     @Column(name = "itenmane")
     private String itemname;
-    @Column(name = "weight", columnDefinition = "TEXT(65000)")
+    @Column(name = "weight")
     private double weight;
     @Column(name = "price")
     private double price;
-    @Column(name = "description" )
+    @Column(name = "description", columnDefinition = "TEXT(" + DESCRIPTION_MAX_LENGTH + ")")
     private String description;
     @Id
     @GeneratedValue
@@ -59,6 +60,13 @@ public class Item extends EntityClass implements Serializable{
         this.weight = weight;
         this.price = price;
         this.description = description;
+    }
+    
+    public Item(Item other) {
+        this.itemname = other.itemname;
+        this.weight = other.weight;
+        this.price = other.price;
+        this.description = other.description;
     }
     
     /**
@@ -126,7 +134,7 @@ public class Item extends EntityClass implements Serializable{
     
 
     @Override
-    public Integer getID() {
+    public Integer getId() {
         return id;
     }
 

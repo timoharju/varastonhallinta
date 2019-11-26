@@ -79,6 +79,7 @@ public class Main extends Application{
      * @param entityManagerFactory the entityManagerFactory to set
      */
     public void setEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
+        System.out.println("setEntityManagerFactory " + entityManagerFactory);
         this.entityManagerFactory = entityManagerFactory;
         configureControllers(entityManagerFactory);
     }
@@ -87,22 +88,20 @@ public class Main extends Application{
     private User loggedUser;
     private final double MINIMUM_WINDOW_WIDTH = 390.0;
     private final double MINIMUM_WINDOW_HEIGHT = 500.0;
-    private final String UI_PAGE = "/fxml/ui3.fxml";
+    private final String UI_PAGE = "/fxml/admin.fxml";
     private final String LOGIN_PAGE = "/fxml/login.fxml";
     private final String PROFILE_PAGE = "/profile.fxml";
     
-    private EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("varastonhallinta");
-    
-//    private UserJpaController userController = new UserJpaController(entityManagerFactory);
-//    private ItemJpaController itemController = new ItemJpaController(entityManagerFactory);
-//    private RoleJpaController roleController = new RoleJpaController(entityManagerFactory);
-    private UserJpaController userController = new UserJpaController(getEntityManagerFactory());
-    private Authenticator authenticator = new Authenticator(new UserJpaController(getEntityManagerFactory()));
+    private EntityManagerFactory entityManagerFactory;
+    private UserJpaController userController;
+    private Authenticator authenticator;
     private Scene scene;
     private static Main application;
     private Map<Class<?>, JPAController<?>> controllerMap = new HashMap<>();
  
     private void configureControllers(EntityManagerFactory em){
+        userController = new UserJpaController(em);
+        authenticator = new Authenticator(userController);
         JPAController userController = new JPAControllerImpl(User.class, em);
         JPAController itemController = new JPAControllerImpl(Item.class, em);
         JPAController roleController = new JPAControllerImpl(Role.class, em);
@@ -124,9 +123,9 @@ public class Main extends Application{
         Application.launch(Main.class, (java.lang.String[])null);
     }
     
-    private Main(){
+    public Main(){
         application = this;
-        HibernateUtil.initDB(this);
+        //HibernateUtil.initDB();
     }
 
     @Override
@@ -167,9 +166,11 @@ public class Main extends Application{
      * @return
      */
     public boolean userLogin(String username, String password){
+        System.out.println("userLogin " + username + " " + password);
+        System.out.println("authenticator.validate(username, password) " + authenticator.validate(username, password));
         if (authenticator.validate(username, password)) {
             loggedUser = userController.findUserWithName(username);
-            gotoUI("Admin" + "UI");
+            //this.gotoUI("AdminUI");
             return true;
         } else {
             return false;
@@ -189,7 +190,7 @@ public class Main extends Application{
      */
     public void userLogout(){
         loggedUser = null;
-        gotoLogin();
+        //gotoLogin();
     }
     
     private void gotoProfile() {
@@ -221,7 +222,7 @@ public class Main extends Application{
     private Initializable replaceSceneContent(String fxml) throws Exception {
         System.out.println("replaceSceneContent " + fxml);
         FXMLLoader loader = new FXMLLoader();
-        InputStream in = Main.class.getResourceAsStream(fxml);
+        InputStream in = Main.class.getResourceAsStream(fxml);  
         loader.setBuilderFactory(new JavaFXBuilderFactory());
         loader.setLocation(Main.class.getResource(fxml));
         Parent page;
@@ -291,7 +292,7 @@ public class Main extends Application{
     }
 
     public <T extends EntityClass> void removeEntity(T t) throws NonexistentEntityException {
-        controllerMap.get(t.getClass()).destroy(t.getID());
+        controllerMap.get(t.getClass()).destroy(t.getId());
     }
 
     public <T extends EntityClass> void update(T t) throws NonexistentEntityException, ValidationException{

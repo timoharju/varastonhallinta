@@ -162,7 +162,7 @@ public class ItemTabController extends TabController<Item>{
     private void configureFilters(){
         filterFactory = new FilterFactory<>();
         
-        filterFactory.addFilter(idBox, Input.from(itemIDField, Integer.class), (item) -> item.getID(),
+        filterFactory.addFilter(idBox, Input.from(itemIDField, Integer.class), (item) -> item.getId(),
                 (inputID, id) -> id.equals(inputID));
         
         filterFactory.addFilter(nameBox, Input.from(itemnameField, String.class), (item) -> item.getItemname(),

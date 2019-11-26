@@ -178,7 +178,7 @@ public class UserTabController extends TabController<User>{
         inputMap.put(lastNameBox, Input.from(lastNameField));
         inputMap.put(roleBox, Input.from(roleComboBox));
         
-        filterFactory.addFilter(idBox, Input.from(userIDField, Integer.class), (user) -> user.getID(),
+        filterFactory.addFilter(idBox, Input.from(userIDField, Integer.class), (user) -> user.getId(),
                 (input, id) -> id.equals(input));
         filterFactory.addFilter(usernameBox, Input.from(usernameField), (user) -> user.getUsername(),
                 (input, username) -> username.contains(input) || input.contains(username));
