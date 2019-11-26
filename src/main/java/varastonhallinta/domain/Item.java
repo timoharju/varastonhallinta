@@ -12,41 +12,25 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "ITEM")
-@NamedQuery(
-    name="findItemWithName",
-    query="SELECT i FROM Item i WHERE i.itemname = :itemname"
-)
 public class Item extends EntityClass implements Serializable{
-    private static final int ITEM_NAME_MIN_LENGTH = 1;
-    private static final int ITEM_NAME_MAX_LENGTH = 60;
-    private static final double MIN_WEIGHT = 0;
-    private static final double MAX_WEIGHT = Double.MAX_VALUE;
-    private static final double MIN_PRICE = 0;
-    private static final double MAX_PRICE = Double.MAX_VALUE;
-    private static final int DESCRIPTION_MIN_LENGTH = 0;
-    private static final int DESCRIPTION_MAX_LENGTH = 30;
     
-    @Column(name = "itenmane")
-    private String itemname;
-    @Column(name = "weight", columnDefinition = "TEXT(65000)")
-    private double weight;
-    @Column(name = "price")
-    private double price;
-    @Column(name = "description" )
-    private String description;
     @Id
     @GeneratedValue
-    @Column(name = "id")
-    public int id;
-
-    private static final Map<Predicate<Item>, String> map = new HashMap<>();
-   
-   static{
-       map.put(item -> validItemname(item.getItemname()), "itenmane");
-       map.put(item -> validItemWeight(item.getWeight()), "weight");
-       map.put(item -> validItemPrice(item.getPrice()), "price");
-       map.put(item -> validItemDescription(item.getDescription()), "description");
-   }
+    @Column(name = "ID")
+    private int id;
+    
+    @ManyToOne()
+    @JoinColumn(name = "ITEM_TYPE_ID" , referencedColumnName = "ID", nullable = false)
+    private ItemType itemType;
+    
+    @ManyToOne()
+    @JoinColumn(name = "SHIPMENT_ID" , referencedColumnName = "ID", nullable = false)
+    private Shipment shipment;
+    
+    @ManyToOne()
+    @JoinColumn(name = "ORDER_ID" , referencedColumnName = "ID", nullable = true)
+    private Order order;
+    
         
     /**
      *
@@ -55,117 +39,71 @@ public class Item extends EntityClass implements Serializable{
     }
 
     public Item(String itemname, double weight, double price, String description) {
-        this.itemname = itemname;
-        this.weight = weight;
-        this.price = price;
-        this.description = description;
+
     }
     
-    public Item(Item other) {
-        this.itemname = other.itemname;
-        this.weight = other.weight;
-        this.price = other.price;
-        this.description = other.description;
-    }
-    
-    /**
-     *
-     * @return
-     */
-    public String getItemname() {
-		return itemname;
-	}
-
-    /**
-     *
-     * @param itemname
-     */
-    public void setItemname(String itemname) {
-		this.itemname = itemname;
-	}
-
-    /**
-     *
-     * @return
-     */
-    public double getWeight() {
-        return weight;
-    }
-
-    /**
-     *
-     * @param weight
-     */
-    public void setWeight(double weight) {
-        this.weight = weight;
-    }
-
-    /**
-     * @return the price
-     */
-    
-    public double getPrice() {
-        return price;
-    }
-
-    /**
-     * @param price the price to set
-     */
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
-    /**
-     * @return the description
-     */
-    
-    public String getDescription() {
-        return description;
-    }
-
-    /**
-     * @param description the description to set
-     */
-    public void setDescription(String description) {
-        this.description = description;
-    }
+ 
     
     @Override
-    public int getID() {
+    public int getId() {
         return id;
     }
 
     @Override
-    public void setID(Integer id) {
+    public void setId(Integer id) {
         this.id = id;
-    }
-
-    public static boolean validItemname(String itemname){
-        String regex = "[\\S]+([ ]?[\\S]+)+";
-        return itemname != null && itemname.matches(regex) && itemname.length() >= ITEM_NAME_MIN_LENGTH && itemname.length() <= ITEM_NAME_MAX_LENGTH;
-    }
-    
-    public static boolean validItemWeight(double weight){
-        return weight >= MIN_WEIGHT && weight <= MAX_WEIGHT;
-    }
-    
-    public static boolean validItemPrice(double price){
-        return price >= MIN_PRICE && price <= MAX_PRICE;
-    }
-        
-    public static boolean validItemDescription(String description){
-        String regex = "[\\x{" + Integer.toHexString(Character.MIN_CODE_POINT) + "}-\\x{" + (Integer.toHexString(Character.MAX_CODE_POINT)) + "}]{" + DESCRIPTION_MIN_LENGTH + "," + DESCRIPTION_MAX_LENGTH + "}";
-        return description != null && description.matches(regex);
     }
 
     @Override
     public void validate() throws ValidationException {
-        this.testFields(map, this);
+        
     }
 
     @Override
     public String toString(){
-        return "id: " + id + " itemname: " + itemname + " weight: " + weight + 
-                " price: " + price + " description: " + description;
+        return "id: " + id + " itemType: " + itemType + " shipment: " + shipment + 
+                " order: " + order;
+    }
+
+    /**
+     * @return the itemType
+     */
+    public ItemType getItemType() {
+        return itemType;
+    }
+
+    /**
+     * @param itemType the itemType to set
+     */
+    public void setItemType(ItemType itemType) {
+        this.itemType = itemType;
+    }
+
+    /**
+     * @return the shipment
+     */
+    public Shipment getShipment() {
+        return shipment;
+    }
+
+    /**
+     * @param shipment the shipment to set
+     */
+    public void setShipment(Shipment shipment) {
+        this.shipment = shipment;
+    }
+
+    /**
+     * @return the order
+     */
+    public Order getOrder() {
+        return order;
+    }
+
+    /**
+     * @param order the order to set
+     */
+    public void setOrder(Order order) {
+        this.order = order;
     }
 }

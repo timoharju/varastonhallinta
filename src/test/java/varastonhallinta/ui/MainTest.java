@@ -5,32 +5,23 @@
  */
 package varastonhallinta.ui;
 
-import com.google.common.collect.Maps;
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
-import java.util.function.IntFunction;
-import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Stream;
-import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
-import javax.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -40,19 +31,14 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import varastonhallinta.domain.EntityClass;
-import varastonhallinta.domain.Item;
+import varastonhallinta.domain.ItemType;
 import varastonhallinta.domain.Role;
 import varastonhallinta.domain.User;
 import varastonhallinta.domain.ValidationException;
 import varastonhallinta.logic.exceptions.NonexistentEntityException;
 import varastonhallinta.ui.exceptions.AddEntityException;
-import varastonhallinta.ui.exceptions.AddUserException;
-import varastonhallinta.ui.exceptions.EntityException;
-import varastonhallinta.util.Range;
 
 /**
  *
@@ -71,7 +57,7 @@ public class MainTest {
     final static String[] lastNames = new String[] {"jormala", "seppola", "kallela"};
     final static int ENTITY_AMOUNT = Math.min(firstNames.length, lastNames.length);
     private static final User[] users = new User[ENTITY_AMOUNT];
-    private static final Item[] items = new Item[ENTITY_AMOUNT];
+    private static final ItemType[] items = new ItemType[ENTITY_AMOUNT];
     private static final Role[] roles = new Role[ENTITY_AMOUNT];
     //private static final List<EntityClass> entities = new ArrayList<>();
     
@@ -91,10 +77,10 @@ public class MainTest {
         return copy;
     }
         
-    private Item[] getTestItems(){
-        Item[] copy = new Item[ENTITY_AMOUNT];
+    private ItemType[] getTestItems(){
+        ItemType[] copy = new ItemType[ENTITY_AMOUNT];
         for(int i=0; i<ENTITY_AMOUNT; i++){
-            copy[i] = new Item(items[i]);
+            copy[i] = new ItemType(items[i]);
         }
         return copy;
     }
@@ -111,7 +97,7 @@ public class MainTest {
     public static void setUpClass() {
         for(int i=0; i<ENTITY_AMOUNT; i++){
             roles[i] = new Role("role" + i);
-            items[i] = new Item("item" + i, i, i, "description" + i);
+            items[i] = new ItemType("item" + i, i, i, "description" + i);
             users[i] = new User("user" + i, "password" + i, firstNames[i], lastNames[i], roles[i]);
         }
     }
@@ -225,7 +211,7 @@ public class MainTest {
     @Disabled("Method not implemented")
     public void testGetBalance() {
         System.out.println("getBalance");
-        Item item = null;
+        ItemType item = null;
         Main instance = Main.getApp();
         int expResult = 0;
         int result = instance.getBalance(item);
@@ -241,7 +227,7 @@ public class MainTest {
     @Disabled("Method not implemented")
     public void testGetStorageSpace() {
         System.out.println("getStorageSpace");
-        Item item = null;
+        ItemType item = null;
         Main instance = Main.getApp();
         String expResult = "";
         String result = instance.getStorageSpace(item);
@@ -350,7 +336,7 @@ public class MainTest {
         Main instance = Main.getApp();
         
         Role invalidRole = new Role("te     eserg st");
-        Item invalidItem = new Item("test", 1, -500, "description");
+        ItemType invalidItem = new ItemType("test", 1, -500, "description");
         User invalidUser = new User("a", "test", invalidRole);
         
         Collection<User> usersInDB = instance.getEntities(User.class);
@@ -370,7 +356,7 @@ public class MainTest {
         List<EntityClass> validEntities = new ArrayList<>();
         List<User> validUsers = Arrays.asList(getTestUsers());
         List<Role> validRoles = Arrays.asList(validUsers.stream().map(user -> user.getRole()).toArray(Role[]::new));
-        List<Item> validItems = Arrays.asList(getTestItems());
+        List<ItemType> validItems = Arrays.asList(getTestItems());
         validEntities.addAll(validRoles);
         validEntities.addAll(validUsers);
         validEntities.addAll(validItems);
@@ -405,7 +391,7 @@ public class MainTest {
     public void testRemoveEntity(){
         System.out.println("removeEntity");
         Main instance = Main.getApp();
-        List<Class<? extends EntityClass>> entityClasses = Arrays.asList(User.class, Item.class, Role.class);
+        List<Class<? extends EntityClass>> entityClasses = Arrays.asList(User.class, ItemType.class, Role.class);
         
         for(Class<? extends EntityClass> entityClass : entityClasses){
             Collection<EntityClass> entities = instance.getEntities(entityClass);
@@ -424,7 +410,7 @@ public class MainTest {
         }
         
         Role role = new Role("test");
-        Item item = new Item("test", 1, 100, "description");
+        ItemType item = new ItemType("test", 1, 100, "description");
         User user = new User("test", "test", role);
         
         List<EntityClass> entitiesNotInDB = Arrays.asList(role, item, user);
@@ -449,7 +435,7 @@ public class MainTest {
         List<User> users = Arrays.asList(getTestUsers());
         System.out.println("users " + users);
         List<Role> roles = Arrays.asList(users.stream().map(user -> user.getRole()).toArray(Role[]::new));
-        List<Item> items = Arrays.asList(getTestItems());
+        List<ItemType> items = Arrays.asList(getTestItems());
         roles.forEach(role -> {
             try {
                 instance.addEntity(role);
@@ -462,7 +448,7 @@ public class MainTest {
         Map<Iterator<? extends EntityClass>, Iterator<? extends EntityClass>> map = new HashMap<>();
         map.put(users.iterator(), instance.getEntities(User.class).iterator());
         map.put(roles.iterator(), instance.getEntities(Role.class).iterator());
-        map.put(items.iterator(), instance.getEntities(Item.class).iterator());
+        map.put(items.iterator(), instance.getEntities(ItemType.class).iterator());
 
         
         map.forEach((newEntities, oldEntities) -> {
@@ -493,9 +479,9 @@ public class MainTest {
             assertEquals(oldUser.getFirstName(), newUser.getFirstName());
             assertEquals(oldUser.getLastName(), newUser.getLastName());
             assertEquals(oldUser.getRole(), newUser.getRole());
-        }else if(oldEntity instanceof Item && newEntity instanceof Item){
-            Item oldItem = (Item)oldEntity;
-            Item newItem = (Item)newEntity;
+        }else if(oldEntity instanceof ItemType && newEntity instanceof ItemType){
+            ItemType oldItem = (ItemType)oldEntity;
+            ItemType newItem = (ItemType)newEntity;
             
             assertEquals(oldItem.getItemname(), newItem.getItemname());
             assertEquals(oldItem.getWeight(), newItem.getWeight());
@@ -519,9 +505,9 @@ public class MainTest {
             oldUser.setFirstName(newUser.getFirstName());
             oldUser.setLastName(newUser.getLastName());
             oldUser.setRole(newUser.getRole());
-        }else if(oldEntity instanceof Item && newEntity instanceof Item){
-            Item oldItem = (Item)oldEntity;
-            Item newItem = (Item)newEntity;
+        }else if(oldEntity instanceof ItemType && newEntity instanceof ItemType){
+            ItemType oldItem = (ItemType)oldEntity;
+            ItemType newItem = (ItemType)newEntity;
             
             oldItem.setItemname(newItem.getItemname());
             oldItem.setWeight(newItem.getWeight());
@@ -547,7 +533,7 @@ public class MainTest {
         Map<Class<? extends EntityClass>, List<EntityClass>> entityMap = new HashMap<>();
         //entityTypes.forEach(list -> list.forEach(entity -> map.get(entity.getClass()).add(entity)));
         entityMap.put(User.class, Arrays.asList(getTestUsers()));
-        entityMap.put(Item.class, Arrays.asList(getTestItems()));
+        entityMap.put(ItemType.class, Arrays.asList(getTestItems()));
         entityMap.put(Role.class, Arrays.asList(getTestRoles()));
         
         entityMap.forEach((entityClass, entityList) -> {
@@ -617,7 +603,7 @@ public class MainTest {
         final int ENTITY_AMOUNT = 3;
         
         List<User> users = new ArrayList<>();
-        List<Item> items = new ArrayList<>();
+        List<ItemType> items = new ArrayList<>();
         List<Role> roles = new ArrayList<>();
         
         String[] firstNames = new String[] {"jorma", "seppo", "kalle"};
@@ -625,7 +611,7 @@ public class MainTest {
    
         for(int i=0; i<ENTITY_AMOUNT; i++){
             Role validRole = new Role("role" + i);
-            Item validItem = new Item("item" + i, i, i, "description" + i);
+            ItemType validItem = new ItemType("item" + i, i, i, "description" + i);
             User validUser = new User("user" + i, "password" + i, firstNames[i], lastNames[i], validRole);
             
             users.add(validUser);
@@ -634,7 +620,7 @@ public class MainTest {
         }
         
         List<Function<User, Object>> userFunctions = Arrays.asList(
-                (user) -> user.getID(),
+                (user) -> user.getId(),
                 (user) -> user.getUsername(),
                 (user) -> user.getPassword(),
                 (user) -> user.getFirstName(),
@@ -642,8 +628,8 @@ public class MainTest {
                 (user) -> user.getRole()
         );
         
-        List<Function<Item, Object>> itemFunctions = Arrays.asList(
-                (item) -> item.getID(),
+        List<Function<ItemType, Object>> itemFunctions = Arrays.asList(
+                (item) -> item.getId(),
                 (item) -> item.getItemname(),
                 (item) -> item.getPrice(),
                 (item) -> item.getWeight(),
@@ -651,7 +637,7 @@ public class MainTest {
         );
         
         List<Function<Role, Object>> roleFunctions = Arrays.asList(
-                (role) -> role.getID(),
+                (role) -> role.getId(),
                 (role) -> role.getName()
         );
 

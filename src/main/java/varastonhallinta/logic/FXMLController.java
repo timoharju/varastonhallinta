@@ -14,7 +14,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import varastonhallinta.domain.EntityClass;
-import varastonhallinta.domain.Item;
+import varastonhallinta.domain.ItemType;
 import varastonhallinta.domain.Role;
 import varastonhallinta.domain.User;
 import varastonhallinta.logic.exceptions.NonexistentEntityException;

@@ -35,13 +35,13 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import varastonhallinta.domain.Item;
+import varastonhallinta.domain.ItemType;
 import varastonhallinta.ui.Main;
 import varastonhallinta.util.Range;
 /**
  * Login Controller.
  */
-public class ItemTabController extends TabController<Item>{
+public class ItemTabController extends TabController<ItemType>{
 
     @FXML
     private TextField itemIDField;
@@ -71,7 +71,7 @@ public class ItemTabController extends TabController<Item>{
     private TextField storageSpaceField;
     
     @FXML
-    TableView<Item> itemTable;
+    TableView<ItemType> itemTable;
     
     @FXML
     CheckBox idBox;
@@ -96,32 +96,32 @@ public class ItemTabController extends TabController<Item>{
     CheckBox roleBox;
     
     @FXML //  fx:id="colName"
-    private TableColumn<Item, Integer> colID; // Value injected by FXMLLoader
+    private TableColumn<ItemType, Integer> colID; // Value injected by FXMLLoader
 
     @FXML //  fx:id="colStatus"
-    private TableColumn<Item, String> colItemname; // Value injected by FXMLLoader
+    private TableColumn<ItemType, String> colItemname; // Value injected by FXMLLoader
 
     @FXML //  fx:id="colSynopsis"
-    private TableColumn<Item, Double> colWeight; // Value injected by FXMLLoader
+    private TableColumn<ItemType, Double> colWeight; // Value injected by FXMLLoader
     
     @FXML //  fx:id="colStatus"
-    private TableColumn<Item, Double> colPrice; // Value injected by FXMLLoader
+    private TableColumn<ItemType, Double> colPrice; // Value injected by FXMLLoader
 
     @FXML //  fx:id="colSynopsis"
-    private TableColumn<Item, String> colStorageSpace; // Value injected by FXMLLoader
+    private TableColumn<ItemType, String> colStorageSpace; // Value injected by FXMLLoader
     
     @FXML //  fx:id="colSynopsis"
-    private TableColumn<Item, Integer> colBalance; // Value injected by FXMLLoader
+    private TableColumn<ItemType, Integer> colBalance; // Value injected by FXMLLoader
     
     @FXML //  fx:id="colSynopsis"
     private Object content; // Value injected by FXMLLoader
 
     
-    final ObservableList<Item> tableContent = FXCollections.observableArrayList();
+    final ObservableList<ItemType> tableContent = FXCollections.observableArrayList();
             // This listener listen to changes in the table widget selection and
     // update the DeleteIssue button state accordingly.
-    private final ListChangeListener<Item> tableSelectionChanged =
-            (ListChangeListener.Change<? extends Item> c) -> {
+    private final ListChangeListener<ItemType> tableSelectionChanged =
+            (ListChangeListener.Change<? extends ItemType> c) -> {
 //                updateSearchButtonState();
 //                updateDeleteButtonState();
 //                updateModifyButtonState();
@@ -150,19 +150,19 @@ public class ItemTabController extends TabController<Item>{
         colPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
         
         itemTable.setItems(tableContent);
-        final ObservableList<Item> tableSelection = itemTable.getSelectionModel().getSelectedItems();
+        final ObservableList<ItemType> tableSelection = itemTable.getSelectionModel().getSelectedItems();
 
         tableSelection.addListener(tableSelectionChanged);
     }
 
     private Map<CheckBox, Input<String>> inputMap = new HashMap<>();
     private Map<CheckBox, String> inputNameMap = new HashMap<>();
-    private FilterFactory<Item> filterFactory;
+    private FilterFactory<ItemType> filterFactory;
     
     private void configureFilters(){
         filterFactory = new FilterFactory<>();
         
-        filterFactory.addFilter(idBox, Input.from(itemIDField, Integer.class), (item) -> item.getID(),
+        filterFactory.addFilter(idBox, Input.from(itemIDField, Integer.class), (item) -> item.getId(),
                 (inputID, id) -> id.equals(inputID));
         
         filterFactory.addFilter(nameBox, Input.from(itemnameField, String.class), (item) -> item.getItemname(),
@@ -219,7 +219,7 @@ public class ItemTabController extends TabController<Item>{
         configureDialogs();
         configureFindItemTable();
         configureFilters();
-        super.configureDialogController(itemTable, Item.class, createItemController, updateItemController, filterFactory, inputNameMap, inputMap, "Lisäys onnistui", "Lisäys epäonnistui", "Muokkaus onnistui", "Muokkaus epäonnistui", "Poisto onnistui", "Poisto epäonnistui");
+        super.configureDialogController(itemTable, ItemType.class, createItemController, updateItemController, filterFactory, inputNameMap, inputMap, "Lisäys onnistui", "Lisäys epäonnistui", "Muokkaus onnistui", "Muokkaus epäonnistui", "Poisto onnistui", "Poisto epäonnistui");
     }
 }
 

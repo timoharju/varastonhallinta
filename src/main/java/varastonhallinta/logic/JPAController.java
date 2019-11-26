@@ -23,7 +23,7 @@ import varastonhallinta.ui.exceptions.AddEntityException;
  * @author tanel
  * @param <E>
  */
-public abstract class JPAController<E extends EntityClass> implements Serializable {
+public abstract class JPAController<E extends EntityClass>{
     
     protected EntityManagerFactory emf = null;
     private Class<? extends E> classObject;
@@ -86,7 +86,7 @@ public abstract class JPAController<E extends EntityClass> implements Serializab
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
-                int id = entity.getID();
+                int id = entity.getId();
                 if (findEntity(id) == null) {
                     throw new NonexistentEntityException("The entity with id " + id + " no longer exists.");
                 }

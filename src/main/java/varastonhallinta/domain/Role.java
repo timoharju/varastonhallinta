@@ -24,19 +24,19 @@ import javax.persistence.Table;
 public class Role extends EntityClass implements Serializable{
     private static final int ROLE_NAME_MIN_LENGTH = 3;
     private static final int ROLE_NAME_MAX_LENGTH = 20;
-    
-    @Id @GeneratedValue
-   @Column(name = "id")
-   private int id;
 
-   @Column(name = "name")
-   private String name; 
-   
+    @Id @GeneratedValue
+    @Column(name = "id")
+    private int id;
+
+    @Column(name = "name")
+    private String name; 
+
     private static final Map<Predicate<Role>, String> map = new HashMap<>();
-   
-   static{
+
+    static{
        map.put(role -> validRoleName(role.getName()), "name");
-   }
+    }
 
     /**
      *
@@ -60,7 +60,7 @@ public class Role extends EntityClass implements Serializable{
      * @return
      */
    @Override
-    public int getID() {
+    public int getId() {
       return id;
    }
    
@@ -69,7 +69,7 @@ public class Role extends EntityClass implements Serializable{
      * @param id
      */
     @Override
-    public void setID(Integer id ) {
+    public void setId(Integer id ) {
       this.id = id;
    }
 

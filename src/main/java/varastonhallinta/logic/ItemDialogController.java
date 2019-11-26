@@ -13,14 +13,14 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
-import varastonhallinta.domain.Item;
+import varastonhallinta.domain.ItemType;
 import varastonhallinta.logic.exceptions.InputException;
 
 /**
  *
  * @author tanel
  */
-public class ItemDialogController extends DialogController<Item>{
+public class ItemDialogController extends DialogController<ItemType>{
     @FXML
     private TextField itemIDField;
     
@@ -43,8 +43,8 @@ public class ItemDialogController extends DialogController<Item>{
     private GridPane grid;
     
     @Override
-    public void initFields(Item item){
-        itemIDField.setText(Integer.toString(item.getID()));
+    public void initFields(ItemType item){
+        itemIDField.setText(Integer.toString(item.getId()));
         itemNameField.setText(item.getItemname());
         weightField.setText(Double.toString(item.getWeight()));
         priceField.setText(Double.toString(item.getPrice()));
@@ -65,7 +65,7 @@ public class ItemDialogController extends DialogController<Item>{
     }
 
     @Override
-    public Item getEntity() {
+    public ItemType getEntity() {
         String name = ""; 
         double weight = 0; 
         double price = 0; 
@@ -78,11 +78,11 @@ public class ItemDialogController extends DialogController<Item>{
         }catch(InputException e){
             
         }
-        return new Item(name, weight, price, description);
+        return new ItemType(name, weight, price, description);
     }
 
     @Override
-    public Item updateEntity(Item item) {
+    public ItemType updateEntity(ItemType item) {
         System.out.println("updateEntity " + item);
         String name = ""; 
         double weight = 0; 

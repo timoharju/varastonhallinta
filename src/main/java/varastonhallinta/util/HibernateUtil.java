@@ -13,7 +13,7 @@ import javax.persistence.Persistence;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import varastonhallinta.domain.EntityClass;
-import varastonhallinta.domain.Item;
+import varastonhallinta.domain.ItemType;
 import varastonhallinta.domain.Role;
 
 import varastonhallinta.domain.User;
@@ -99,9 +99,9 @@ public class HibernateUtil {
 "55-tuumaisessa televisiossa on teräväpiirtokanavia tukevat digivirittimet DVB-T2, DVB-C HD ja DVB-S2. Siinä on myös CI+-liitäntä "
                     + "maksu-tv-kanavia varten ja voit kiinnittää sen seinälle VESA-standardin mukaisella telineellä.";
                     
-            main.addEntity(new Item("kamera", 0.4, 400, "description"));
-            main.addEntity(new Item("Monster Energy Ultra", 0.5, 1.5, "description"));
-            main.addEntity(new Item("Samsung UE55RU7172 55\" Smart 4K Ultra HD LED", 17.3, 450, "description"));
+            main.addEntity(new ItemType("kamera", 0.4, 400, "description"));
+            main.addEntity(new ItemType("Monster Energy Ultra", 0.5, 1.5, "description"));
+            main.addEntity(new ItemType("Samsung UE55RU7172 55\" Smart 4K Ultra HD LED", 17.3, 450, "description"));
 
 //        for(int i=0; i<3; i++){
 //            Role validRole = new Role("test" + i);

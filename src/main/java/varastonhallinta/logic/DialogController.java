@@ -37,7 +37,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.util.Callback;
 import varastonhallinta.domain.EntityClass;
-import varastonhallinta.domain.Item;
+import varastonhallinta.domain.ItemType;
 import varastonhallinta.domain.Role;
 import varastonhallinta.domain.User;
 import static varastonhallinta.logic.FXMLController.USERNAME_MIN_LENGTH;

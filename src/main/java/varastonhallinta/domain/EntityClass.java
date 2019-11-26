@@ -5,6 +5,7 @@
  */
 package varastonhallinta.domain;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -30,18 +31,18 @@ public abstract class EntityClass{
      *
      * @return
      */
-    public abstract int getID();
+    public abstract int getId();
 
     /**
      *
      * @param id
      *
      */
-    public abstract void setID(Integer id);
+    public abstract void setId(Integer id);
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(getID());
+        return Objects.hashCode(getId());
     }
 
     @Override
@@ -54,7 +55,7 @@ public abstract class EntityClass{
 //        if ((this.getID() == null && other.getID() != null) || (this.getID() != null && !this.getID().equals(other.getID()))) {
 //            return false;
 //        }
-        if(this.getID() != other.getID()){
+        if(this.getId() != other.getId()){
             return false;
         }
         return true;
@@ -68,7 +69,27 @@ public abstract class EntityClass{
         public Validator(){
             
         }
-        
+    }
+    
+//    TODO: Is it necessary to validate EntityClass fields since they need to be
+//    validated to be persisted in the first place???
+    protected static <T extends EntityClass> boolean validEntity(T t){
+        try {
+            t.validate();
+        } catch (ValidationException ex) {
+            return false;
+        }
+        return true;
     }
 
+    protected static <T extends EntityClass> boolean validEntity(Collection<T> tCollection){
+        for(T t : tCollection){
+            try {
+                t.validate();
+            } catch (ValidationException ex) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

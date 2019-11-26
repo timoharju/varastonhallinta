@@ -59,7 +59,6 @@ public class User extends EntityClass implements Serializable {
        map.put(user -> User.validPassword(user.getPassword()), "password");
        map.put(user -> User.validLastName(user.getFirstName()), "firstname");
        map.put(user -> User.validFirstName(user.getLastName()), "lastname");
-       map.put(user -> User.validLRole(user.getRole()), "role");
    }
     /**
      *
@@ -106,7 +105,7 @@ public class User extends EntityClass implements Serializable {
      * @return
      */
    @Override
-    public int getID() {
+    public int getId() {
       return id;
    }
    
@@ -115,7 +114,7 @@ public class User extends EntityClass implements Serializable {
      * @param id
      */
     @Override
-    public void setID(Integer id ) {
+    public void setId(Integer id ) {
       this.id = id;
    }
 
@@ -213,15 +212,6 @@ public class User extends EntityClass implements Serializable {
     public static boolean validLastName(String lastName){
         String regex = "[a-zåäö]{" + LAST_NAME_MIN_LENGTH + "," + LAST_NAME_MAX_LENGTH + "}";
         return "".equals(lastName) || lastName.matches(regex);
-    }
-    
-    public static boolean validLRole(Role role){
-        try {
-            role.validate();
-        } catch (ValidationException ex) {
-            return false;
-        }
-        return true;
     }
     
     @Override

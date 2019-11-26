@@ -73,7 +73,7 @@ public class RoleJpaController implements Serializable {
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
-                int id = role.getID();
+                int id = role.getId();
                 if (findRole(id) == null) {
                     throw new NonexistentEntityException("The role with id " + id + " no longer exists.");
                 }
@@ -99,7 +99,7 @@ public class RoleJpaController implements Serializable {
             Role role;
             try {
                 role = em.getReference(Role.class, id);
-                role.getID();
+                role.getId();
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The role with id " + id + " no longer exists.", enfe);
             }

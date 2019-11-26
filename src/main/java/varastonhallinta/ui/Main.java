@@ -41,7 +41,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import varastonhallinta.domain.EntityClass;
-import varastonhallinta.domain.Item;
+import varastonhallinta.domain.ItemType;
 import varastonhallinta.domain.Role;
 import varastonhallinta.logic.LoginController;
 import varastonhallinta.logic.ProfileController;
@@ -104,9 +104,9 @@ public class Main extends Application{
  
     private void configureControllers(EntityManagerFactory em){
         JPAController userController = new JPAControllerImpl(User.class, em);
-        JPAController itemController = new JPAControllerImpl(Item.class, em);
+        JPAController itemController = new JPAControllerImpl(ItemType.class, em);
         JPAController roleController = new JPAControllerImpl(Role.class, em);
-        controllerMap.put(Item.class, itemController);
+        controllerMap.put(ItemType.class, itemController);
         controllerMap.put(User.class, userController);
         controllerMap.put(Role.class, roleController);
     }
@@ -179,11 +179,11 @@ public class Main extends Application{
         }
     }
     
-    public int getBalance(Item item){
+    public int getBalance(ItemType item){
         return 3;
     }
     
-    public String getStorageSpace(Item item){
+    public String getStorageSpace(ItemType item){
         return "A45";
     }
     
@@ -296,7 +296,7 @@ public class Main extends Application{
 
     public <T extends EntityClass> void removeEntity(T t) throws NonexistentEntityException {
         System.out.println("Main removeEntity " + t + " t.getClass() " + t.getClass());
-        controllerMap.get(t.getClass()).destroy(t.getID());
+        controllerMap.get(t.getClass()).destroy(t.getId());
     }
 
     public <T extends EntityClass> void update(T t) throws NonexistentEntityException, ValidationException{
@@ -309,10 +309,6 @@ public class Main extends Application{
         return matchedEntities;
     }
     
-    public Collection<EntityClass> getEntities2(Class<? extends EntityClass> c){
-        List<EntityClass> matchedEntities = (List<EntityClass>) controllerMap.get(c).findEntities();
-        return matchedEntities;
-    }
     
     public <T extends EntityClass> Collection<T> getEntities(Class<? extends T> c, Predicate<T> predicate){
         System.out.println("");

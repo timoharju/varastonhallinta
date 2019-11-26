@@ -13,17 +13,17 @@ import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import varastonhallinta.domain.Item;
+import varastonhallinta.domain.ItemType;
 import varastonhallinta.logic.exceptions.NonexistentEntityException;
 
 /**
  *
  * @author tanel
  */
-public class ItemJpaController extends JPAController<Item> {
+public class ItemJpaController extends JPAController<ItemType> {
 
     public ItemJpaController(EntityManagerFactory emf) {
-        super(Item.class, emf);
+        super(ItemType.class, emf);
     }
 
     /**
@@ -36,10 +36,10 @@ public class ItemJpaController extends JPAController<Item> {
      * @param name
      * @return
      */
-    public Item findUserWithName(String name) {
+    public ItemType findUserWithName(String name) {
         EntityManager em = getEntityManager();
         try {
-            return em.createNamedQuery("findItemWithName", Item.class).setParameter("itemname", name).getSingleResult();
+            return em.createNamedQuery("findItemWithName", ItemType.class).setParameter("itemname", name).getSingleResult();
         } finally {
             em.close();
         }
