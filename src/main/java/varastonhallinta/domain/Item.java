@@ -38,7 +38,7 @@ public class Item extends EntityClass implements Serializable{
     @Id
     @GeneratedValue
     @Column(name = "id")
-    public Integer id;
+    private int id;
 
     private static final Map<Predicate<Item>, String> map = new HashMap<>();
    
@@ -134,12 +134,12 @@ public class Item extends EntityClass implements Serializable{
     
 
     @Override
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
     @Override
-    public void setID(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 

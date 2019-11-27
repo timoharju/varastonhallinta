@@ -112,11 +112,11 @@ public abstract class JPAController<E extends EntityClass> implements Serializab
             E entity;
             try {
                 entity = em.getReference(classObject, id);
+                em.remove(entity);
+                em.getTransaction().commit();
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The entity with id " + id + " no longer exists.", enfe);
             }
-            em.remove(entity);
-            em.getTransaction().commit();
         } finally {
             if (em != null) {
                 em.close();

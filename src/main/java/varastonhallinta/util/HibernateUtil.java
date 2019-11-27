@@ -92,12 +92,11 @@ public class HibernateUtil {
                 em.getTransaction().begin();
                 em.persist(role);
                 em.getTransaction().commit();
-                System.out.println();
             }
-            User ad = new User("admin", "admin", adR);
-            User vm = new User("varastomies", "varastomies", vmR);
-            User tp = new User("tuotePäällikkö", "tuotePäällikkö", tpR);
-            User as = new User("asiakas", "asiakas", asR);
+            User ad = new User("admin", "admin", "jorma", "jormala", adR);
+            User vm = new User("varastomies", "varastomies", "seppo", "seppola", vmR);
+            User tp = new User("tuotePäällikkö", "tuotePäällikkö", "kalle", "kallela", tpR);
+            User as = new User("asiakas", "asiakas", "liisa", "liisala", asR);
             for(User user : Arrays.asList(ad, vm, tp, as)){
                 em.getTransaction().begin();
                 em.persist(user);

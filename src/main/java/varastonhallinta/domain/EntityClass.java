@@ -36,18 +36,17 @@ public abstract class EntityClass{
      *
      * @return
      */
-    public abstract Integer getId();
+    public abstract int getId();
 
     /**
      *
      * @param id
      *
      */
-    public abstract void setID(Integer id);
+    public abstract void setId(int id);
 
     @Override
     public int hashCode() {
-
         return Objects.hashCode(getId());
     }
 
@@ -58,12 +57,14 @@ public abstract class EntityClass{
             return false;
         }
         EntityClass other = this.getClass().cast(object);
-        if ((this.getId() == null && other.getId() != null) || (this.getId() != null && !this.getId().equals(other.getId()))) {
+//        if ((this.getID() == null && other.getID() != null) || (this.getID() != null && !this.getID().equals(other.getID()))) {
+//            return false;
+//        }
+        if(this.getId() != other.getId()){
             return false;
         }
         return true;
     }
-    
     
     private static class Validator{
         private Range range;

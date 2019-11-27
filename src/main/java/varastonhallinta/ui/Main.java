@@ -166,8 +166,8 @@ public class Main extends Application{
      * @return
      */
     public boolean userLogin(String username, String password){
-        System.out.println("userLogin " + username + " " + password);
-        System.out.println("authenticator.validate(username, password) " + authenticator.validate(username, password));
+//        System.out.println("userLogin " + username + " " + password);
+//        System.out.println("authenticator.validate(username, password) " + authenticator.validate(username, password));
         if (authenticator.validate(username, password)) {
             loggedUser = userController.findUserWithName(username);
             //this.gotoUI("AdminUI");
