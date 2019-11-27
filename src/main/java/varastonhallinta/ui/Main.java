@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,28 +37,20 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import varastonhallinta.domain.EntityClass;
 import varastonhallinta.domain.Item;
 import varastonhallinta.domain.Role;
 import varastonhallinta.logic.LoginController;
 import varastonhallinta.logic.ProfileController;
-import varastonhallinta.logic.RoleJpaController;
 import varastonhallinta.logic.UiController;
 import varastonhallinta.logic.UserJpaController;
 import varastonhallinta.domain.User;
 import varastonhallinta.domain.ValidationException;
-import varastonhallinta.logic.FXMLController;
-import varastonhallinta.logic.ItemJpaController;
 import varastonhallinta.logic.JPAController;
 import varastonhallinta.logic.exceptions.NonexistentEntityException;
 import varastonhallinta.security.Authenticator;
 import varastonhallinta.ui.exceptions.AddEntityException;
-import varastonhallinta.ui.exceptions.EntityException;
-import varastonhallinta.ui.exceptions.ItemnameTakenException;
-import varastonhallinta.ui.exceptions.NoSuchRoleException;
-import varastonhallinta.ui.exceptions.UsernameTakenException;
 import varastonhallinta.util.HibernateUtil;
 import varastonhallinta.util.Range;
 
@@ -92,7 +83,6 @@ public class Main extends Application{
     private final String PROFILE_PAGE = "/profile.fxml";
     
     private EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("varastonhallinta");
-    
 //    private UserJpaController userController = new UserJpaController(entityManagerFactory);
 //    private ItemJpaController itemController = new ItemJpaController(entityManagerFactory);
 //    private RoleJpaController roleController = new RoleJpaController(entityManagerFactory);
@@ -101,7 +91,7 @@ public class Main extends Application{
     private Scene scene;
     private static Main application;
     private Map<Class<?>, JPAController<?>> controllerMap = new HashMap<>();
- 
+
     private void configureControllers(EntityManagerFactory em){
         JPAController userController = new JPAControllerImpl(User.class, em);
         JPAController itemController = new JPAControllerImpl(Item.class, em);
