@@ -6,7 +6,7 @@
     <class>varastonhallinta.domain.Item</class>
     <class>varastonhallinta.domain.Role</class>
     <properties>
-      <property name="javax.persistence.jdbc.url" value="jdbc:mysql://10.114.32.49/test?zeroDateTimeBehavior=convertToNull"/>
+      <property name="javax.persistence.jdbc.url" value="jdbc:mysql://10.114.32.49:3306/test?zeroDateTimeBehavior=convertToNull"/>
       <property name="javax.persistence.jdbc.user" value="taneli"/>
       <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
       <property name="javax.persistence.jdbc.password" value="12345678"/>
