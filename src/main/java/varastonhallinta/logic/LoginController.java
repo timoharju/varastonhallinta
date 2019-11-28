@@ -21,15 +21,26 @@ package varastonhallinta.logic;
 
 import java.awt.Color;
 import java.net.URL;
+import java.util.Collection;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.ResourceBundle;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.util.StringConverter;
+import varastonhallinta.domain.Role;
 import varastonhallinta.ui.Main;
 /**
  * Login Controller.
@@ -44,6 +55,8 @@ public class LoginController extends AnchorPane implements Initializable {
     Button login;
     @FXML
     Label errorMessage;
+    @FXML
+    ComboBox<Locale> languageBox;
 
     private Main application;
     
@@ -53,6 +66,42 @@ public class LoginController extends AnchorPane implements Initializable {
      */
     public void setApp(Main application){
         this.application = application;
+        configureLanguageBox();
+    }
+    
+    private void configureLanguageBox(){
+        Map<String, Locale> localeMap = application.getLocaleMap();
+        languageBox.getItems().addAll(localeMap.values());
+
+        languageBox.setConverter(new StringConverter<Locale>(){
+            @Override
+            public String toString(Locale object) {
+                final StringBuilder displayName = new StringBuilder();
+                localeMap.forEach((s, l) -> {
+                    if(l == object){
+                        displayName.append(s);
+                    }
+                });
+
+                return displayName.toString();
+            }
+
+            @Override
+            public Locale fromString(String string) {
+                return localeMap.get(string);
+            }
+        });
+        
+        languageBox.valueProperty().set(application.getLocale());
+        
+        languageBox.valueProperty().addListener(
+        (ObservableValue<? extends Locale> observable, Locale oldValue, Locale newValue) -> {
+            application.setLocale(newValue);
+        });
+    }
+    
+    public Locale getSelectedLocale(){
+        return languageBox.getValue();
     }
     
     /**

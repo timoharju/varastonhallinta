@@ -46,6 +46,7 @@
                     <Image url="@../images/LoginLogo.png" />
                   </image>
                 </ImageView>
+                        <ComboBox fx:id="languageBox" layoutX="278.0" layoutY="9.0" prefWidth="150.0" />
               </children>
             </AnchorPane>
           </children>

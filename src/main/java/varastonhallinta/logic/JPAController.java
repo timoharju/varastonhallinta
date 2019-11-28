@@ -86,7 +86,7 @@ public abstract class JPAController<E extends EntityClass> implements Serializab
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
-                int id = entity.getID();
+                int id = entity.getId();
                 if (findEntity(id) == null) {
                     throw new NonexistentEntityException("The entity with id " + id + " no longer exists.");
                 }
@@ -112,11 +112,11 @@ public abstract class JPAController<E extends EntityClass> implements Serializab
             E entity;
             try {
                 entity = em.getReference(classObject, id);
+                em.remove(entity);
+                em.getTransaction().commit();
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The entity with id " + id + " no longer exists.", enfe);
             }
-            em.remove(entity);
-            em.getTransaction().commit();
         } finally {
             if (em != null) {
                 em.close();

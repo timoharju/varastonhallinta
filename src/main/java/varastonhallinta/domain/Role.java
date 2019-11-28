@@ -27,7 +27,7 @@ public class Role extends EntityClass implements Serializable{
     
     @Id @GeneratedValue
    @Column(name = "id")
-   private Integer id;
+   private int id;
 
    @Column(name = "name")
    private String name; 
@@ -43,6 +43,10 @@ public class Role extends EntityClass implements Serializable{
      */
     public Role() {}
 
+    public Role(Role other) {
+       this.name = other.name;
+    }
+        
     /**
      *
      * @param name
@@ -56,7 +60,7 @@ public class Role extends EntityClass implements Serializable{
      * @return
      */
    @Override
-    public Integer getID() {
+    public int getId() {
       return id;
    }
    
@@ -65,7 +69,7 @@ public class Role extends EntityClass implements Serializable{
      * @param id
      */
     @Override
-    public void setID(Integer id ) {
+    public void setId(int id ) {
       this.id = id;
    }
 
@@ -86,7 +90,7 @@ public class Role extends EntityClass implements Serializable{
     }
     
     public static boolean validRoleName(String roleName){
-        String regex = "[a-zåäöA-ZÅÄÖ]{" + ROLE_NAME_MIN_LENGTH + "," + ROLE_NAME_MAX_LENGTH + "}";
+        String regex = "[a-zåäöA-ZÅÄÖ0-9]{" + ROLE_NAME_MIN_LENGTH + "," + ROLE_NAME_MAX_LENGTH + "}";
         return roleName != null && roleName.matches(regex);
     }
 

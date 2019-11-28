@@ -34,7 +34,7 @@ public class User extends EntityClass implements Serializable {
     
     @Id @GeneratedValue
    @Column(name = "id")
-   private Integer id;
+   private int id;
 
    @Column(name = "username")
    private String username; 
@@ -92,13 +92,21 @@ public class User extends EntityClass implements Serializable {
         this.lastName = lastName;
         this.role = role;
    }
+    
+    public User(User other) {
+        this.username = other.username;
+        this.password = other.password;
+        this.firstName = other.firstName;
+        this.lastName = other.lastName;
+        this.role = new Role(other.role);
+   }
    
     /**
      *
      * @return
      */
    @Override
-    public Integer getID() {
+    public int getId() {
       return id;
    }
    
@@ -107,7 +115,7 @@ public class User extends EntityClass implements Serializable {
      * @param id
      */
     @Override
-    public void setID(Integer id ) {
+    public void setId(int id ) {
       this.id = id;
    }
 

@@ -23,7 +23,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -58,41 +60,42 @@ import varastonhallinta.util.Range;
  * Main Application. This class handles navigation and user session.
  */
 public class Main extends Application{
-
-    /**
-     * @return the entityManagerFactory
-     */
-    public EntityManagerFactory getEntityManagerFactory() {
-        return entityManagerFactory;
-    }
-
-    /**
-     * @param entityManagerFactory the entityManagerFactory to set
-     */
-    public void setEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
-        this.entityManagerFactory = entityManagerFactory;
-        configureControllers(entityManagerFactory);
-    }
-
     private Stage stage;
     private User loggedUser;
     private final double MINIMUM_WINDOW_WIDTH = 390.0;
     private final double MINIMUM_WINDOW_HEIGHT = 500.0;
-    private final String UI_PAGE = "/fxml/ui3.fxml";
+    private final String UI_PAGE = "/fxml/admin.fxml";
     private final String LOGIN_PAGE = "/fxml/login.fxml";
     private final String PROFILE_PAGE = "/profile.fxml";
     
-    private EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("varastonhallinta");
-//    private UserJpaController userController = new UserJpaController(entityManagerFactory);
-//    private ItemJpaController itemController = new ItemJpaController(entityManagerFactory);
-//    private RoleJpaController roleController = new RoleJpaController(entityManagerFactory);
-    private UserJpaController userController = new UserJpaController(getEntityManagerFactory());
-    private Authenticator authenticator = new Authenticator(new UserJpaController(getEntityManagerFactory()));
+    private EntityManagerFactory entityManagerFactory;
+    private UserJpaController userController;
+    private Authenticator authenticator;
     private Scene scene;
     private static Main application;
     private Map<Class<?>, JPAController<?>> controllerMap = new HashMap<>();
-
+    private Locale locale;
+    private static final Map<String, Locale> LOCALE_MAP = new HashMap<>();
+    {
+        LOCALE_MAP.put("Finnish", new Locale("fi"));
+        LOCALE_MAP.put("English", new Locale("en"));
+        
+        Locale defaultLocale = Locale.getDefault();
+        LOCALE_MAP.values().forEach(myLocale -> {
+            if(defaultLocale.getLanguage().equals(myLocale.getLanguage())){
+                setLocale(myLocale);
+            }
+        });
+        if(getLocale() == null){
+            setLocale(LOCALE_MAP.values().iterator().next());
+        }
+                
+    }
+    private static final String BUNDLE_NAME = "properties.UiBundle";
+    
     private void configureControllers(EntityManagerFactory em){
+        userController = new UserJpaController(em);
+        authenticator = new Authenticator(userController);
         JPAController userController = new JPAControllerImpl(User.class, em);
         JPAController itemController = new JPAControllerImpl(Item.class, em);
         JPAController roleController = new JPAControllerImpl(Role.class, em);
@@ -114,9 +117,9 @@ public class Main extends Application{
         Application.launch(Main.class, (java.lang.String[])null);
     }
     
-    private Main(){
+    public Main(){
         application = this;
-        HibernateUtil.initDB(this);
+        HibernateUtil.initDB();
     }
 
     @Override
@@ -142,6 +145,37 @@ public class Main extends Application{
     }
     
     /**
+     * @return the locale
+     */
+    public Locale getLocale() {
+        return locale;
+    }
+
+    /**
+     * @param locale the locale to set
+     */
+    public void setLocale(Locale locale) {
+        System.out.println("setLocale " + locale.getLanguage());
+        this.locale = locale;
+    }
+
+    /**
+     * @return the entityManagerFactory
+     */
+    public EntityManagerFactory getEntityManagerFactory() {
+        return entityManagerFactory;
+    }
+
+    /**
+     * @param entityManagerFactory the entityManagerFactory to set
+     */
+    public void setEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
+        System.out.println("setEntityManagerFactory " + entityManagerFactory);
+        this.entityManagerFactory = entityManagerFactory;
+        configureControllers(entityManagerFactory);
+    }
+    
+    /**
      * Returns the currently logged in {@link User}. All user related operations
      * are performed on the user that is logged in.
      * @return the currently logged in user.
@@ -157,9 +191,11 @@ public class Main extends Application{
      * @return
      */
     public boolean userLogin(String username, String password){
+//        System.out.println("userLogin " + username + " " + password);
+//        System.out.println("authenticator.validate(username, password) " + authenticator.validate(username, password));
         if (authenticator.validate(username, password)) {
             loggedUser = userController.findUserWithName(username);
-            gotoUI("Admin" + "UI");
+            this.gotoUI("AdminUI");
             return true;
         } else {
             return false;
@@ -179,7 +215,7 @@ public class Main extends Application{
      */
     public void userLogout(){
         loggedUser = null;
-        gotoLogin();
+        //gotoLogin();
     }
     
     private void gotoProfile() {
@@ -201,8 +237,8 @@ public class Main extends Application{
 
     private void gotoLogin() {
         try {
-            LoginController login = (LoginController) replaceSceneContent(LOGIN_PAGE);
-            login.setApp(this);
+            LoginController loginController = (LoginController) replaceSceneContent(LOGIN_PAGE);
+            loginController.setApp(this);
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -211,7 +247,8 @@ public class Main extends Application{
     private Initializable replaceSceneContent(String fxml) throws Exception {
         System.out.println("replaceSceneContent " + fxml);
         FXMLLoader loader = new FXMLLoader();
-        InputStream in = Main.class.getResourceAsStream(fxml);
+        loader.setResources(getResourceBundle());
+        InputStream in = Main.class.getResourceAsStream(fxml);  
         loader.setBuilderFactory(new JavaFXBuilderFactory());
         loader.setLocation(Main.class.getResource(fxml));
         Parent page;
@@ -225,38 +262,31 @@ public class Main extends Application{
         stage.sizeToScene();
         return (Initializable) loader.getController();
     }
-    
-    public Node loadContent(String fxml) throws Exception {
-        System.out.println("loadContent " + fxml);
-        FXMLLoader loader = new FXMLLoader();
-        InputStream in = Main.class.getResourceAsStream(fxml);
-        loader.setBuilderFactory(new JavaFXBuilderFactory());
-        loader.setLocation(Main.class.getResource(fxml));
-        Node node;
-        try {
-            node = (Node)loader.load(in);
-        } finally {
-            in.close();
-        } 
-        //((FXMLController) loader.getController()).setApp(this);
-        return node;
-    }
+
     
     public Initializable loadController(String fxml) throws Exception {
         System.out.println("loadController " + fxml);
         FXMLLoader loader = new FXMLLoader();
+        loader.setResources(getResourceBundle());
         InputStream in = Main.class.getResourceAsStream(fxml);
         loader.setBuilderFactory(new JavaFXBuilderFactory());
         loader.setLocation(Main.class.getResource(fxml));
-        Node node;
         try {
-            node = (Node)loader.load(in);
+            loader.load(in);
         } finally {
             in.close();
         } 
         //((FXMLController) loader.getController()).setApp(this);
         return loader.getController();
     }
+    
+    private ResourceBundle getResourceBundle(){
+        ResourceBundle rb = ResourceBundle.getBundle(BUNDLE_NAME, getLocale());
+        System.out.println("rb " + rb);
+        System.out.println("rb.getKeys() " + rb.getKeys());
+        return ResourceBundle.getBundle(BUNDLE_NAME, getLocale());
+    }
+
 
     /**
      * Shows an popup window containing the given message and title. Used to 
@@ -281,7 +311,7 @@ public class Main extends Application{
     }
 
     public <T extends EntityClass> void removeEntity(T t) throws NonexistentEntityException {
-        controllerMap.get(t.getClass()).destroy(t.getID());
+        controllerMap.get(t.getClass()).destroy(t.getId());
     }
 
     public <T extends EntityClass> void update(T t) throws NonexistentEntityException, ValidationException{
@@ -313,19 +343,8 @@ public class Main extends Application{
         }
         return roleNames;
     }
-
     
-    private static class EntityTester{
-        
-    }
-    
-    private static class EntityField{
-        private boolean isMandatory;
-        private Range range;
-        private char[] invalidChars;
-        
-        public EntityField(){
-            
-        }
+    public Map<String, Locale> getLocaleMap(){
+        return Main.LOCALE_MAP;
     }
 }
