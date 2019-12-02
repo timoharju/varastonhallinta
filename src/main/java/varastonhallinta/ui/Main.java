@@ -18,6 +18,7 @@
  */
 package varastonhallinta.ui;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -238,6 +239,7 @@ public class Main extends Application{
     private void gotoLogin() {
         try {
             LoginController loginController = (LoginController) replaceSceneContent(LOGIN_PAGE);
+            System.out.println("loginController " + loginController);
             loginController.setApp(this);
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
@@ -246,11 +248,8 @@ public class Main extends Application{
 
     private Initializable replaceSceneContent(String fxml) throws Exception {
         System.out.println("replaceSceneContent " + fxml);
-        FXMLLoader loader = new FXMLLoader();
-        loader.setResources(getResourceBundle());
-        InputStream in = Main.class.getResourceAsStream(fxml);  
-        loader.setBuilderFactory(new JavaFXBuilderFactory());
-        loader.setLocation(Main.class.getResource(fxml));
+        InputStream in = Main.class.getResourceAsStream(fxml);
+        FXMLLoader loader = getLoader(fxml);
         Parent page;
         try {
             page = (Parent)loader.load(in);
@@ -266,24 +265,26 @@ public class Main extends Application{
     
     public Initializable loadController(String fxml) throws Exception {
         System.out.println("loadController " + fxml);
-        FXMLLoader loader = new FXMLLoader();
-        loader.setResources(getResourceBundle());
         InputStream in = Main.class.getResourceAsStream(fxml);
-        loader.setBuilderFactory(new JavaFXBuilderFactory());
-        loader.setLocation(Main.class.getResource(fxml));
+        FXMLLoader loader = getLoader(fxml);
         try {
             loader.load(in);
         } finally {
             in.close();
         } 
-        //((FXMLController) loader.getController()).setApp(this);
         return loader.getController();
     }
     
+    private FXMLLoader getLoader(String fxml) throws IOException{
+        System.out.println("getLoader " + fxml);
+        FXMLLoader loader = new FXMLLoader();
+        loader.setResources(getResourceBundle());
+        loader.setBuilderFactory(new JavaFXBuilderFactory());
+        loader.setLocation(Main.class.getResource(fxml));
+        return loader;
+    }
+    
     private ResourceBundle getResourceBundle(){
-        ResourceBundle rb = ResourceBundle.getBundle(BUNDLE_NAME, getLocale());
-        System.out.println("rb " + rb);
-        System.out.println("rb.getKeys() " + rb.getKeys());
         return ResourceBundle.getBundle(BUNDLE_NAME, getLocale());
     }
 
