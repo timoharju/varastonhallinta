@@ -1,7 +1,14 @@
+# Group 4
+
 # otp-varastonhallinta
 
 # Overview
 Maven warehouse project for warehouse management
+
+# Installation
+1. Create a connectable mysql database.
+2. Edit the persistense.xml and hibernate.conf files to include the proper information to connect to your database (user, password, database name).
+3. Compile and run the application.
 
 # Tools & technologies used 
 1.	Java 1.8
