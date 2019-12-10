@@ -22,9 +22,6 @@ import varastonhallinta.logic.exceptions.InputException;
  */
 public class ItemDialogController extends DialogController<Item>{
     @FXML
-    private TextField itemIDField;
-    
-    @FXML
     private TextField itemNameField;
     
     @FXML
@@ -44,7 +41,6 @@ public class ItemDialogController extends DialogController<Item>{
     
     @Override
     public void initFields(Item item){
-        itemIDField.setText(Integer.toString(item.getId()));
         itemNameField.setText(item.getItemname());
         weightField.setText(Double.toString(item.getWeight()));
         priceField.setText(Double.toString(item.getPrice()));
