@@ -16,10 +16,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
@@ -181,6 +183,7 @@ public class MainTest {
      * Test of getLoggedUser method, of class Main.
      */
     @Test
+    @Disabled("JavaFX method")
     public void testGetLoggedUser() {
         System.out.println("getLoggedUser");
         Main instance = Main.getApp();
@@ -214,6 +217,7 @@ public class MainTest {
      * Test of userLogin method, of class Main.
      */
     @Test
+    @Disabled("JavaFX method")
     public void testUserLogin() {
         System.out.println("userLogin");
         Main instance = Main.getApp();
@@ -284,6 +288,7 @@ public class MainTest {
      * Test of userLogout method, of class Main.
      */
     @Test
+    @Disabled("JavaFX method")
     public void testUserLogout() {
         System.out.println("testUserLogout");
         Main instance = Main.getApp();
@@ -307,29 +312,6 @@ public class MainTest {
             assertEquals(expResult, result);
         }
     }
-
-    /**
-     * Test of loadContent method, of class Main. Will have to mock all javaFX-objects
-     * to test this method.
-     */
-    @Test
-    @Disabled("JavaFX dependent method")
-    public void testLoadContent(){
-        System.out.println("loadContent");
-        Main instance = Main.getApp();
-        Node result;
-        
-        try {
-            for(String name : getFxmlFileNames()){
-                System.out.println("getFxmlFileNames " + name);
-                result = instance.loadContent(name);
-                Assertions.assertNotNull(result);
-            }
-        } catch (Exception ex) {
-            Logger.getLogger(MainTest.class.getName()).log(Level.SEVERE, null, ex);
-            fail(ex);
-        }
-    }
     
     private Collection<String> getFxmlFileNames() throws IOException{
         Path path = FileSystems.getDefault().getPath("src", "main", "resources", "fxml");
@@ -343,14 +325,14 @@ public class MainTest {
      * them. Fails if there is an exception during loading.
      */
     @Test
-    @Disabled("JavaFX dependent method")
+    @Disabled("JavaFX method")
     public void testLoadController(){
         System.out.println("loadController");
         Main instance = Main.getApp();
-        Node result;
+        Initializable result;
         try {
             for(String name : getFxmlFileNames()){
-                result = instance.loadContent(name);
+                result = instance.loadController(name);
                 Assertions.assertNotNull(result);
             }
         } catch (Exception ex) {
@@ -643,18 +625,22 @@ public class MainTest {
         entityMap.put(User.class, validUsers);
         entityMap.put(Item.class, validItems);
         
+        Consumer<EntityClass> adder = (entity) -> {
+            try {
+                instance.addEntity(entity);
+            } catch (ValidationException | AddEntityException ex) {
+                Logger.getLogger(MainTest.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        };
+        
         //Go through all of the entity-classess and lists containing the instances
         //of that class to be added to the DB
+        validRoles.forEach(adder);
+        validUsers.forEach(adder);
+        validItems.forEach(adder);
+        
+        //Go through all of the entity-classess and lists
         entityMap.forEach((entityClass, entityList) -> {
-            entityList.forEach(e -> {
-                try {
-                    //Add all of the entities in the list to the DB
-                    instance.addEntity(e);
-                } catch (ValidationException | AddEntityException ex) {
-                    Logger.getLogger(MainTest.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            });
-            
             //Get a list of all of the entities of a certain entity-class
             //that are in the DB
             Collection<EntityClass> entitiesInDB = instance.getEntities(entityClass);

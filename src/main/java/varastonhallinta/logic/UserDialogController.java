@@ -100,10 +100,10 @@ public class UserDialogController extends DialogController<User>{
 //            }
 //        });
 
-        roleComboBox.selectionModelProperty().addListener(
-        (ObservableValue<? extends SingleSelectionModel<Role>> observable, SingleSelectionModel<Role> oldValue, SingleSelectionModel<Role> newValue) -> {
-            System.out.println("Selection changed");
-        });
+//        roleComboBox.selectionModelProperty().addListener(
+//        (ObservableValue<? extends SingleSelectionModel<Role>> observable, SingleSelectionModel<Role> oldValue, SingleSelectionModel<Role> newValue) -> {
+//            System.out.println("Selection changed");
+//        });
         
         roleComboBox.setConverter(new StringConverter<Role>(){
             @Override

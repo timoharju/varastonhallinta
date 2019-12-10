@@ -57,8 +57,8 @@ public class User extends EntityClass implements Serializable {
    static{
        map.put(user -> User.validUsername(user.getUsername()), "username");
        map.put(user -> User.validPassword(user.getPassword()), "password");
-       map.put(user -> User.validLastName(user.getFirstName()), "firstname");
-       map.put(user -> User.validFirstName(user.getLastName()), "lastname");
+       map.put(user -> User.validFirstName(user.getFirstName()), "firstname");
+       map.put(user -> User.validLastName(user.getLastName()), "lastname");
        map.put(user -> User.validLRole(user.getRole()), "role");
    }
     /**
@@ -88,8 +88,8 @@ public class User extends EntityClass implements Serializable {
     public User(String username, String password, String firstName, String lastName, Role role) {
         this.username = username;
         this.password = password;
-        this.firstName = firstName;
-        this.lastName = lastName;
+        this.firstName = formatName(firstName);
+        this.lastName = formatName(lastName);
         this.role = role;
    }
     
@@ -100,6 +100,19 @@ public class User extends EntityClass implements Serializable {
         this.lastName = other.lastName;
         this.role = new Role(other.role);
    }
+    
+    private String formatName(String name){
+        String formattedName;
+        if(name.length() == 0){
+            return name;
+        }
+        formattedName = name.substring(0, 1).toUpperCase();
+        if(name.length() == 1){
+            return formattedName;
+        }else{
+            return formattedName + name.substring(1).toLowerCase();
+        }
+    }
    
     /**
      *
@@ -178,7 +191,7 @@ public class User extends EntityClass implements Serializable {
      * @param firstName the firstName to set
      */
     public void setFirstName(String firstName) {
-        this.firstName = firstName;
+        this.firstName = formatName(firstName);
     }
 
     /**
@@ -192,26 +205,30 @@ public class User extends EntityClass implements Serializable {
      * @param lastName the lastName to set
      */
     public void setLastName(String lastName) {
-        this.lastName = lastName;
+        this.lastName = formatName(lastName);
     }
     
     public static boolean validUsername(String username){
+        System.out.println("validUsername " + username);
         String regex = "[A-Za-zåÅäÄöÖ0-9_\\-]{" + USERNAME_MIN_LENGTH + "," + USERNAME_MAX_LENGTH + "}";
         return username != null && username.matches(regex);
     }
     
     public static boolean validPassword(String password){
+        System.out.println("validPassword " + password);
         String regex = "[^\n]{" + PASSWORD_MIN_LENGTH + "," + PASSWORD_MAX_LENGTH + "}";
         return password != null && password.matches(regex);
     }
     
     public static boolean validFirstName(String firstName){
-        String regex = "[a-zåäö]{" + FIRST_NAME_MIN_LENGTH + "," + FIRST_NAME_MAX_LENGTH + "}";
+        System.out.println("validFirstName " + firstName);
+        String regex = "[A-Za-zåÅäÄöÖ0]{" + FIRST_NAME_MIN_LENGTH + "," + FIRST_NAME_MAX_LENGTH + "}";
         return "".equals(firstName) || firstName.matches(regex);
     }
         
     public static boolean validLastName(String lastName){
-        String regex = "[a-zåäö]{" + LAST_NAME_MIN_LENGTH + "," + LAST_NAME_MAX_LENGTH + "}";
+        System.out.println("validLastName " + lastName);
+        String regex = "[A-Za-zåÅäÄöÖ0]{" + LAST_NAME_MIN_LENGTH + "," + LAST_NAME_MAX_LENGTH + "}";
         return "".equals(lastName) || lastName.matches(regex);
     }
     

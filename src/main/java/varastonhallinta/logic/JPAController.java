@@ -45,6 +45,7 @@ public abstract class JPAController<E extends EntityClass> implements Serializab
      *
      * @param entity
      * @throws varastonhallinta.domain.ValidationException
+     * @throws varastonhallinta.ui.exceptions.AddEntityException
      */
     public void create(E entity) throws ValidationException, AddEntityException {
         System.out.println("CREATE " + entity);

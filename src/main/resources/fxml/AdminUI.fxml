@@ -1,36 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.net.*?>
-<?import javafx.scene.shape.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.effect.*?>
 <?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ChoiceBox?>
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.PasswordField?>
-<?import javafx.scene.control.RadioButton?>
-<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SeparatorMenuItem?>
-<?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
 
 <VBox prefHeight="768.0" prefWidth="1024.0" stylesheets="@../styles/Admin.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="varastonhallinta.logic.UiController">
   <children>
@@ -78,10 +60,10 @@
             <fx:include source="TabPane.fxml" />
             <HBox id="buttonBox" alignment="TOP_RIGHT" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="37.0" prefWidth="374.0" spacing="10.0" StackPane.alignment="TOP_RIGHT">
                <children>
-                  <Button fx:id="search" mnemonicParsing="false" onAction="#searchFired" text="HAE 🔎" />
-                  <Button fx:id="modify" mnemonicParsing="false" onAction="#modifyFired" text="MUOKKAA 📐" />
-                  <Button fx:id="create" mnemonicParsing="false" onAction="#newFired" prefHeight="23.0" text="UUSI ✔" />
-                  <Button fx:id="delete" mnemonicParsing="false" onAction="#deleteFired" prefHeight="23.0" text="POISTA ❌" />
+                  <Button fx:id="search" mnemonicParsing="false" onAction="#searchFired" text="%search.button" />
+                  <Button fx:id="modify" mnemonicParsing="false" onAction="#modifyFired" text="%edit.button" />
+                  <Button fx:id="create" mnemonicParsing="false" onAction="#newFired" prefHeight="23.0" text="%new.button" />
+                  <Button fx:id="delete" mnemonicParsing="false" onAction="#deleteFired" prefHeight="23.0" text="%delete.button" />
                </children>
                <StackPane.margin>
                   <Insets bottom="10.0" right="10.0" />

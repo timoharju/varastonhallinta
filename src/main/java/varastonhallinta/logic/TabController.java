@@ -260,7 +260,8 @@ public abstract class TabController <E extends EntityClass> extends FXMLControll
             application.showAlert(Alert.AlertType.ERROR, "Virhe", updateFail);
             return;
         } catch (ValidationException ex) {
-            Logger.getLogger(TabController.class.getName()).log(Level.SEVERE, null, ex);
+            application.showAlert(Alert.AlertType.ERROR, "Virhe", updateFail);
+            return;
         }
         application.showAlert(Alert.AlertType.CONFIRMATION, "Käsky onnistunut", updateSuccessfull);
     }

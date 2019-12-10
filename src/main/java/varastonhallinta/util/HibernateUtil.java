@@ -109,8 +109,8 @@ public class HibernateUtil {
                     + "synkronoida pilveen, jolloin web-kokoiset kuvat saa jaettua täysin automaattisesti ja lähes viipeettä "
                     + "vaikka toiselle puolelle maailmaa.";
             
-            String description2 = "\"Uusi, vähemmän makea ja kevyempi Monster Energy Ultra on nollakalorinen, \"\n" +
-"                    + \"mutta täyttä Monster Energyä. Unleash the Ultra Beast!";
+            String description2 = "\"Uusi, vähemmän makea ja kevyempi Monster Energy Ultra on nollakalorinen," +
+                " mutta täyttä Monster Energyä. Unleash the Ultra Beast!";
             
             String description3 = "Samsung UE55RU7172 / UE55RU7179 / UE55RU7170 on "
                     + "Ultra HD -resoluutioinen televisio, jossa on HDR10 ja HLG -tuki.\n" +
