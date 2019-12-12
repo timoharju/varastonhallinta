@@ -14,6 +14,9 @@
     -fx-base: #75ff69;
 }
 
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-opacity: 22%;
+}
 /*.button {
     -fx-background-color:
         linear-gradient(
